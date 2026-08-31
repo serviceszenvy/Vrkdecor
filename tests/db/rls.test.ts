@@ -342,3 +342,94 @@ describe('every public table has RLS enabled', () => {
     });
   });
 });
+
+/**
+ * Portfolio relationships under RLS (P5).
+ *
+ * The public portfolio joins designs to their occasion, styles, services,
+ * images and videos. Every one of those child rows must disappear with an
+ * unpublished parent, or a draft design would leak through a join.
+ */
+describe('portfolio tree visibility', () => {
+  it('hides every child row of a draft design from anonymous visitors', async () => {
+    await inRollbackTransaction(async (client) => {
+      const fx = await seedFixtures(client);
+      await actAsOwner(client);
+
+      const { rows: styleRows } = await client.query<{ id: string }>(
+        `select id from public.styles limit 1`,
+      );
+      const { rows: serviceRows } = await client.query<{ id: string }>(
+        `select id from public.services limit 1`,
+      );
+
+      for (const designId of [fx.publishedDesignId, fx.draftDesignId]) {
+        await client.query(
+          `insert into public.design_styles (design_id, style_id) values ($1, $2)`,
+          [designId, styleRows[0]!.id],
+        );
+        await client.query(
+          `insert into public.design_services (design_id, service_id) values ($1, $2)`,
+          [designId, serviceRows[0]!.id],
+        );
+        await client.query(
+          `insert into public.design_videos (design_id, provider, url)
+           values ($1, 'youtube', 'https://www.youtube.com/watch?v=x')`,
+          [designId],
+        );
+      }
+
+      await actAs(client, ANON);
+
+      for (const table of ['design_styles', 'design_services', 'design_videos']) {
+        const { rows } = await client.query(
+          `select design_id from public.${table} where design_id = $1`,
+          [fx.draftDesignId],
+        );
+        expect(rows, `${table} must hide draft rows`).toHaveLength(0);
+
+        const visible = await client.query(
+          `select design_id from public.${table} where design_id = $1`,
+          [fx.publishedDesignId],
+        );
+        expect(
+          visible.rows.length,
+          `${table} must show published rows`,
+        ).toBeGreaterThan(0);
+      }
+    });
+  });
+
+  it('keeps a published design joinable to its full public tree', async () => {
+    await inRollbackTransaction(async (client) => {
+      const fx = await seedFixtures(client);
+      await actAs(client, ANON);
+
+      const { rows } = await client.query(
+        `select d.id, d.name, o.name as occasion, i.id as image_id
+         from public.designs d
+         left join public.occasions o on o.id = d.occasion_id
+         left join public.design_images i on i.design_id = d.id
+         where d.id = $1`,
+        [fx.publishedDesignId],
+      );
+
+      expect(rows.length).toBeGreaterThan(0);
+      expect(rows[0]?.occasion).toBeTruthy();
+      expect(rows[0]?.image_id).toBe(fx.publishedImageId);
+    });
+  });
+
+  it('never lets a photograph exist without a parent design', async () => {
+    await inRollbackTransaction(async (client) => {
+      await seedFixtures(client);
+      await actAsOwner(client);
+
+      const error = await attempt(
+        client,
+        `insert into public.design_images (design_id, storage_key) values (null, 'orphan.webp')`,
+      );
+      expect(error?.message).toMatch(/not-null|null value/i);
+    });
+  });
+});

@@ -20,12 +20,9 @@ import {
   styles,
   whyChooseUs,
 } from '@/lib/content';
-import {
-  getOccasions,
-  getPublishedDesigns,
-  getServices,
-  getTestimonials,
-} from '@/lib/db/public-content';
+import { isShowingSampleContent, listFeaturedDesigns } from '@/features/portfolio';
+import { DesignGrid, SampleContentNotice } from '@/features/portfolio/components';
+import { getOccasions, getServices, getTestimonials } from '@/lib/db/public-content';
 import { routes } from '@/lib/navigation';
 import { pageMetadata } from '@/lib/seo';
 import { siteConfig } from '@/lib/site-config';
@@ -54,7 +51,7 @@ export default async function HomePage() {
   const [occasions, services, designs, testimonials] = await Promise.all([
     getOccasions(),
     getServices(),
-    getPublishedDesigns(6),
+    listFeaturedDesigns(6),
     getTestimonials(),
   ]);
 
@@ -142,19 +139,19 @@ export default async function HomePage() {
         />
         <div className="mt-8">
           {designs.length > 0 ? (
-            <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {designs.map((design) => (
-                <Card key={design.id} as="li" interactive className="group">
-                  <ImageFrame ratio="landscape" rounded={false} zoomOnHover>
-                    <div className="from-brand-100 to-accent-100 h-full w-full bg-gradient-to-br" />
-                  </ImageFrame>
-                  <CardBody>
-                    <CardTitle>{design.name}</CardTitle>
-                    {design.location ? <CardMeta>{design.location}</CardMeta> : null}
-                  </CardBody>
-                </Card>
-              ))}
-            </ul>
+            <>
+              {isShowingSampleContent() ? (
+                <div className="mb-8">
+                  <SampleContentNotice />
+                </div>
+              ) : null}
+              <DesignGrid designs={designs} />
+              <div className="mt-8">
+                <ButtonLink href={routes.work} variant="outline" size="md">
+                  See all designs
+                </ButtonLink>
+              </div>
+            </>
           ) : (
             <EmptyState
               title="Our portfolio is on its way"

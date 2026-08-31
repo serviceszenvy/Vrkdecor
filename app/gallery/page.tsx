@@ -1,25 +1,29 @@
 import type { Metadata } from 'next';
 import { CtaBand, EmptyState, Hero } from '@/components/page';
 import { ButtonLink, Section } from '@/components/ui';
-import { getPublishedDesigns } from '@/lib/db/public-content';
+import { PhotoGallery, SampleContentNotice } from '@/features/portfolio/components';
+import { isShowingSampleContent, listDesigns, toPhotos } from '@/features/portfolio';
 import { routes } from '@/lib/navigation';
 import { pageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = pageMetadata({
   title: 'Gallery',
   description:
-    'Photographs from weddings, receptions and celebrations designed by VRK Decor across Tamil Nadu.',
+    'Photographs from weddings, receptions and celebrations designed by VRK Decor. Every photograph opens the design it belongs to.',
   path: '/gallery',
 });
 
 /**
- * Gallery — the photo-led view of the same published designs.
+ * Gallery — every published photograph across the portfolio.
  *
- * P4 delivers the route and metadata. The photo grid, lightbox, mobile swipe
- * and photo-level quote CTAs are P5.
+ * Each photograph carries its parent Design, so opening one gives both a link
+ * to that Design and a quote CTA for it. There is no separate Design record per
+ * photograph: this view is a flattening of the same parent Designs shown on
+ * Our Work.
  */
 export default async function GalleryPage() {
-  const designs = await getPublishedDesigns();
+  const designs = await listDesigns();
+  const photos = toPhotos(designs);
 
   return (
     <>
@@ -39,19 +43,33 @@ export default async function GalleryPage() {
         <h2 id="photos" className="sr-only">
           Photographs
         </h2>
-        <EmptyState
-          title={
-            designs.length > 0
-              ? 'The photo gallery is being finished'
-              : 'Photographs are on their way'
-          }
-          body="VRK Decor is preparing the gallery. In the meantime, browse the designs or tell us about your celebration."
-          action={
-            <ButtonLink href={routes.work} variant="primary" size="md">
-              Explore Our Work
-            </ButtonLink>
-          }
-        />
+
+        {isShowingSampleContent() ? (
+          <div className="mb-8">
+            <SampleContentNotice />
+          </div>
+        ) : null}
+
+        {photos.length > 0 ? (
+          <>
+            <p className="text-ink-muted mb-6 text-sm">
+              {photos.length} photographs from {designs.length}{' '}
+              {designs.length === 1 ? 'design' : 'designs'}. Open any photograph to see
+              the design it belongs to.
+            </p>
+            <PhotoGallery photos={photos} columns={4} showDesignName />
+          </>
+        ) : (
+          <EmptyState
+            title="Photographs are on their way"
+            body="VRK Decor is preparing the gallery. In the meantime, browse the designs or tell us about your celebration."
+            action={
+              <ButtonLink href={routes.work} variant="primary" size="md">
+                Explore Our Work
+              </ButtonLink>
+            }
+          />
+        )}
       </Section>
 
       <CtaBand />

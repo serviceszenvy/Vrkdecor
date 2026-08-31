@@ -6,6 +6,7 @@ import {
   occasions as approvedOccasions,
   services as approvedServices,
 } from '@/lib/content';
+import { withTimeout } from './with-timeout';
 import {
   listActiveOccasions,
   listActiveServices,
@@ -39,7 +40,9 @@ function reportFailure(what: string) {
 async function safely<T>(what: string, run: () => Promise<T>, fallback: T): Promise<T> {
   if (!isSupabaseConfigured()) return fallback;
   try {
-    return await run();
+    // Bounded so an unreachable database degrades to fallback content instead
+    // of holding the page render open.
+    return await withTimeout(run, undefined, what);
   } catch {
     reportFailure(what);
     return fallback;

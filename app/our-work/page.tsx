@@ -1,40 +1,54 @@
 import type { Metadata } from 'next';
 import { CtaBand, EmptyState, Hero } from '@/components/page';
+import { ButtonLink, Section } from '@/components/ui';
 import {
-  Badge,
-  ButtonLink,
-  Card,
-  CardBody,
-  CardMeta,
-  CardTitle,
-  ImageFrame,
-  Section,
-} from '@/components/ui';
-import { styles } from '@/lib/content';
-import { getPublishedDesigns } from '@/lib/db/public-content';
+  DesignGrid,
+  FilterBar,
+  SampleContentNotice,
+} from '@/features/portfolio/components';
+import {
+  isShowingSampleContent,
+  listDesigns,
+  listFilterOptions,
+} from '@/features/portfolio';
 import { routes } from '@/lib/navigation';
 import { pageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = pageMetadata({
   title: 'Our Work — Decoration Portfolio',
   description:
-    'Browse VRK Decor’s portfolio of weddings, receptions and celebrations across Tamil Nadu, and request a quote for the design you like.',
+    'Browse VRK Decor’s portfolio of weddings, receptions and celebrations across Tamil Nadu. Filter by occasion, style and service, and request a quote for any design.',
   path: '/our-work',
 });
 
 /**
- * Our Work — the portfolio listing route.
+ * Our Work — the portfolio listing (Requirements section 8).
  *
- * P4 delivers the route, its metadata and a listing of published designs. The
- * portfolio experience itself — occasion/style/service filters, design detail
- * pages, the ordered gallery, lightbox and photo-level quote CTAs — is P5
- * (`05_PROMPTS/05-PORTFOLIO.md`) and replaces the body of this page.
- *
- * Only published designs are ever returned; that is enforced by Row Level
- * Security, not by this page.
+ * Filters are query parameters, so each filtered view is linkable and works
+ * without JavaScript. Only published Designs are ever listed; Row Level
+ * Security is the boundary and the query filter is defence in depth.
  */
-export default async function OurWorkPage() {
-  const designs = await getPublishedDesigns();
+export default async function OurWorkPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const params = await searchParams;
+  const single = (value: string | string[] | undefined) =>
+    Array.isArray(value) ? value[0] : value;
+
+  const filters = {
+    occasion: single(params.occasion),
+    style: single(params.style),
+    service: single(params.service),
+  };
+
+  const [designs, options] = await Promise.all([
+    listDesigns(filters),
+    listFilterOptions(),
+  ]);
+
+  const hasFilters = Boolean(filters.occasion || filters.style || filters.service);
 
   return (
     <>
@@ -55,39 +69,39 @@ export default async function OurWorkPage() {
           Designs
         </h2>
 
-        <ul className="mb-8 flex flex-wrap gap-2">
-          {styles.map((style) => (
-            <li key={style.slug}>
-              <Badge tone="neutral">{style.name}</Badge>
-            </li>
-          ))}
-        </ul>
+        {isShowingSampleContent() ? (
+          <div className="mb-8">
+            <SampleContentNotice />
+          </div>
+        ) : null}
 
-        {designs.length > 0 ? (
-          <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {designs.map((design) => (
-              <Card key={design.id} as="li" interactive className="group">
-                <ImageFrame ratio="landscape" rounded={false} zoomOnHover>
-                  <div className="from-brand-100 to-accent-100 h-full w-full bg-gradient-to-br" />
-                </ImageFrame>
-                <CardBody>
-                  <CardTitle>{design.name}</CardTitle>
-                  {design.location ? <CardMeta>{design.location}</CardMeta> : null}
-                </CardBody>
-              </Card>
-            ))}
-          </ul>
-        ) : (
-          <EmptyState
-            title="The portfolio is being prepared"
-            body="VRK Decor is adding its designs and photographs. Tell us about your celebration and the team will share relevant work with you directly."
-            action={
-              <ButtonLink href={routes.quote} variant="primary" size="md">
-                Get a Quote
-              </ButtonLink>
-            }
-          />
-        )}
+        <FilterBar options={options} filters={filters} resultCount={designs.length} />
+
+        <div className="mt-8">
+          {designs.length > 0 ? (
+            <DesignGrid designs={designs} />
+          ) : hasFilters ? (
+            <EmptyState
+              title="No designs match those filters"
+              body="Try a different occasion, style or service, or clear the filters to see everything."
+              action={
+                <ButtonLink href={routes.work} variant="outline" size="md">
+                  Clear filters
+                </ButtonLink>
+              }
+            />
+          ) : (
+            <EmptyState
+              title="The portfolio is being prepared"
+              body="VRK Decor is adding its designs and photographs. Tell us about your celebration and the team will share relevant work with you directly."
+              action={
+                <ButtonLink href={routes.quote} variant="primary" size="md">
+                  Get a Quote
+                </ButtonLink>
+              }
+            />
+          )}
+        </div>
       </Section>
 
       <CtaBand />

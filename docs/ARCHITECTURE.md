@@ -33,7 +33,7 @@ components/             Shared presentational components
   layout/               Application shell: header, nav, footer, mobile CTA (P2)
   page/                 Page-level sections: hero, CTA band, stats, empty state (P4)
 features/
-  portfolio/            Design + DesignImage portfolio feature (P5)
+  portfolio/            Design + DesignImage portfolio: data, types, components (P5)
   enquiries/            Quote capture, enquiry persistence, reference images (P6, P7)
   admin/                Admin Panel: portfolio CRUD and enquiry pipeline (P8)
 lib/

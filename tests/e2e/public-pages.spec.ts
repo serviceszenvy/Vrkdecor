@@ -5,6 +5,16 @@ import { expect, test } from '@playwright/test';
  * Source of truth: Requirements & SOW sections 4, 5, 6, 7, 16 and 17.
  */
 
+/*
+  These tests assert routing, metadata, copy and structure across every page,
+  which means many navigations. Image optimisation is by far the most expensive
+  part of loading the portfolio pages and is irrelevant here, so it is blocked.
+  Image rendering has its own dedicated assertions in `portfolio.spec.ts`.
+*/
+test.beforeEach(async ({ page }) => {
+  await page.route('**/_next/image**', (route) => route.abort());
+});
+
 const PAGES = [
   { path: '/', heading: /Celebrations designed with care/i },
   { path: '/our-work', heading: /Celebrations we have designed/i },

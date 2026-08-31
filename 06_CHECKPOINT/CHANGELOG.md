@@ -1,5 +1,93 @@
 # VRK Decor — Changelog
 
+## 0.5.0 — 2026-08-31 — P5 Portfolio
+
+### Added
+
+- **Portfolio feature** (`features/portfolio/`): published-only reads of the
+  full design tree (occasion, styles, services, images, videos), filter options
+  derived from designs that actually exist, and view models that make the parent
+  relationship structural.
+- **Design listing** at `/our-work` with occasion, style and service filters as
+  query-parameter links — shareable, keyboard-navigable and working with
+  JavaScript disabled.
+- **Design detail** at `/our-work/[slug]`: parent metadata shown once, ordered
+  gallery, optional video, per-design SEO metadata, and a 404 for any unknown,
+  draft or archived slug.
+- **Gallery** at `/gallery` showing every published photograph, each carrying
+  its parent Design.
+- **Lightbox**: a modal dialog with focus trap, Escape with focus return,
+  arrow-key navigation, wrap-around, horizontal swipe that ignores vertical
+  intent, and body scroll locking; portalled so no stacking context traps it.
+- **Featured designs** ordered first in the listing and on the Home page.
+- **Design-level and photo-level Get Quote CTAs**, both always carrying the
+  parent Design.
+- **Optional video/reel**, URL-only, embedded through `youtube-nocookie.com` for
+  recognised providers and degraded to a plain link otherwise.
+- **Sample portfolio content**: 6 designs and 24 procedurally generated
+  placeholder images, active only when Supabase is unconfigured and labelled on
+  every portfolio surface.
+- `lib/db/with-timeout.ts` — bounded public reads.
+- **19 new unit tests** and **38 new end-to-end tests** covering parent
+  resolution, filters, gallery, lightbox, swipe, video, sample safety and image
+  rendering; **3 new database tests** for portfolio tree visibility under RLS.
+
+### Changed
+
+- Home, Our Work and Gallery now render real portfolio data with cover images.
+- `next.config.ts`: WebP-only output and image candidate widths capped at 1920
+  (see Fixed).
+- `playwright.config.ts`: explicit worker policy and test timeout.
+- `lib/db/public-content.ts`: reads bounded by a timeout.
+- Page-wide end-to-end tests block image optimisation, which is irrelevant to
+  their assertions and dominated their runtime.
+
+### Fixed
+
+Found by inspecting rendered pages and by writing an assertion that images
+actually decode:
+
+- **A design card's stretched link covered unrelated page content.** The card
+  had no positioned ancestor, so `after:inset-0` expanded to the nearest one and
+  silently swallowed clicks on the filters.
+- **Public reads could hang a page render.** A slow or unreachable database had
+  no timeout; reads now degrade to fallback content instead.
+- **Images could be served with a 200 and still never render.** On-demand AVIF
+  encoding was slow enough on a small machine to exceed navigation timeouts, and
+  an uncapped 3840 candidate let the browser request an upscale of a portrait
+  source to roughly 20 megapixels, which a mobile browser refuses to decode.
+  WebP-only output and a 1920 cap fixed both; six cold 1080px images now
+  optimise in 0.58s. The end-to-end suite went from 9.2 minutes to 42 seconds.
+- **An image-decode assertion was itself wrong**: checking every image at the
+  end of a long scroll reported healthy images as broken, because browsers
+  abandon in-flight lazy loads that leave the viewport. It now asserts images
+  decode while they are in view.
+
+### Portfolio rules enforced
+
+- A Design is the parent entity; no duplicate Design record is created for a
+  related photograph.
+- A photograph cannot be represented, rendered, linked or quoted without its
+  parent — `PortfolioPhoto` is `{ image, design }` by construction.
+- Every quote link carries the design; the photo id is optional context only.
+- Only published Designs are publicly visible, and RLS hides every child row of
+  an unpublished parent so media cannot leak through a join.
+- Related images inherit the parent's occasion, styles, services, location and
+  description; only alt text is overridden per image.
+
+### Verification
+
+`npm run format:check`, `npm run lint`, `npm run typecheck`, `npm test` (93),
+`npm run test:db` (61), `npm run test:e2e` (110), `npm run build`,
+`npm run verify:bundle` and `npm audit --audit-level=high` all pass. Renderings
+of the listing, detail, gallery, lightbox and mobile views were inspected.
+
+### Not included
+
+Quote form and enquiry submission (P6); reference uploads, email and WhatsApp
+instrumentation (P7); admin panel (P8); sitemap, robots, structured data and
+analytics (P9). `/quote` still returns 404.
+
 ## 0.4.0 — 2026-08-31 — P4 Public Website
 
 ### Added

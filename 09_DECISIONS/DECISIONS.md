@@ -187,6 +187,49 @@ official brand guideline is supplied.
 - **Sitemap, robots and structured data stay in P9.** P4 delivers unique
   metadata, canonical URLs and Open Graph only, as the phase boundary defines.
 
+## P5 — Portfolio decisions (2026-08-31)
+
+- **The parent relationship is structural, not conventional.**
+  `PortfolioPhoto` is `{ image, design }`, `toPhotos()` is the only flattening
+  path, and `designQuoteHref()` requires a design. A photograph therefore cannot
+  be rendered or quoted without its parent, which is how "every photo resolves
+  to its parent Design" is guaranteed rather than remembered.
+- **Filters are query-parameter links, not client state.** Every filtered view
+  is shareable and indexable, works without JavaScript, and is ordinary keyboard
+  navigation.
+- **Style and service filtering is applied in memory** after one query. Both
+  live behind join tables and the PostgREST inner-join syntax for them cannot be
+  integration-tested without a live Supabase project. Revisit if the portfolio
+  reaches thousands of designs.
+- **Public reads are bounded by a timeout.** An unreachable database costs a
+  visitor a section, not the whole page.
+- **Sample portfolio content is gated on Supabase being unconfigured.** That
+  makes it impossible for placeholder designs to appear in staging or
+  production, rather than relying on a flag someone must remember to switch. It
+  is labelled wherever it appears and must be deleted before the production
+  build.
+- **`resolveImageUrl` accepts a local path only under `/samples/`**, so a stored
+  storage key can never become an arbitrary local URL.
+- **Only recognised video providers are embedded**, through
+  `youtube-nocookie.com`; anything else degrades to a link, so a stored URL
+  cannot become an arbitrary iframe source.
+- **WebP-only image output; AVIF disabled.** Next optimises on demand, and AVIF
+  encoding is far slower than WebP. On Hostinger's shared CPU a first visitor to
+  an image-heavy page would pay seconds per image. Revisit only if images are
+  pre-generated at build time or served through a CDN.
+- **Image candidate widths capped at 1920.** A 3840 candidate let the browser
+  request an upscale of a portrait source to roughly 20 megapixels, which a
+  mobile browser can refuse to decode, producing a silently blank image. A
+  decoration portfolio has no need for 3840px assets.
+- **Image tests assert that images decode in the browser, while in view.** A
+  file can be present, valid on disk and served with a 200 and still never
+  render; and asserting at the end of a long scroll produces false failures,
+  because browsers abandon in-flight lazy loads that leave the viewport.
+- **Playwright worker count is explicit and overridable.** Rendering
+  image-heavy pages is CPU-bound, and excess workers starve both the browsers
+  and the server under test, producing navigation timeouts that look like
+  product failures.
+
 ## Pending
 
 - Exact Hostinger plan
@@ -197,6 +240,7 @@ official brand guideline is supplied.
 - Approval of the proposed design system (or supply of an official brand guideline)
 - Final typeface selection and licence
 - Reversed/light logo variant for dark surfaces
-- Approved hero photography or video, and portfolio photography
+- Approved hero photography or video, and real portfolio designs and photography
+  (the sample set in public/samples/ must be deleted before the production build)
 - Instagram / social account handle for the Home page showcase
 - Legal review of the draft Privacy Policy and Terms & Conditions

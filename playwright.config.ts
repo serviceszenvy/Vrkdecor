@@ -14,8 +14,15 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  /*
+    One worker by default. Rendering image-heavy portfolio pages is CPU-bound,
+    and on a small machine extra workers starve both the browsers and the
+    `next start` instance under test, producing navigation timeouts that look
+    like product failures. Raise it with PLAYWRIGHT_WORKERS on a larger machine.
+  */
+  workers: process.env.PLAYWRIGHT_WORKERS ? Number(process.env.PLAYWRIGHT_WORKERS) : 1,
   reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : 'list',
+  timeout: 45_000,
   use: {
     baseURL,
     trace: 'on-first-retry',

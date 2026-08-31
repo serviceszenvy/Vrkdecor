@@ -36,6 +36,26 @@ npm run verify     # format check + lint + typecheck + unit tests + build
 
 ## Current coverage
 
+### P5 — portfolio
+
+- Parent resolution: photographs always carry their parent Design, no duplicate
+  Design records are created for related photographs, and every quote link
+  carries a design.
+- Cover image resolution and featured ordering.
+- Filtering by occasion, style and service, individually and combined.
+- Design detail: parent metadata shown once, gallery ordering, 404 for unknown
+  or unpublished slugs, optional video present only when the design has one.
+- Lightbox: keyboard navigation, Escape with focus return, wrap-around, swipe
+  with vertical intent ignored, and a photo-level quote CTA that changes per
+  photograph while keeping the same design.
+- Filters work with JavaScript disabled.
+- Images are asserted to **decode in the browser while in view**, not merely to
+  return 200 — a valid file served with a 200 can still fail to render.
+- Under RLS, every child row of an unpublished design is invisible, and a
+  photograph cannot exist without a parent.
+- Sample content is active only when Supabase is unconfigured, and is labelled
+  wherever it appears.
+
 ### P4 — public website
 
 - Approved figures (14+, 600+, 35+) and the positioning statement are asserted
