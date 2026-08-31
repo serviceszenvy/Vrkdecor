@@ -1,0 +1,12 @@
+.next
+node_modules
+coverage
+playwright-report
+test-results
+package-lock.json
+*.docx
+*.jpg
+*.jpeg
+*.png
+*.webp
+*.svg

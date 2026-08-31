@@ -1,0 +1,36 @@
+@import 'tailwindcss';
+
+/*
+ * P1 foundation baseline only.
+ * The proposed AI-derived VRK Decor design system (colour tokens, typography
+ * scale, spacing, component primitives) is defined in P2 — 02-DESIGN-SYSTEM.
+ */
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-white text-neutral-900 antialiased;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-neutral-900;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
