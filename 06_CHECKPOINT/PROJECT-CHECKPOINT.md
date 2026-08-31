@@ -1,55 +1,47 @@
 # VRK Decor — Project Checkpoint
 
-Version: 0.3.0
-Status: P3 COMPLETE — database, auth, storage and RLS verified
-Current phase: P3 — Data/Auth/Storage (complete)
-Completed phases: P1, P2, P3
+Version: 0.4.0
+Status: P4 COMPLETE — public website pages verified
+Current phase: P4 — Public Website (complete)
+Completed phases: P1, P2, P3, P4
 Last updated: 2026-08-31
 
 ## Verified project state
 
-The repository contains a verified foundation (P1), an AI-derived proposed
-design system and application shell (P2), and a complete database, authentication
-and storage architecture with Row Level Security (P3). Public pages, portfolio,
-quote engine and admin panel are not implemented.
+The repository contains a verified foundation (P1), the AI-derived proposed
+design system and application shell (P2), the database, authentication and
+storage architecture with Row Level Security (P3), and the public website pages
+(P4). Portfolio browsing, the quote engine and the admin panel are not
+implemented.
 
 Every claim below was produced by running the command in this repository.
 
-Implemented in P3:
+Implemented in P4:
 
-- **Versioned migrations** in `supabase/migrations/`, applied in order:
-  - `20260831120000_initial_schema.sql` — all ten entities from Technical
-    Development Specification section 6, plus `styles` and the two join tables
-    the approved "filter by occasion, style and service" requirement needs.
-    Foreign keys, unique slugs, indexes, status constraints, deletion behaviour,
-    `updated_at` triggers.
-  - `20260831120100_row_level_security.sql` — RLS on every table, the
-    `is_active_admin()` predicate, every policy, and privilege revocations.
-  - `20260831120200_storage.sql` — `portfolio` (public) and `references`
-    (private) buckets and their policies.
-  - `20260831120300_seed_reference_data.sql` — the approved 14 occasions,
-    12 services and 10 styles, idempotent.
-- **Typed data access** — `lib/db/types.ts` (the `Database` type) and
-  `lib/db/queries/public.ts` read helpers, including the
-  `isDesignQuotable()` server-side eligibility check P6 will use.
-- **Authentication** — `lib/auth/` with three clearly separated clients:
-  browser (`anon`), server (acts as the signed-in user, subject to RLS) and
-  service role (bypasses RLS, `server-only`). `middleware.ts` refreshes the
-  session on `/admin` routes.
-- **Authorization** — `getCurrentAdmin()`, `isAdmin()`, `requireAdmin()`.
-  Decisions use `auth.getUser()`, which revalidates with Supabase Auth;
-  `getSession()` is never trusted.
-- **Storage** — bucket configuration, server-generated unguessable object keys
-  with path-traversal refusal, public portfolio URLs and five-minute signed URLs
-  for private reference images.
-- **Secret-leak detector** — `npm run verify:bundle` builds with sentinel values
-  in the server-only variables and scans every browser-downloadable asset.
-- **CI** extended with a `postgres:16` service job running the database suite,
-  and a job running the bundle secret scan.
+- **Public pages**, all statically rendered: `/`, `/our-work`, `/services`,
+  `/occasions`, `/packages`, `/gallery`, `/about`, `/contact`,
+  `/privacy-policy`, `/terms`.
+- **Home page** covering the Requirements section 7 checklist: hero with
+  Explore Our Work and Get a Quote, credentials, featured occasions, featured
+  designs, browse by style, services overview, Why Choose VRK Decor, How It
+  Works, testimonials and the final CTA. The persistent WhatsApp action comes
+  from the P2 shell.
+- **Content layer** (`lib/content/`) holding only requirements-derived copy:
+  positioning, credentials, coverage, journey steps, and the approved 14
+  occasions, 12 services and 10 styles.
+- **Database-optional reads** (`lib/db/public-content.ts`): pages prefer
+  Supabase rows so admin edits win, fall back to approved content, and never
+  throw. The site renders correctly with no database configured.
+- **SEO foundations** (`lib/seo.ts`): unique title and description per page,
+  canonical URLs and Open Graph. Sitemap, robots and structured data remain P9.
+- **Page components** (`components/page/`): Hero, CtaBand, StatList, EmptyState,
+  DraftNotice.
 
-NOT implemented (correctly out of P3 scope): public page content, portfolio UI,
-quote engine, upload flow, email, admin panel UI, SEO, analytics, rate limiting,
-security hardening, deployment.
+NOT implemented (correctly out of P4 scope): portfolio filters, design detail
+pages, gallery lightbox and photo-level quote CTAs (P5); the quote form and
+enquiry submission (P6); uploads, email and WhatsApp instrumentation (P7); admin
+panel (P8); sitemap, robots, structured data and analytics (P9); rate limiting
+and remaining hardening (P10).
 
 ## Approved stack
 
@@ -72,166 +64,148 @@ No Vercel-only capabilities.
 
 ## Portfolio
 
-Design is the parent entity, now enforced structurally: `design_images` and
-`design_videos` cascade from `designs` and are readable publicly only through a
-published parent. At most one cover image per design (partial unique index).
-Portfolio UI is P5.
+Design remains the parent entity, enforced structurally in P3. `/our-work` and
+`/gallery` exist as routes with metadata and a published-designs listing; the
+filters, detail pages, ordered gallery, lightbox and photo-level quote CTAs are
+P5 and replace the bodies of those two pages.
+
+## Content status
+
+Content sources and outstanding client input are documented in
+`docs/CONTENT.md`. In summary, still required from VRK Decor: approved hero
+photography or video, portfolio designs and photographs, testimonials, published
+packages, an Instagram/social handle, before/after pairs, and legal review of
+the two draft legal pages.
+
+Sections with no approved content show an honest empty state rather than
+placeholder work. The social/Instagram showcase and before/after sections from
+Requirements section 7 are deliberately not built, because no account handle and
+no before/after pairs have been supplied.
 
 ## Database / migration state
 
-Four migrations, not yet applied to any Supabase project.
+Unchanged from P3. Four migrations exist and are verified locally on every test
+run; they have **not** been applied to any Supabase project.
 
-| Item                                     | State                                |
-| ---------------------------------------- | ------------------------------------ |
-| Migrations written                       | Yes — `supabase/migrations/`         |
-| Migrations applied locally and tested    | Yes — every run of `npm run test:db` |
-| Applied to a Supabase staging project    | **No — blocked, see manual actions** |
-| Applied to a Supabase production project | No                                   |
-| Untracked dashboard edits                | None; forbidden by process           |
+| Item                           | State                                |
+| ------------------------------ | ------------------------------------ |
+| Migrations written             | Yes — `supabase/migrations/`         |
+| Applied locally and tested     | Yes — every `npm run test:db` run    |
+| Applied to Supabase staging    | **No — blocked, see manual actions** |
+| Applied to Supabase production | No                                   |
 
-Tables: `admin_users`, `occasions`, `services`, `styles`, `designs`,
-`design_styles`, `design_services`, `design_images`, `design_videos`,
-`packages`, `testimonials`, `enquiries`, `reference_images`.
-Buckets: `portfolio` (public, 10 MB), `references` (private, 5 MB).
-
-## Files added or changed in P3
+## Files added or changed in P4
 
 Added
 
-- `supabase/migrations/` — four migration files
-- `lib/db/types.ts`, `lib/db/queries/public.ts`
-- `lib/auth/config.ts`, `supabase-browser.ts`, `supabase-server.ts`,
-  `supabase-service.ts`, `admin.ts`, `index.ts`
-- `lib/storage/buckets.ts`, `keys.ts`, `urls.ts`, `index.ts`
-- `middleware.ts`
-- `scripts/check-client-bundle.mjs`
-- `tests/db/` — `global-setup.ts`, `helpers.ts`, `supabase-shim.sql`,
-  `rls.test.ts`, `storage-privacy.test.ts`, `schema-constraints.test.ts`,
-  `schema-types.test.ts`
-- `tests/unit/storage.test.ts`, `supabase-config.test.ts`,
-  `enquiry-pipeline.test.ts`
-- `vitest.db.config.mts`
-- `docs/DATABASE.md`
+- `app/services/page.tsx`, `app/occasions/page.tsx`, `app/packages/page.tsx`,
+  `app/about/page.tsx`, `app/contact/page.tsx`, `app/our-work/page.tsx`,
+  `app/gallery/page.tsx`, `app/privacy-policy/page.tsx`, `app/terms/page.tsx`
+- `components/page/` — `hero.tsx`, `cta-band.tsx`, `stat-list.tsx`,
+  `empty-state.tsx`, `draft-notice.tsx`, `index.ts`
+- `lib/content/` — `business.ts`, `catalog.ts`, `index.ts`, `README.md`
+- `lib/seo.ts`, `lib/auth/supabase-anon.ts`, `lib/db/public-content.ts`
+- `tests/unit/content.test.ts`, `tests/unit/catalog-parity.test.ts`
+- `tests/e2e/public-pages.spec.ts`
+- `docs/CONTENT.md`
 
 Changed
 
-- `package.json` — `@supabase/supabase-js`, `@supabase/ssr`, `server-only`;
-  dev `pg`, `@types/pg`; scripts `test:db`, `verify:bundle`
-- `eslint.config.mjs` — allow console output in `scripts/`
-- `.github/workflows/ci.yml` — `database` and `secrets` jobs
-- `.env.example` — documented `TEST_DATABASE_URL`
-- `lib/auth/README.md`, `lib/db/README.md`, `lib/storage/README.md`
-- `docs/README.md`, `ARCHITECTURE.md`, `SECURITY.md`, `TESTING.md`,
-  `ENVIRONMENT.md`
+- `app/page.tsx` — the real Home page
+- `tests/e2e/smoke.spec.ts` — unchanged assertions, still passing
+- `docs/README.md`, `docs/ARCHITECTURE.md`, `docs/TESTING.md`
 - `06_CHECKPOINT/PROJECT-CHECKPOINT.md`, `CHANGELOG.md`
 - `09_DECISIONS/DECISIONS.md`
 
 ## Tests and results (run 2026-08-31 in this repository)
 
-| Command                        | Result                                         |
-| ------------------------------ | ---------------------------------------------- |
-| `npm run format:check`         | PASS                                           |
-| `npm run lint`                 | PASS — 0 errors, 0 warnings                    |
-| `npm run typecheck`            | PASS — 0 errors                                |
-| `npm test`                     | PASS — 10 files, 61 tests (was 46)             |
-| `npm run test:db`              | PASS — 4 files, 58 tests (new)                 |
-| `npm run test:e2e`             | PASS — 26 tests                                |
-| `npm run build`                | PASS — 4 routes + middleware                   |
-| `npm run verify:bundle`        | PASS — 13 client assets, no server-only secret |
-| `npm audit --audit-level=high` | PASS — 0 vulnerabilities                       |
+| Command                        | Result                                        |
+| ------------------------------ | --------------------------------------------- |
+| `npm run format:check`         | PASS                                          |
+| `npm run lint`                 | PASS — 0 errors, 0 warnings                   |
+| `npm run typecheck`            | PASS — 0 errors                               |
+| `npm test`                     | PASS — 12 files, 74 tests (was 61)            |
+| `npm run test:db`              | PASS — 4 files, 58 tests                      |
+| `npm run test:e2e`             | PASS — 72 tests (was 26)                      |
+| `npm run build`                | PASS — 12 routes + middleware                 |
+| `npm run verify:bundle`        | PASS — no server-only secret in client assets |
+| `npm audit --audit-level=high` | PASS — 0 vulnerabilities                      |
 
-The database suite runs against a real PostgreSQL 16 instance with the actual
-migrations applied, acting as `anon`, `authenticated` and `service_role` with
-the same request claims Supabase derives from a JWT.
-
-The bundle secret scanner was validated with a negative control: a deliberate
-client-side reference to a secret was introduced, the scanner failed the build
-as intended, and the probe was reverted.
+Desktop and mobile renderings of the Home, Services, Occasions, Packages and
+Contact pages were captured and inspected.
 
 ## Build status
 
-Production build succeeds. Routes: `/` (static), `/_not-found` (static),
-`/design-system` (static, `noindex`), `/api/health` (dynamic), plus middleware
-on `/admin/:path*`. The application builds and runs with no Supabase
+Production build succeeds. All ten public pages plus `/design-system` are
+statically prerendered; `/api/health` is dynamic; middleware runs on
+`/admin/:path*`. The site builds and renders correctly with no Supabase
 credentials configured.
 
 ## Security status
 
-Added in P3: RLS on every table (deny by default), IDOR protection on draft
-content, separation of authentication from authorization, immediate revocation
-for disabled admins, no client path to grant admin rights, private reference
-bucket with unguessable server-generated keys and short-lived signed URLs,
-storage-level upload type and size limits, parameterized access only,
-`SECURITY DEFINER` with pinned `search_path`, secure session cookies, least
-privilege on the `public` schema, and an automated client-bundle secret scan.
-
-Nothing from P1 or P2 was weakened. No secret is committed; `.env*` remains
-git-ignored except `.env.example`.
-
-Deferred by design: server-side payload validation on enquiry submission (P6),
-upload content/dimension validation (P7), rate limiting, CSP/HSTS, CSRF,
-logging controls, retention and backups (P10, P12).
+Unchanged from P3 and not weakened. P4 added no new dependency, no client-side
+storage, no form submission and no network call beyond anonymous Supabase reads,
+which remain governed by Row Level Security. External links keep
+`rel="noopener noreferrer"`. Public content readers log a message only, never an
+error object, so connection details cannot leak into logs.
 
 ## Known issues
 
-- **Migrations have not been applied to any Supabase project.** They are
-  verified locally but no staging or production database exists yet. This is the
-  blocking manual action below.
-- The local test harness (`tests/db/supabase-shim.sql`) reproduces the Supabase
-  `auth` and `storage` surface that the policies depend on. It is close enough
-  to test policy logic faithfully, but it is not Supabase itself — the
-  migrations must still be applied to a real staging project and the security
-  checklist re-run there during P11/P12.
-- `lib/db/types.ts` is hand-maintained because `supabase gen types` needs a
-  linked project. A schema-introspection test fails on drift; regenerate from
-  the CLI once a project exists if preferred.
-- Navigation links still resolve to 404 until P4/P5/P6 create those routes.
-- No webfont is loaded and no reversed logo variant exists (see P2 entry).
-- `@playwright/test` remains pinned to 1.56.0 (see P1 entry).
+- **`/quote` still returns 404.** Every "Get a Quote" call to action points at
+  it; the route is implemented by P6. This is the only intentionally broken
+  internal link, and the E2E link check excludes it explicitly.
+- **The legal pages are drafts.** Both carry a visible notice and a
+  `data-draft-notice` attribute. They must be reviewed and approved, and the
+  notices removed, before production sign-off.
+- **The hero has no photograph.** A deliberate brand panel stands in and is
+  hidden below the `lg` breakpoint, where it would only push content down. It
+  should be replaced with the approved hero image or video.
+- Migrations are still not applied to any Supabase project (P3 carry-over).
+- No webfont is loaded and no reversed logo variant exists (P2 carry-over).
+- `@playwright/test` remains pinned to 1.56.0 (P1 carry-over).
 
 ## Unresolved decisions
 
-| Decision                                                         | Needed by     |
-| ---------------------------------------------------------------- | ------------- |
-| **Supabase staging and production projects must be created**     | P3 apply / P4 |
-| Approval of the proposed design system                           | P4            |
-| Final typeface selection and licence                             | P4            |
-| Reversed/light logo variant for dark surfaces                    | P4            |
-| Exact Hostinger plan and Node.js version offered                 | P12           |
-| Image upload dimension limits (size limits chosen: 10 MB / 5 MB) | P7            |
-| Practical maximum related images per Design                      | P5/P8         |
-| Transactional email provider                                     | P7            |
-| Confirmation that one admin is sufficient                        | P8            |
-| Enquiry and reference-image retention period                     | P10           |
-| Final page content and approved photography                      | P4            |
-| Google Analytics / Search Console owning account                 | P9            |
-| Browser support floor                                            | P11           |
-
-Closed in P3: video URL-only vs upload — implemented as external URLs only,
-per the Master Implementation Specification's recommended default.
+| Decision                                                      | Needed by                  |
+| ------------------------------------------------------------- | -------------------------- |
+| **Supabase staging and production projects must be created**  | P5 onwards                 |
+| **Approved hero photography or video**                        | P4 sign-off                |
+| **Portfolio designs, photographs, testimonials and packages** | P5, sign-off               |
+| **Instagram / social account handle**                         | Home social showcase       |
+| **Legal review of the Privacy Policy and Terms**              | Production                 |
+| Approval of the proposed design system                        | Sign-off                   |
+| Final typeface selection and licence                          | Sign-off                   |
+| Reversed/light logo variant for dark surfaces                 | Sign-off                   |
+| Exact Hostinger plan and Node.js version offered              | P12                        |
+| Image upload dimension limits                                 | P7                         |
+| Practical maximum related images per Design                   | P5/P8                      |
+| Transactional email provider                                  | P7                         |
+| Enquiry and reference-image retention period                  | P10 and the Privacy Policy |
+| Google Analytics / Search Console owning account              | P9                         |
+| Browser support floor                                         | P11                        |
 
 ## Manual actions required before later phases
 
-1. **Create Supabase projects for staging and production**, then apply the
-   migrations: `supabase link --project-ref <ref>` and `supabase db push`.
-   Record the project URLs and keys in each environment's secret manager, never
-   in the repository.
-2. **Create the first admin**: create the user in Supabase Auth, then insert the
-   matching `admin_users` row with the service role. No client path can do this
-   by design.
-3. Review and approve the proposed design system (P2 deliverable).
-4. Confirm the typeface choice and supply a reversed logo variant.
-5. Create the GitHub repository and push; enable the CI workflow.
-6. Confirm the Hostinger plan and supported Node.js version.
-7. Choose the transactional email provider.
-8. Supply final page content and approved photography.
+1. **Create Supabase projects for staging and production** and apply the
+   migrations (`supabase link`, `supabase db push`).
+2. **Create the first admin**: a Supabase Auth user plus a matching
+   `admin_users` row inserted with the service role.
+3. **Supply approved hero photography or video** and the portfolio content.
+4. **Review the two draft legal pages** and confirm the retention period.
+5. Confirm the Instagram/social handle, or confirm the section is dropped.
+6. Review and approve the proposed design system; confirm the typeface and
+   supply a reversed logo variant.
+7. Create the GitHub repository and push; enable the CI workflow.
+8. Confirm the Hostinger plan and the transactional email provider.
 
 ## Next action
 
-Execute `05_PROMPTS/04-PUBLIC-WEBSITE.md` (P4 — Public Website): Home, Services,
-Occasions, Packages, About and Contact pages built on the P2 design system and
-the P3 read helpers, with routing, metadata and responsive behaviour.
+Execute `05_PROMPTS/05-PORTFOLIO.md` (P5 — Portfolio): the design listing with
+occasion, style and service filters, design detail pages, the ordered gallery
+with lightbox and mobile swipe, video support, the featured flag, and the
+photo-level "Get Quote for This Design" call to action carrying the parent
+Design.
 
-P4 needs approved page content and photography to be more than placeholder
-structure, and it reads from the database, so applying the migrations to a
-staging Supabase project should be done first. Confirm before proceeding.
+P5 replaces the bodies of `/our-work` and `/gallery`. It needs a Supabase
+project with the migrations applied and at least one published Design in order
+to be verified against real data.

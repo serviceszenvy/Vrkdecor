@@ -1,5 +1,87 @@
 # VRK Decor — Changelog
 
+## 0.4.0 — 2026-08-31 — P4 Public Website
+
+### Added
+
+- **Ten public pages**, all statically rendered: Home, Our Work, Services,
+  Occasions, Packages, Gallery, About, Contact, Privacy Policy and Terms &
+  Conditions.
+- **Home page** covering the Requirements section 7 checklist: hero with
+  Explore Our Work and Get a Quote, credentials, featured occasions, featured
+  designs, browse by style, services overview, Why Choose VRK Decor, How It
+  Works, testimonials and a final CTA.
+- **Content layer** (`lib/content/`) carrying only requirements-derived copy —
+  positioning, credentials, coverage, journey steps, and the approved 14
+  occasions, 12 services and 10 styles, with partner-vendor delivery marked.
+- **Database-optional reads** (`lib/db/public-content.ts`): pages prefer
+  Supabase rows so VRK Decor's admin edits win, fall back to approved content,
+  and never throw. The site renders fully with no database configured.
+- **SEO foundations** (`lib/seo.ts`): a unique title and description per page,
+  canonical URLs and Open Graph tags.
+- **Page components** (`components/page/`): `Hero`, `CtaBand`, `StatList`,
+  `EmptyState` and `DraftNotice`.
+- **13 new unit tests** asserting the approved figures and positioning verbatim,
+  catalogue parity between the content module and the seed migration, and the
+  absence of superlative or pricing claims.
+- **46 new end-to-end tests** covering every route, unique metadata, canonical
+  and Open Graph tags, heading structure, navigation and footer link integrity,
+  partner-vendor labelling, contact details, draft notices, horizontal-overflow
+  freedom at 390px and the sticky action bar.
+- `docs/CONTENT.md` recording where every piece of content comes from and what
+  still needs client approval.
+
+### Changed
+
+- `app/page.tsx` replaced the P2 shell placeholder with the real Home page.
+- Page titles are concise and the root layout's template appends the brand; the
+  Home page supplies an absolute title because Next.js does not apply the
+  template to the root segment.
+- Documentation updated: `docs/README.md`, `ARCHITECTURE.md`, `TESTING.md`.
+
+### Fixed
+
+Found by inspecting the rendered pages rather than by a failing test:
+
+- The hero media collapsed to zero width. A grid item that is only
+  `justify-self-end` shrinks to its content, which collapses a percentage-width
+  child; the wrapper now sets `w-full`.
+- The Home page title lost the brand entirely, because Next.js does not apply a
+  layout's title template to the root segment.
+- The hero placeholder gradient was so pale it read as a broken image. It is now
+  a deliberate brand panel, hidden below `lg` where it would only push content
+  down.
+
+### Content integrity
+
+- Approved figures (14+ years, 600+ events, 35+ team) are printed exactly and
+  never rounded; tests fail if they change.
+- No superlative, ranking or guarantee claim appears anywhere, checked in unit
+  tests and in the rendered pages.
+- Partner-vendor delivery is displayed rather than hidden, as the requirements
+  demand.
+- Prices come only from admin-entered package rows; no budget range is shown and
+  the site performs no pricing arithmetic beyond paise-to-rupee conversion.
+- Sections with no approved content show honest empty states. The social/
+  Instagram showcase and before/after sections are deliberately not built,
+  because no handle and no pairs have been supplied.
+- The two legal pages are drafted from the site's real data handling and carry a
+  visible draft notice pending review.
+
+### Verification
+
+`npm run format:check`, `npm run lint`, `npm run typecheck`, `npm test` (74),
+`npm run test:db` (58), `npm run test:e2e` (72), `npm run build` (12 routes),
+`npm run verify:bundle` and `npm audit --audit-level=high` all pass. Desktop and
+mobile renderings were captured and inspected.
+
+### Not included
+
+Portfolio filters, design detail pages, gallery lightbox and photo-level quote
+CTAs (P5); the quote form and enquiry submission (P6); uploads, email and
+WhatsApp instrumentation (P7); admin panel (P8); sitemap, robots, structured
+data and analytics (P9). `/quote` still returns 404 and is implemented in P6.
+
 ## 0.3.0 — 2026-08-31 — P3 Database, Auth & Storage
 
 ### Added

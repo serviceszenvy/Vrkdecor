@@ -148,6 +148,45 @@ official brand guideline is supplied.
   `server-only`, and the scanner independently proves no server-only value
   reaches a browser asset.
 
+## P4 — Public website decisions (2026-08-31)
+
+- **A requirements-derived content module (`lib/content`) is the canonical page
+  copy**, and the database is preferred over it when configured. This keeps the
+  site rendering before Supabase exists while ensuring VRK Decor's own admin
+  edits win once it does. A test fails if the module and the seed migration
+  disagree.
+- **Public content readers never throw.** A missing or unavailable database
+  yields approved fallback content or an empty state, not an error page. Only a
+  message is logged, never the error object, so connection details cannot reach
+  logs.
+- **Public reads use a sessionless anon client**, so pages stay statically
+  renderable. Row Level Security still applies exactly as for any visitor.
+- **Empty states instead of placeholder content.** Designs, packages and
+  testimonials are admin-managed; inventing samples would put unapproved claims
+  on a live site.
+- **The social/Instagram showcase and before/after sections are not built.** No
+  account handle and no before/after pairs have been supplied, and neither can
+  be invented. Both are recorded as outstanding client input.
+- **The hero uses a deliberate brand panel, not an empty image frame**, until
+  approved photography is supplied, and it is hidden below `lg` where it would
+  only push content down.
+- **The legal pages ship as clearly-marked drafts.** Leaving the footer links
+  broken was the alternative. Every statement describes what the application
+  actually does, open items (retention, analytics provider) say they are being
+  confirmed rather than stating invented values, and each notice carries a
+  `data-draft-notice` attribute so P11/P12 can confirm removal.
+- **`/our-work` and `/gallery` are created in P4 as routes with metadata and a
+  published-designs listing**, so no navigation link 404s. P5 replaces their
+  bodies with the filters, detail pages and lightbox.
+- **The contact page links to the quote flow rather than shipping its own
+  form.** Server-side validation and rate limiting belong to P6 and P10; an
+  unvalidated form would be a security regression.
+- **Page titles omit the brand and let the layout template append it.** The Home
+  page supplies an absolute title because Next.js does not apply a layout
+  template to its own root segment.
+- **Sitemap, robots and structured data stay in P9.** P4 delivers unique
+  metadata, canonical URLs and Open Graph only, as the phase boundary defines.
+
 ## Pending
 
 - Exact Hostinger plan
@@ -158,4 +197,6 @@ official brand guideline is supplied.
 - Approval of the proposed design system (or supply of an official brand guideline)
 - Final typeface selection and licence
 - Reversed/light logo variant for dark surfaces
-- Final page content and approved photography
+- Approved hero photography or video, and portfolio photography
+- Instagram / social account handle for the Home page showcase
+- Legal review of the draft Privacy Policy and Terms & Conditions

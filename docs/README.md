@@ -5,6 +5,7 @@
 | [ARCHITECTURE.md](./ARCHITECTURE.md)           | Application architecture and repository structure                            |
 | [DESIGN-SYSTEM.md](./DESIGN-SYSTEM.md)         | AI-derived proposed design system (colours, type, components, accessibility) |
 | [DATABASE.md](./DATABASE.md)                   | Schema, migrations, RLS, storage and auth                                    |
+| [CONTENT.md](./CONTENT.md)                     | Where page content comes from and what still needs approval                  |
 | [LOCAL-DEVELOPMENT.md](./LOCAL-DEVELOPMENT.md) | Running the project locally                                                  |
 | [ENVIRONMENT.md](./ENVIRONMENT.md)             | Environment variable contract                                                |
 | [TESTING.md](./TESTING.md)                     | Test strategy, tooling and commands                                          |

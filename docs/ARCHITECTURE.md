@@ -31,6 +31,7 @@ app/                    Next.js App Router routes, layouts and route handlers
 components/             Shared presentational components
   ui/                   Design-system primitives (P2)
   layout/               Application shell: header, nav, footer, mobile CTA (P2)
+  page/                 Page-level sections: hero, CTA band, stats, empty state (P4)
 features/
   portfolio/            Design + DesignImage portfolio feature (P5)
   enquiries/            Quote capture, enquiry persistence, reference images (P6, P7)
@@ -42,7 +43,9 @@ lib/
   storage/              Public portfolio and private reference storage (P3, P7)
   validation/           Shared Zod schemas, including the environment contract
   analytics/            Analytics event definitions and dispatch (P9)
+  content/              Requirements-derived page content: business facts, catalogue (P4)
   site-config.ts        Approved business facts (brand, contact, coverage)
+  seo.ts                Per-page metadata, canonical URLs and Open Graph (P4)
   design-tokens.ts      Design-system tokens; source of truth for the palette
   navigation.ts         Route map, primary nav, tel/WhatsApp/mail hrefs
   contrast.ts           WCAG contrast maths used by the design-system tests

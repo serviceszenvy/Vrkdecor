@@ -36,6 +36,24 @@ npm run verify     # format check + lint + typecheck + unit tests + build
 
 ## Current coverage
 
+### P4 — public website
+
+- Approved figures (14+, 600+, 35+) and the positioning statement are asserted
+  verbatim, so a copy edit cannot inflate a claim.
+- The content module and the seed migration are compared, so the catalogue is
+  identical whether or not the database is reachable.
+- Page copy is scanned for superlatives and guarantees, in unit tests and again
+  in the rendered pages.
+- Every approved route returns 200 with exactly one `h1`.
+- Titles and descriptions are unique per page; canonical URL and Open Graph tags
+  are present; public pages are indexable and `/design-system` is not.
+- Every primary-navigation and footer link resolves (except `/quote`, owned by
+  P6).
+- No page scrolls horizontally at 390px, and the sticky action bar is present on
+  every public page.
+- Partner-vendor services are shown as such; contact details match the approved
+  business profile; legal pages carry a visible draft notice.
+
 ### P3 — database, auth and storage
 
 Run against a real PostgreSQL instance with the actual migrations applied; see
