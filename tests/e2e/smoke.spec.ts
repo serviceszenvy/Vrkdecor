@@ -5,7 +5,10 @@ test.describe('foundation smoke', () => {
     await page.goto('/');
 
     await expect(page).toHaveTitle(/VRK Decor/);
-    await expect(page.getByRole('heading', { level: 1 })).toContainText('VRK Decor');
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+    await expect(
+      page.getByRole('banner').getByRole('link', { name: 'VRK Decor — home' }),
+    ).toBeVisible();
   });
 
   test('unknown routes return the not-found page', async ({ page }) => {

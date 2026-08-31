@@ -30,6 +30,7 @@ Specification section 5 and the Master Implementation Specification section 6.
 app/                    Next.js App Router routes, layouts and route handlers
 components/             Shared presentational components
   ui/                   Design-system primitives (P2)
+  layout/               Application shell: header, nav, footer, mobile CTA (P2)
 features/
   portfolio/            Design + DesignImage portfolio feature (P5)
   enquiries/            Quote capture, enquiry persistence, reference images (P6, P7)
@@ -41,6 +42,10 @@ lib/
   validation/           Shared Zod schemas, including the environment contract
   analytics/            Analytics event definitions and dispatch (P9)
   site-config.ts        Approved business facts (brand, contact, coverage)
+  design-tokens.ts      Design-system tokens; source of truth for the palette
+  navigation.ts         Route map, primary nav, tel/WhatsApp/mail hrefs
+  contrast.ts           WCAG contrast maths used by the design-system tests
+  cn.ts                 Class-name join helper
 tests/
   unit/                 Vitest unit and integration tests
   e2e/                  Playwright end-to-end tests
@@ -81,8 +86,10 @@ Full entity definitions are in the Technical Development Specification section 6
 
 - **Next.js App Router**, not the Pages Router: required for the metadata,
   streaming and route-handler patterns the later SEO and API phases rely on.
-- **Tailwind CSS v4 CSS-first configuration**: design tokens will be declared in
-  `app/globals.css` via `@theme` during P2; there is no `tailwind.config.js`.
+- **Tailwind CSS v4 CSS-first configuration**: design tokens are declared in
+  `app/globals.css` via `@theme`; there is no `tailwind.config.js`.
+  `lib/design-tokens.ts` is the source of truth and a unit test fails if the two
+  drift apart.
 - **Vitest** for unit and integration tests: native ESM and TypeScript support,
   fast, and it shares configuration conventions with the Vite ecosystem.
   Playwright covers end-to-end and browser behaviour.

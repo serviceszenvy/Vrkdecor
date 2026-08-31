@@ -32,7 +32,23 @@ npm run verify     # format check + lint + typecheck + unit tests + build
 - Vitest only collects `tests/unit/**`; Playwright specs are excluded so the two
   runners never collide.
 
-## Current P1 coverage
+## Current coverage
+
+### P2 — design system and shell
+
+- Palette anchors match the colours measured in the supplied logo.
+- Every palette step and semantic role in `lib/design-tokens.ts` is mirrored in
+  `app/globals.css`; drift fails the suite.
+- All thirteen documented text/background pairings meet WCAG 2.1 AA.
+- Button variants stay at or above the 44px minimum touch target.
+- Navigation matches the approved site structure; `tel:`, WhatsApp and `mailto:`
+  hrefs are built from the approved business details.
+- End-to-end: header and footer contents, skip-link focus behaviour, visible
+  focus indicators, mobile sticky action bar, mobile menu open/Escape/focus
+  return, content not obscured by the action bar, and the `noindex`
+  design-system reference page.
+
+### P1 — foundation
 
 - Environment contract parsing, defaults, rejection of malformed values and
   non-disclosure of secret values in error output.

@@ -58,10 +58,58 @@ them changes an approved business requirement.
   be provisioned and verified in the current build environment. Bump together
   with `npx playwright install` when a newer browser build is available.
 
+## P2 — Design system decisions (2026-08-31)
+
+The design system is **AI-derived and proposed**, not an official VRK Decor
+brand guideline. It requires client review and approval, and is superseded if an
+official brand guideline is supplied.
+
+- **Palette anchored to measured logo colours.** Pixel analysis of the supplied
+  artwork found lime `#8EC840` and sage `#61764B`. `accent-500` and `brand-700`
+  are those exact values; the surrounding steps are a lightness ramp on the same
+  hues. No unrelated brand identity was invented.
+- **Sage is the primary brand colour, lime is a highlight.** The lime measures
+  2.00:1 on white and fails WCAG AA for text; the sage measures 5.00:1 and
+  passes. This is enforced by an automated test rather than left to convention.
+- **A warm neutral (`sand`) rather than a cool grey**, so the neutral surfaces
+  sit under warm event photography without a cold cast.
+- **`lib/design-tokens.ts` is the single source of truth** for the palette, and
+  a unit test fails if `app/globals.css` drifts from it.
+- **Contrast is a tested contract, not documentation.** Thirteen pairings are
+  declared in code and asserted against WCAG 2.1 AA.
+- **44px minimum touch target**, exceeding the WCAG 2.1 AA minimum, for
+  one-handed mobile use on a photography-led site.
+- **No webfont is loaded yet.** Typeface selection and licensing is an open
+  client decision; `--font-display` and `--font-sans` are the documented swap
+  point. Self-hosting with `next/font/local` is recommended over a font CDN for
+  performance, privacy and Hostinger independence. Google Fonts is additionally
+  unreachable from the current build environment, so an unverifiable dependency
+  was not introduced.
+- **The logo artwork is used unmodified.** A transparent PNG was produced by
+  keying out the flat white background only. Because no reversed variant exists,
+  the dark footer presents the logo on a white plate; a reversed asset from the
+  client would remove it.
+- **The shell links to routes that later phases create.** Navigation targets the
+  approved site structure now and resolves to the styled 404 page until P4, P5
+  and P6 add those routes. This was preferred over disabling navigation, which
+  would have to be unpicked later.
+- **The mobile navigation is portalled.** The header uses `backdrop-filter`,
+  which makes it the containing block and stacking context for `fixed`
+  descendants.
+- **No class-merging dependency.** `cn` is a plain join; the rule is that
+  responsive visibility and layout are applied to a wrapper, never passed
+  through a component's `className`.
+- **An internal `/design-system` page ships with the application**, marked
+  `noindex`, so the client and future engineers can review the system in a
+  browser rather than only on paper.
+
 ## Pending
 
 - Exact Hostinger plan
 - Upload limits
 - Email provider
 - Retention period
-- Final brand assets/content
+- Approval of the proposed design system (or supply of an official brand guideline)
+- Final typeface selection and licence
+- Reversed/light logo variant for dark surfaces
+- Final page content and approved photography

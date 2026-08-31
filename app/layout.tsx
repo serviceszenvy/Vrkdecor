@@ -1,4 +1,6 @@
 import type { Metadata, Viewport } from 'next';
+import { SiteFooter, SiteHeader, StickyMobileCta } from '@/components/layout';
+import { SkipLink } from '@/components/ui';
 import { siteConfig } from '@/lib/site-config';
 import './globals.css';
 
@@ -16,6 +18,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
+  themeColor: '#252522',
 };
 
 export default function RootLayout({
@@ -23,7 +26,15 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className="flex min-h-dvh flex-col">
+        <SkipLink />
+        <SiteHeader />
+        <main id="main" tabIndex={-1} className="pb-mobile-cta flex-1">
+          {children}
+        </main>
+        <SiteFooter />
+        <StickyMobileCta />
+      </body>
     </html>
   );
 }

@@ -1,12 +1,13 @@
 # VRK Decor — Documentation
 
-| Document                                       | Purpose                                           |
-| ---------------------------------------------- | ------------------------------------------------- |
-| [ARCHITECTURE.md](./ARCHITECTURE.md)           | Application architecture and repository structure |
-| [LOCAL-DEVELOPMENT.md](./LOCAL-DEVELOPMENT.md) | Running the project locally                       |
-| [ENVIRONMENT.md](./ENVIRONMENT.md)             | Environment variable contract                     |
-| [TESTING.md](./TESTING.md)                     | Test strategy, tooling and commands               |
-| [SECURITY.md](./SECURITY.md)                   | Security baseline and phase ownership             |
+| Document                                       | Purpose                                                                      |
+| ---------------------------------------------- | ---------------------------------------------------------------------------- |
+| [ARCHITECTURE.md](./ARCHITECTURE.md)           | Application architecture and repository structure                            |
+| [DESIGN-SYSTEM.md](./DESIGN-SYSTEM.md)         | AI-derived proposed design system (colours, type, components, accessibility) |
+| [LOCAL-DEVELOPMENT.md](./LOCAL-DEVELOPMENT.md) | Running the project locally                                                  |
+| [ENVIRONMENT.md](./ENVIRONMENT.md)             | Environment variable contract                                                |
+| [TESTING.md](./TESTING.md)                     | Test strategy, tooling and commands                                          |
+| [SECURITY.md](./SECURITY.md)                   | Security baseline and phase ownership                                        |
 
 Project governance documents live at the repository root and in the numbered
 folders:

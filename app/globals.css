@@ -1,30 +1,164 @@
 @import 'tailwindcss';
 
 /*
- * P1 foundation baseline only.
- * The proposed AI-derived VRK Decor design system (colour tokens, typography
- * scale, spacing, component primitives) is defined in P2 — 02-DESIGN-SYSTEM.
+ * VRK Decor — AI-derived proposed digital design system.
+ *
+ * This is a PROPOSED design system derived from the supplied logo, not an
+ * official VRK Decor brand guideline. See docs/DESIGN-SYSTEM.md.
+ *
+ * `lib/design-tokens.ts` is the source of truth for these values.
+ * `tests/unit/design-tokens.test.ts` fails if this file drifts from it.
  */
+
+@theme {
+  /* Brand — sage/olive, measured from the "DECOR" wordmark, leaf and ellipse */
+  --color-brand-50: #f6f9f3;
+  --color-brand-100: #ecf2e6;
+  --color-brand-200: #dae5cf;
+  --color-brand-300: #c2d2b2;
+  --color-brand-400: #a4bb8b;
+  --color-brand-500: #85a06a;
+  --color-brand-600: #6d8455;
+  --color-brand-700: #61764b;
+  --color-brand-800: #475637;
+  --color-brand-900: #37432b;
+  --color-brand-950: #242c1c;
+
+  /* Accent — lime, measured from the "VRK" wordmark */
+  --color-accent-50: #f7fbf1;
+  --color-accent-100: #edf7e0;
+  --color-accent-200: #ddf0c4;
+  --color-accent-300: #c7e79d;
+  --color-accent-400: #aad671;
+  --color-accent-500: #8ec840;
+  --color-accent-600: #74a831;
+  --color-accent-700: #5e8828;
+  --color-accent-800: #4b6d20;
+  --color-accent-900: #3b5519;
+  --color-accent-950: #263710;
+
+  /* Sand — warm neutral for surfaces, text and borders */
+  --color-sand-50: #f7f7f5;
+  --color-sand-100: #edeeea;
+  --color-sand-200: #dcddd7;
+  --color-sand-300: #c5c6be;
+  --color-sand-400: #a7aa9d;
+  --color-sand-500: #898b7e;
+  --color-sand-600: #707267;
+  --color-sand-700: #5b5c54;
+  --color-sand-800: #484a43;
+  --color-sand-900: #393a34;
+  --color-sand-950: #252522;
+
+  /* Semantic roles — components use these, not raw palette steps */
+  --color-surface: #ffffff;
+  --color-surface-subtle: #f7f7f5;
+  --color-surface-muted: #edeeea;
+  --color-surface-inverse: #252522;
+  --color-ink: #252522;
+  --color-ink-muted: #707267;
+  --color-ink-inverse: #ffffff;
+  --color-line: #dcddd7;
+
+  /*
+   * Typography.
+   *
+   * Webfonts are intentionally NOT loaded yet: typeface selection and licensing
+   * are an open client decision (09_DECISIONS/DECISIONS.md). These stacks are
+   * the swap point — replace the first entry with a self-hosted `next/font/local`
+   * family once the client approves one. No third-party font request is made,
+   * which keeps the site fast, private and Hostinger-friendly.
+   */
+  --font-display:
+    'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia,
+    'Times New Roman', serif;
+  --font-sans:
+    system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
+    sans-serif;
+
+  /* Fluid type scale */
+  --text-2xs: 0.75rem;
+  --text-xs: 0.8125rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: clamp(1.25rem, 1.15rem + 0.4vw, 1.375rem);
+  --text-2xl: clamp(1.5rem, 1.35rem + 0.7vw, 1.75rem);
+  --text-3xl: clamp(1.875rem, 1.6rem + 1.2vw, 2.25rem);
+  --text-4xl: clamp(2.25rem, 1.85rem + 1.9vw, 3rem);
+  --text-5xl: clamp(2.75rem, 2.1rem + 3vw, 4rem);
+
+  /* Radii */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.875rem;
+  --radius-xl: 1.5rem;
+
+  /* Elevation — restrained, so photography stays the focus */
+  --shadow-card: 0 1px 2px rgb(37 37 34 / 0.04), 0 8px 24px -12px rgb(37 37 34 / 0.18);
+  --shadow-raised:
+    0 2px 4px rgb(37 37 34 / 0.06), 0 18px 40px -18px rgb(37 37 34 / 0.28);
+}
 
 @layer base {
   :root {
     color-scheme: light;
+    /* Height of the mobile sticky action bar; reserved so it never covers content. */
+    --mobile-cta-height: 4rem;
   }
 
   html {
     -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
   }
 
   body {
-    @apply bg-white text-neutral-900 antialiased;
+    @apply bg-surface text-ink font-sans antialiased;
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
   }
 
+  h1,
+  h2,
+  h3 {
+    @apply font-display text-balance;
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Visible, high-contrast focus for every interactive element. */
   :focus-visible {
-    @apply outline-2 outline-offset-2 outline-neutral-900;
+    @apply outline-brand-700 rounded-sm outline-2 outline-offset-2;
+  }
+
+  /* Images never overflow their container. */
+  img,
+  video {
+    @apply max-w-full;
+  }
+}
+
+@layer utilities {
+  /* Reserves space for the mobile sticky CTA bar below the `lg` breakpoint. */
+  .pb-mobile-cta {
+    padding-bottom: var(--mobile-cta-height);
+  }
+
+  @media (min-width: 1024px) {
+    .pb-mobile-cta {
+      padding-bottom: 0;
+    }
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   *,
   *::before,
   *::after {

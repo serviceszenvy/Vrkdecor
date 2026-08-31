@@ -1,24 +1,30 @@
-import { siteConfig } from '@/lib/site-config';
+import { ButtonLink, Section, SectionHeading } from '@/components/ui';
+import { routes } from '@/lib/navigation';
 
 /**
- * P1 foundation placeholder.
- * The real Home page is implemented in P4 — 04-PUBLIC-WEBSITE, on top of the
- * design system delivered in P2.
+ * P2 shell placeholder.
+ *
+ * The real Home page — hero, featured occasions and designs, services overview,
+ * how it works, testimonials and social showcase — is implemented in P4
+ * (`05_PROMPTS/04-PUBLIC-WEBSITE.md`) on top of these design-system primitives.
  */
 export default function HomePage() {
   return (
-    <main className="mx-auto flex min-h-screen max-w-3xl flex-col justify-center gap-4 px-6 py-16">
-      <p className="text-sm font-medium tracking-widest text-neutral-500 uppercase">
-        Foundation build
-      </p>
-      <h1 className="text-3xl font-semibold text-balance sm:text-4xl">
-        {siteConfig.name}
-      </h1>
-      <p className="text-neutral-600">{siteConfig.description}</p>
-      <p className="text-sm text-neutral-500">
-        Phase 1 foundation is in place. The public website is implemented in later,
-        separately approved build phases.
-      </p>
-    </main>
+    <Section spacing="spacious" width="wide">
+      <SectionHeading
+        level={1}
+        eyebrow="Premium event design"
+        title="Complete celebration solutions across Tamil Nadu"
+        lead="The design system and application shell are in place. Page content is implemented in the next approved build phase."
+      />
+      <div className="mt-8 flex flex-wrap gap-3">
+        <ButtonLink href={routes.work} variant="primary" size="lg">
+          Explore Our Work
+        </ButtonLink>
+        <ButtonLink href={routes.quote} variant="outline" size="lg">
+          Get a Quote
+        </ButtonLink>
+      </div>
+    </Section>
   );
 }
