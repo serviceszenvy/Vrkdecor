@@ -36,7 +36,8 @@ features/
   enquiries/            Quote capture, enquiry persistence, reference images (P6, P7)
   admin/                Admin Panel: portfolio CRUD and enquiry pipeline (P8)
 lib/
-  db/                   Database access and versioned migrations (P3)
+  db/                   Database types and query helpers (P3)
+    queries/            Read helpers for public content
   auth/                 Supabase Auth and server-side authorization (P3)
   storage/              Public portfolio and private reference storage (P3, P7)
   validation/           Shared Zod schemas, including the environment contract
@@ -46,10 +47,15 @@ lib/
   navigation.ts         Route map, primary nav, tel/WhatsApp/mail hrefs
   contrast.ts           WCAG contrast maths used by the design-system tests
   cn.ts                 Class-name join helper
+supabase/
+  migrations/           Versioned SQL migrations (P3)
 tests/
   unit/                 Vitest unit and integration tests
+  db/                   Vitest RLS, storage-policy and schema tests (P3)
   e2e/                  Playwright end-to-end tests
+scripts/                Verification scripts
 docs/                   Engineering documentation
+middleware.ts           Supabase session refresh on /admin routes (P3)
 ```
 
 Directories owned by later phases contain a `README.md` that records the phase

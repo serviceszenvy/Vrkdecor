@@ -17,7 +17,9 @@
 ```bash
 npm test           # Vitest, single run
 npm run test:watch # Vitest, watch mode
+npm run test:db    # RLS, storage policies and schema (needs TEST_DATABASE_URL)
 npm run test:e2e   # Playwright
+npm run verify:bundle # server-only secrets absent from the client bundle
 npm run verify     # format check + lint + typecheck + unit tests + build
 ```
 
@@ -33,6 +35,31 @@ npm run verify     # format check + lint + typecheck + unit tests + build
   runners never collide.
 
 ## Current coverage
+
+### P3 — database, auth and storage
+
+Run against a real PostgreSQL instance with the actual migrations applied; see
+[DATABASE.md](./DATABASE.md).
+
+- Anonymous visitors: can read published designs, cannot see drafts or their
+  media even by exact id, are refused enquiries, reference images and admin
+  data, cannot create an enquiry or mutate content, cannot create objects in
+  the `public` schema.
+- Signed-in non-admins: see exactly what anonymous visitors see, and cannot
+  escalate by inserting themselves into `admin_users`.
+- Disabled admins: lose access immediately.
+- Active admins: can read drafts, enquiries and private reference images,
+  publish designs, manage media and move the enquiry pipeline — but still
+  cannot grant admin rights from a client connection.
+- Storage: portfolio objects public, reference objects unreadable by anonymous
+  and non-admin users even with the exact key, no client role can write to the
+  private bucket, buckets reject non-image types.
+- Schema contract: cover uniqueness, the three-reference-image limit, required
+  consent, pricing-mode consistency, slug and storage-key uniqueness, cascade
+  and restrict deletion behaviour, approved seed data.
+- Drift guards: `lib/db/types.ts` is compared against the live schema, and
+  `lib/storage` limits against the migrated buckets.
+- Every table in `public` is asserted to have RLS enabled.
 
 ### P2 — design system and shell
 

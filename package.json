@@ -18,23 +18,30 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "verify": "npm run format:check && npm run lint && npm run typecheck && npm run test && npm run build"
+    "verify": "npm run format:check && npm run lint && npm run typecheck && npm run test && npm run build",
+    "test:db": "vitest run --config vitest.db.config.mts",
+    "verify:bundle": "node scripts/check-client-bundle.mjs"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.12.5",
+    "@supabase/supabase-js": "^2.112.4",
     "next": "16.3.3",
     "react": "19.2.8",
     "react-dom": "19.2.8",
+    "server-only": "^0.0.1",
     "zod": "4.1.13"
   },
   "devDependencies": {
     "@playwright/test": "1.56.0",
     "@tailwindcss/postcss": "4.3.3",
     "@types/node": "22.19.2",
+    "@types/pg": "^8.23.1",
     "@types/react": "19.2.8",
     "@types/react-dom": "19.2.4",
     "eslint": "9.39.5",
     "eslint-config-next": "16.3.3",
     "eslint-config-prettier": "10.1.8",
+    "pg": "^8.23.0",
     "prettier": "3.6.2",
     "prettier-plugin-tailwindcss": "^0.7.1",
     "tailwindcss": "4.3.3",

@@ -28,3 +28,11 @@ Variable names come from the Technical Development Specification section 14.
   asserts the variables it consumes at its own boundary.
 - `tests/unit/env-example.test.ts` fails the build if a contract variable is
   missing from `.env.example` or if `.env.example` ever gains a value.
+- Supabase configuration is read at call time, never at module load, so the
+  application builds and the public shell runs without credentials
+  (`lib/auth/config.ts`). Accessors fail with the variable name and never echo a
+  value.
+- `npm run verify:bundle` builds with sentinel values in the server-only
+  variables and fails if any of them appears in a browser-downloadable asset.
+- The database test suite additionally uses `TEST_DATABASE_URL`, which must
+  never point at staging or production.

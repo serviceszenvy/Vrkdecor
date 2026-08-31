@@ -28,6 +28,11 @@ const config = [
       eqeqeq: ['error', 'always'],
     },
   },
+  {
+    // Build and verification scripts are CLI tools; their output is the point.
+    files: ['scripts/**/*.mjs'],
+    rules: { 'no-console': 'off' },
+  },
 ];
 
 export default config;

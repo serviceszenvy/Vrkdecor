@@ -26,6 +26,38 @@ each remaining control.
   run on every pull request to `main`.
 - **No secrets in the health endpoint.** `/api/health` returns a fixed payload.
 
+## Added in P3
+
+- **Row Level Security on every table**, deny by default, with policies proven
+  by 58 automated tests against a real PostgreSQL instance. See
+  [DATABASE.md](./DATABASE.md).
+- **Anonymous users are refused enquiries, reference images and admin data** at
+  the privilege level as well as the policy level.
+- **Draft content cannot leak.** Unpublished designs and their media are
+  invisible to anonymous and non-admin users even when the exact id is known
+  (IDOR protection).
+- **Authentication is separated from authorization.** A valid session grants
+  nothing; `admin_users` with `status = 'active'` does. Disabling an admin
+  revokes access immediately. No client role can grant admin rights.
+- **Private reference images.** A private bucket with no anonymous policy, no
+  public URL, server-generated unguessable keys and five-minute signed URLs
+  issued only after `requireAdmin()`.
+- **Upload hardening at the storage layer**: per-bucket size caps and an
+  allow-list of raster image types only — no SVG, PDF, archives or executables.
+- **Enquiries are never written from the browser**; they are created server-side
+  after validation, so leads cannot be forged, enumerated or altered.
+- **Parameterized access only.** All queries go through the Supabase client;
+  no string-built SQL anywhere.
+- **`SECURITY DEFINER` with a pinned `search_path`** on the one privileged
+  helper function.
+- **Secrets cannot reach the browser.** Server modules import `server-only`, and
+  `npm run verify:bundle` builds with sentinel values and fails if any appears
+  in a browser-downloadable asset. CI runs it on every pull request.
+- **Secure session cookies**: `httpOnly`, `sameSite=lax`, `secure` in
+  production.
+- **Least privilege**: client roles cannot create objects in the `public`
+  schema; write privileges are granted only where a policy could allow a write.
+
 ## Owned by later phases
 
 | Control                                                                                                            | Phase      |

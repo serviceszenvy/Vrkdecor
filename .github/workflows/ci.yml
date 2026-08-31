@@ -46,6 +46,69 @@ jobs:
       - name: Dependency audit
         run: npm audit --audit-level=high
 
+  database:
+    name: Database, RLS and storage policies
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      # A throwaway CI database. Never point this at staging or production
+      # (Technical Development Specification section 4).
+      TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/vrk_test
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Apply migrations and run database security tests
+        run: npm run test:db
+
+  secrets:
+    name: Server-only secrets stay out of the client bundle
+    runs-on: ubuntu-latest
+    env:
+      # Sentinel values only. No real secret is used or needed.
+      NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-anon-key-placeholder
+      SUPABASE_SERVICE_ROLE_KEY: ci-sentinel-service-role-4f9a2c7b1e
+      EMAIL_PROVIDER_API_KEY: ci-sentinel-email-key-8d3e6a1f0b
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Scan client bundle for server-only secrets
+        run: npm run verify:bundle
+
   e2e:
     name: End-to-end tests
     runs-on: ubuntu-latest

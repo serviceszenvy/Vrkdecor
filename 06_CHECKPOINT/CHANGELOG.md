@@ -1,5 +1,88 @@
 # VRK Decor — Changelog
 
+## 0.3.0 — 2026-08-31 — P3 Database, Auth & Storage
+
+### Added
+
+- **Versioned migrations** in `supabase/migrations/`:
+  - Initial schema covering all ten entities from the Technical Development
+    Specification section 6, with foreign keys, unique slugs, indexes, status
+    constraints, deletion behaviour and `updated_at` triggers. `styles` and the
+    `design_styles` / `design_services` join tables implement the approved
+    requirement to filter the portfolio by occasion, style **and** service.
+  - Row Level Security on every table, the `is_active_admin()` predicate, every
+    policy, and privilege revocations.
+  - `portfolio` (public) and `references` (private) storage buckets and their
+    policies.
+  - Idempotent seed of the approved 14 occasions, 12 services and 10 styles,
+    transcribed from the Requirements & SOW including the Tamil secondary terms
+    and the partner-vendor markings.
+- **Business rules enforced by the database**, so no application path can break
+  them: at most one cover image per design, at most three reference images per
+  enquiry, consent required on every enquiry, pricing-mode/price consistency,
+  and refusal to delete a design that an enquiry points at.
+- **Typed data access** — `lib/db/types.ts` and `lib/db/queries/public.ts`,
+  including the server-side design eligibility check the quote engine needs.
+- **Authentication** — `lib/auth/` with three separated Supabase clients
+  (browser/anon, server/user, service role) and `middleware.ts` refreshing the
+  session on `/admin` routes.
+- **Authorization** — `getCurrentAdmin()`, `isAdmin()` and `requireAdmin()`,
+  deciding from `auth.getUser()` rather than an unverified session.
+- **Storage** — bucket configuration, server-generated unguessable object keys
+  that refuse path traversal, public portfolio URLs, and five-minute signed URLs
+  for private reference images.
+- **`npm run verify:bundle`** — builds with sentinel values in the server-only
+  environment variables and fails if any appears in a browser-downloadable
+  asset.
+- **58 database tests** (`npm run test:db`) run against a real PostgreSQL
+  instance with the actual migrations applied, covering anonymous access,
+  signed-in non-admins, disabled admins, active admins, storage privacy, schema
+  constraints, seed data, and drift between the TypeScript types and the live
+  schema.
+- **15 new unit tests** for storage keys and limits, Supabase configuration and
+  the enquiry pipeline.
+- `docs/DATABASE.md`.
+
+### Changed
+
+- CI gained a `database` job backed by a `postgres:16` service container and a
+  `secrets` job running the client-bundle scan.
+- `.env.example` documents `TEST_DATABASE_URL` as test-only.
+- ESLint allows console output in `scripts/`.
+- Documentation updated: `docs/README.md`, `ARCHITECTURE.md`, `SECURITY.md`,
+  `TESTING.md`, `ENVIRONMENT.md`, and the `lib/` module READMEs.
+
+### Security
+
+- Deny by default: RLS enabled on every table, `FORCE`d on `enquiries`,
+  `reference_images` and `admin_users`.
+- Anonymous users are refused enquiries, reference images and admin data at both
+  the privilege and policy level, and cannot create objects in `public`.
+- Unpublished designs and their media are invisible to anonymous and non-admin
+  users even when the exact id is known.
+- Authentication is separated from authorization; disabling an admin revokes
+  access immediately, and no client role can grant admin rights.
+- Enquiries are never written from the browser — no anonymous INSERT policy
+  exists; they are created server-side after validation.
+- Reference images have no public URL, unguessable server-generated keys and
+  short-lived signed access.
+- Buckets reject anything that is not an approved raster image — no SVG, PDF,
+  archives or executables.
+- Server modules import `server-only`; the bundle scanner was validated with a
+  negative control that made it fail as intended.
+
+### Verification
+
+`npm run format:check`, `npm run lint`, `npm run typecheck`, `npm test` (61),
+`npm run test:db` (58), `npm run test:e2e` (26), `npm run build`,
+`npm run verify:bundle` and `npm audit --audit-level=high` all pass.
+
+### Not included
+
+No public page content, portfolio UI, quote engine, upload flow, email, admin
+UI, SEO, analytics, rate limiting or deployment. The migrations have not yet
+been applied to a Supabase project — see the checkpoint's manual actions.
+
 ## 0.2.0 — 2026-08-31 — P2 Design System
 
 ### Added

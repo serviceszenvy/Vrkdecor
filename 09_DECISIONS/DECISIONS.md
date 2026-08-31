@@ -103,10 +103,56 @@ official brand guideline is supplied.
   `noindex`, so the client and future engineers can review the system in a
   browser rather than only on paper.
 
+## P3 — Database, auth and storage decisions (2026-08-31)
+
+- **Migrations live in `supabase/migrations/`.** That is where the Supabase CLI
+  applies them, and P12 will deploy from there. TypeScript data access stays in
+  `lib/db/` as the repository contract requires.
+- **A `styles` table plus `design_styles` and `design_services` join tables.**
+  The Requirements & SOW require filtering by occasion, style and service, and
+  record that an admin enters "style(s)" — plural — per Design. One occasion,
+  many styles, many services. The style vocabulary is exactly the approved list.
+- **CHECK constraints rather than PostgreSQL enum types** for status domains, so
+  adding a value later is an ordinary migration.
+- **Money in paise (`bigint`)**, never floating point.
+- **`ON DELETE RESTRICT` from `enquiries.selected_design_id` to `designs`.** A
+  lead must never silently lose the Design it came from; designs with enquiries
+  are archived rather than deleted. Design media cascade normally.
+- **No anonymous INSERT policy on `enquiries` or `reference_images`.** The
+  specification says only authorized admins mutate enquiries. Enquiries are
+  created server-side with the service role after validation and rate limiting,
+  so leads cannot be forged, enumerated or altered from a browser.
+- **`admin_users` has no client write policy at all.** Provisioning the first
+  and any subsequent admin is a deliberate server/service-role operation.
+- **`is_active_admin()` is `SECURITY DEFINER` with a pinned `search_path`**, so
+  a policy on `admin_users` can consult `admin_users` without recursion and the
+  function body cannot be redirected by a caller-controlled search path.
+- **RLS is `FORCE`d** on the three tables holding customer and admin data, so an
+  owner-privileged connection cannot bypass policies by accident.
+- **Storage object keys are server-generated and random**, never derived from a
+  user-supplied filename; the original filename is retained for display only.
+- **Upload limits selected and documented** (Master Implementation
+  Specification section 18): portfolio 10 MB (JPEG/PNG/WebP/AVIF), references
+  5 MB (JPEG/PNG/WebP). No SVG — it is scriptable. Enforced at the bucket level
+  as well as in application validation (P7). Dimension limits remain open.
+- **Video is URL-only in Phase 1**, adopting the specification's recommended
+  default; `design_videos` stores an HTTPS provider URL, never an upload.
+- **`lib/db/types.ts` is hand-maintained**, because `supabase gen types`
+  requires a linked project. A schema-introspection test compares it against the
+  live schema and fails on drift.
+- **Database tests run against real PostgreSQL, not mocks.** A local shim
+  supplies the Supabase `auth`/`storage` surface and roles so the real
+  migrations apply unmodified; the shim is a test fixture and never reaches a
+  Supabase project. Security policies are worth nothing untested.
+- **A client-bundle secret scanner runs in CI.** Server modules import
+  `server-only`, and the scanner independently proves no server-only value
+  reaches a browser asset.
+
 ## Pending
 
 - Exact Hostinger plan
-- Upload limits
+- Supabase staging and production projects must be created and the migrations applied
+- Image upload dimension limits (file size limits chosen in P3)
 - Email provider
 - Retention period
 - Approval of the proposed design system (or supply of an official brand guideline)

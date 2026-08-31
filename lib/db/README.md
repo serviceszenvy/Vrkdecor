@@ -1,6 +1,15 @@
 # lib/db
 
-Database access layer (Supabase PostgreSQL) and versioned migrations.
+Database types and query helpers.
 
-Implemented in P3 — `05_PROMPTS/03-DATABASE-AUTH-STORAGE.md`.
-All access must be parameterized and enforced by RLS.
+- `types.ts` — the `Database` type mirroring `supabase/migrations/`. Kept honest
+  by `tests/db/schema-types.test.ts`, which introspects the migrated database
+  and fails on drift.
+- `queries/public.ts` — read helpers for public content. They run through the
+  caller's Supabase client, so Row Level Security applies; the `status` filters
+  they add are defence in depth, not the security boundary.
+
+Migrations live in `supabase/migrations/` and are applied with the Supabase CLI.
+See [`docs/DATABASE.md`](../../docs/DATABASE.md).
+
+All access is parameterized through the Supabase client — no string-built SQL.
