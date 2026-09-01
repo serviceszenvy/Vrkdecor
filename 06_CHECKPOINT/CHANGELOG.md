@@ -1,5 +1,83 @@
 # VRK Decor — Changelog
 
+## 0.6.0 — 2026-09-01 — P6 Quote Engine
+
+### Added
+
+- **Quote engine** (`features/enquiries/`): the complete Get Quote workflow from
+  a Design or from an individual portfolio photograph, with the parent Design
+  captured automatically and never re-selected by the customer.
+- **`/quote`** — the enquiry form. Reached three ways, all one page: the
+  site-wide CTA (`/quote`), a design-level CTA (`/quote?design=<slug>`) and a
+  photo-level CTA (`/quote?design=<slug>&photo=<image id>`).
+- **`/quote/submitted`** — a `noindex` confirmation page carrying no enquiry
+  identifier, so a refresh cannot resubmit and there is nothing to guess or
+  share.
+- **`quote-context.ts`** — the single path by which a Design enters a quote. It
+  resolves the slug server-side against published designs only, accepts a
+  photograph only when it belongs to that Design, and is run again on submit.
+- **`lib/validation/enquiry.ts`** — the field contract from Requirements section
+  11: name, phone, event type, event date, venue, city, required services and
+  consent required; email, guest count, budget and notes optional. Closed
+  vocabularies for event type and services, E.164 phone normalisation, event
+  dates judged in the business timezone, and control/zero-width character
+  stripping.
+- **`submitQuoteRequest`** — a Server Action, so the request Origin is verified
+  before it runs and the form works with JavaScript disabled.
+- **`lib/rate-limit.ts` and `features/enquiries/throttle.ts`** — per-client,
+  per-phone and per-request limits, with duplicate submissions absorbed rather
+  than turned into a second lead.
+- **Reference-image relationship**: up to three private images per enquiry,
+  validated in `referenceImagesSchema`, capped again in `linkReferenceImages`
+  and enforced by the existing database trigger. The upload itself is P7.
+- **`listEnquiries`** — the Admin Panel's inbox query, running as the caller so
+  Row Level Security decides. P8 renders it.
+- **Migration `20260901090000_enquiry_source_image.sql`** — nullable
+  `enquiries.selected_image_id` with `ON DELETE SET NULL`, recording which
+  photograph started the quote, plus a trigger refusing any photograph that does
+  not belong to the enquiry's own Design.
+- **Local in-memory enquiry store**, active only when Supabase is unconfigured
+  and labelled on the page, so the flow is demonstrable and testable before a
+  Supabase project exists.
+- **82 new unit tests**, **18 new database tests** and **48 new end-to-end
+  tests** covering validation, design capture, tampered parameters, throttling,
+  the full Design → Photo → Quote → Enquiry journey, no-JavaScript operation and
+  the absence of any internal email path.
+
+### Changed
+
+- `lib/db/types.ts` — `EnquiryRow.selected_image_id`.
+- `tests/db/schema-types.test.ts` — the new column declared, keeping the
+  schema-drift guard honest.
+- `tests/db/supabase-shim.sql` — `service_role` now receives the table
+  privileges real Supabase grants it, without which the service-role write path
+  could not be tested.
+- `tests/e2e/public-pages.spec.ts` — the `/quote` exclusion removed; every
+  footer link now resolves.
+- `docs/ARCHITECTURE.md`, `docs/TESTING.md`, `docs/SECURITY.md`,
+  `features/enquiries/README.md`.
+
+### Security
+
+- Server-side validation on every field, with the parser reading only the fields
+  it declares — `status`, `internal_notes`, `confirmation_email_sent_at` and
+  `selected_design_id` cannot be set from a public request.
+- The parent Design is re-resolved server-side on submit, so a tampered hidden
+  field can at most substitute another published Design.
+- A draft, archived, deleted and invented slug are answered identically.
+- CSRF/request integrity through Server Actions; no public JSON endpoint exists.
+- Rate limiting on the first anonymous write surface, with client keys hashed.
+- Storage failures log a fixed message, never the error object or the customer's
+  values.
+
+### Explicitly not done
+
+- **No internal email to VRK Decor**, in line with Requirements section 11. A
+  unit test scans the quote sources for mail transports, `mailto:`, the business
+  address and notification environment variables and fails if any appears.
+- Reference-image upload, the customer confirmation email and WhatsApp
+  instrumentation remain P7. The Admin Panel screens remain P8.
+
 ## 0.5.0 — 2026-08-31 — P5 Portfolio
 
 ### Added

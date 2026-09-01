@@ -208,9 +208,7 @@ test.describe('navigation and internal linking', () => {
     }
   });
 
-  test('every footer link resolves, except the quote route owned by P6', async ({
-    page,
-  }) => {
+  test('every footer link resolves', async ({ page }) => {
     await page.goto('/');
 
     const hrefs = await page
@@ -219,7 +217,7 @@ test.describe('navigation and internal linking', () => {
       .evaluateAll((nodes) =>
         nodes
           .map((node) => (node as HTMLAnchorElement).getAttribute('href') ?? '')
-          .filter((href) => href.startsWith('/') && href !== '/quote'),
+          .filter((href) => href.startsWith('/')),
       );
 
     for (const href of new Set(hrefs)) {

@@ -8,7 +8,8 @@
 | End-to-end                           | Playwright          | `tests/e2e/`    | Smoke tests from P1; expanded per phase |
 | Authorization / RLS / storage policy | Vitest + Playwright | added in P3, P8 | Pending                                 |
 | Upload security                      | Playwright          | added in P7     | Pending                                 |
-| XSS / CSRF / rate limiting           | Playwright          | added in P10    | Pending                                 |
+| Quote validation and rate limiting   | Vitest + Playwright | `tests/`        | Active from P6                          |
+| XSS / CSRF / full rate-limit review  | Playwright          | added in P10    | Pending                                 |
 | SEO and analytics                    | Playwright          | added in P9     | Pending                                 |
 | Accessibility and performance        | Playwright          | added in P11    | Pending                                 |
 
@@ -35,6 +36,45 @@ npm run verify     # format check + lint + typecheck + unit tests + build
   runners never collide.
 
 ## Current coverage
+
+### P6 — quote engine
+
+- **Requirements section 11 as executable tests.** Each of the eight required
+  fields is proven required and each of the four optional fields proven
+  optional; consent cannot be skipped or forged.
+- **Closed vocabularies.** Every approved occasion is accepted as an event type
+  and every approved service as a requirement; anything else is refused, so the
+  value that reaches the database is always one of a fixed set of slugs.
+- **The parent Design is captured, never chosen.** The design resolves from the
+  slug alone; a photograph belonging to another design is discarded while the
+  parent stands; an unpublished or invented slug produces the same answer, so
+  nothing leaks about whether a draft exists; the rendered form is asserted to
+  contain no control bound to a design.
+- **Every photograph of a design** is walked in the browser and each one proven
+  to start a quote for that same parent.
+- **The full journey** — gallery → photograph → lightbox CTA → form → submit →
+  confirmation — including a general enquiry with no design at all.
+- **Duplicate submission** produces one enquiry, not two, and the confirmation
+  page cannot resubmit on refresh.
+- **Rate limiting** is exercised through the real form: a client that keeps
+  submitting is asked to wait, and a rejected attempt does not poison the
+  duplicate window for the customer's retry.
+- **Everything works with JavaScript disabled**, validation errors included.
+- **Admin-owned columns cannot be set from a public request** — `status`,
+  `internal_notes` and `confirmation_email_sent_at` are asserted absent from the
+  insert.
+- **No internal email path exists.** The quote sources are scanned for mail
+  transports, `mailto:`, the business address and notification environment
+  variables; the test fails if any appears.
+- **Under RLS**: an enquiry is readable by an active admin, unreachable by
+  anonymous clients at the privilege level, invisible to signed-in non-admins,
+  and uncreatable from a browser. A photograph recorded on an enquiry must
+  belong to that enquiry's Design, enforced by a trigger on insert and update.
+- **Leads survive media and design changes**: deleting a photograph clears the
+  reference without touching the parent, and a Design with enquiries cannot be
+  deleted, only archived.
+- **The local enquiry store is impossible once Supabase is configured**, and the
+  quote page says plainly when nothing is being delivered.
 
 ### P5 — portfolio
 
@@ -67,8 +107,7 @@ npm run verify     # format check + lint + typecheck + unit tests + build
 - Every approved route returns 200 with exactly one `h1`.
 - Titles and descriptions are unique per page; canonical URL and Open Graph tags
   are present; public pages are indexable and `/design-system` is not.
-- Every primary-navigation and footer link resolves (except `/quote`, owned by
-  P6).
+- Every primary-navigation and footer link resolves, `/quote` included since P6.
 - No page scrolls horizontally at 390px, and the sticky action bar is present on
   every public page.
 - Partner-vendor services are shown as such; contact details match the approved

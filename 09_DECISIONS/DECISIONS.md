@@ -230,6 +230,88 @@ official brand guideline is supplied.
   and the server under test, producing navigation timeouts that look like
   product failures.
 
+## P6 — Quote engine decisions (2026-09-01)
+
+- **Submission is a Next.js Server Action, not a route handler.** Three
+  properties decided it: Next verifies the request Origin against the host
+  before a Server Action runs, which is the CSRF/request-integrity control the
+  Technical Development Specification section 12 requires; the form degrades to
+  a plain HTML POST and works with JavaScript disabled, as the filters do; and
+  it leaves no public JSON endpoint for anyone to script against.
+- **The parent Design is a lookup key in the form, never a value.** The hidden
+  `design` field is re-resolved server-side on submit through the same
+  published-only reader the page used. The worst a tampered field can do is
+  attach a different _published_ Design. This is why there is no signed token or
+  encrypted field: the parameter is already powerless.
+- **A design parameter that does not resolve degrades to a general enquiry**
+  with a visible notice, rather than a 404 or a silent drop. A draft, archived,
+  deleted and invented slug are answered identically, so the form cannot be used
+  to discover whether unpublished work exists.
+- **Event type and required services are closed vocabularies**, validated
+  against the approved occasion and service lists rather than accepted as free
+  text. It is a data-quality decision and an injection-surface decision at once:
+  the value that reaches the database is always one of a fixed set of slugs.
+- **Budget is free text, not a range picker.** Requirements section 16 says the
+  website shows no customer budget ranges; offering a list of ranges to choose
+  from would publish them by implication.
+- **Event date is validated against the business timezone (Asia/Kolkata)**, not
+  the server clock, so an event "today" is never rejected by a server running in
+  UTC. Bookings are accepted up to three years ahead.
+- **Phone numbers are normalised to E.164 on the way in.** VRK Decor follows up
+  by phone and WhatsApp, so the Admin Panel must be able to build `tel:` and
+  `wa.me` links without guessing. Ten-digit and trunk-prefixed numbers are
+  treated as Indian; an explicit `+` is kept as given.
+- **`enquiries.selected_image_id` added** (migration
+  `20260901090000_enquiry_source_image.sql`): a nullable FK to `design_images`
+  with `ON DELETE SET NULL`, recording which photograph started the quote.
+  Requirements section 11 approves the CTA starting from "a Design page or any
+  gallery photo" and section 19 requires `photo_quote_cta_click` to be
+  distinguishable from `quote_cta_click`; without this column the origin is lost
+  at submission and cannot be reconstructed. It is strictly subordinate to
+  `selected_design_id`, which keeps `ON DELETE RESTRICT`, and a trigger refuses
+  any row whose photograph belongs to a different Design — or whose photograph
+  has no Design at all.
+- **Rate limiting ships in P6 rather than waiting for P10.** The quote form is
+  the first anonymous write surface in the application; shipping it unthrottled
+  and hardening later would mean shipping a known gap. The implementation is an
+  in-process fixed-window limiter, which is honest about its scope: P10 replaces
+  the store, not the call sites. Client keys are hashed so the limiter is not a
+  place where visitor IP addresses accumulate.
+- **A duplicate submission is answered with the confirmation, not an error.**
+  The same number, design, date and event type inside ten minutes is one lead.
+  The customer is told plainly that we already have it (`?repeat=1`) rather than
+  being shown a second confirmation for an enquiry that was deliberately not
+  created.
+- **Success redirects to `/quote/submitted`**, a separate `noindex` page with no
+  enquiry identifier in the URL. A refresh cannot resubmit, and there is nothing
+  in the address bar to guess, share or look up.
+- **Reference images: the relationship in P6, the upload in P7.** The schema,
+  the three-image ceiling and the linking path are implemented and tested now;
+  accepting files would require the MIME/content/size/dimension validation that
+  P7 owns, and doing that halfway would be a security regression.
+- **A local in-memory enquiry store, gated on Supabase being unconfigured.**
+  Adopting the pattern P5 established for sample portfolio content: it makes the
+  whole flow demonstrable and end-to-end testable before a Supabase project
+  exists, it is impossible in staging or production, it is labelled on the page
+  so nobody believes an enquiry was delivered when it was not, and a unit test
+  asserts it throws rather than runs once Supabase is configured.
+- **The Admin Panel data path is implemented, the Admin Panel is not.**
+  `listEnquiries` reads as the signed-in user so Row Level Security decides, and
+  the database suite proves an active admin sees the enquiry while anonymous and
+  non-admin callers cannot. P8 renders it. "The enquiry reaches the internal
+  inbox" is therefore verified in P6; the screens are P8's.
+- **The service-role client writes; the caller's session reads.** Unchanged from
+  P3's decision that there is no anonymous INSERT policy. The insert names its
+  columns explicitly so `status`, `internal_notes` and
+  `confirmation_email_sent_at` can never be set from a public request.
+- **The E2E suite gives each test its own client address and phone number.**
+  The form is rate limited exactly as it will be in production; tests sharing an
+  identity would throttle each other and report a working limiter as a broken
+  form.
+- **The test Supabase shim now grants `service_role` table privileges**, which
+  real Supabase does. Without it the P6 write path — service-role only by
+  design — could not be tested at all.
+
 ## Pending
 
 - Exact Hostinger plan

@@ -29,7 +29,7 @@ each remaining control.
 ## Added in P3
 
 - **Row Level Security on every table**, deny by default, with policies proven
-  by 58 automated tests against a real PostgreSQL instance. See
+  by automated tests against a real PostgreSQL instance (79 as of P6). See
   [DATABASE.md](./DATABASE.md).
 - **Anonymous users are refused enquiries, reference images and admin data** at
   the privilege level as well as the policy level.
@@ -58,22 +58,59 @@ each remaining control.
 - **Least privilege**: client roles cannot create objects in the `public`
   schema; write privileges are granted only where a policy could allow a write.
 
+## Added in P6
+
+The quote form is the first place the public can write to the application, so
+the controls below are part of the feature, not deferred.
+
+- **Server-side validation on every field.** `lib/validation/enquiry.ts` is the
+  authority; nothing is persisted from unparsed input. The parser reads only the
+  fields it declares, so `status`, `internal_notes`, `confirmation_email_sent_at`
+  and `selected_design_id` cannot be smuggled in as extra form fields.
+- **Closed vocabularies** for event type and required services: the value that
+  reaches the database is always one of a fixed set of approved slugs.
+- **The parent Design is server-resolved, not submitted.** The hidden field is a
+  lookup key. `resolveQuoteContext` re-resolves it on submit against published
+  designs only, and accepts a photograph only if it belongs to that Design — so
+  a crafted link cannot attach a draft design or cross the parent relationship.
+  A database trigger enforces the same rule independently.
+- **A draft design and an invented slug are answered identically**, so the form
+  cannot be used to discover whether unpublished work exists.
+- **CSRF / request integrity.** Submission is a Next.js Server Action; the
+  framework verifies the request Origin against the host before the action runs,
+  and no public JSON endpoint exists to script against.
+- **Rate limiting** per client, per phone number and per identical request
+  (`lib/rate-limit.ts`). In-process for now — P10 moves it to a shared store.
+  Client keys are stored as a hash, never as an address.
+- **Duplicate submission is absorbed**, so one lead cannot be multiplied into
+  many by a refresh or an impatient second click.
+- **Input hygiene.** Control, zero-width and bidirectional formatting characters
+  are stripped, and single-line fields cannot carry newlines into an admin list
+  or a CSV export. React escapes on render; markup is stored as text, not
+  rejected, so a customer writing `<` is never turned away.
+- **Safe errors and minimal logging.** A storage failure logs a fixed message
+  and never the error object or the customer's submitted values, and the visitor
+  is offered phone and WhatsApp rather than a stack trace.
+- **The confirmation page carries no identifier** and is `noindex`.
+- **No internal notification email exists**, asserted by a test that scans the
+  quote sources for mail transports and notification addresses.
+
 ## Owned by later phases
 
-| Control                                                                                                            | Phase      |
-| ------------------------------------------------------------------------------------------------------------------ | ---------- |
-| Supabase Auth, session handling, secure cookies                                                                    | P3         |
-| Row Level Security policies and tests                                                                              | P3         |
-| Storage policies; private reference-image bucket                                                                   | P3, P7     |
-| Server-side authorization and IDOR protection                                                                      | P3, P6, P8 |
-| Server-side payload validation on every mutation                                                                   | P6, P7, P8 |
-| Upload hardening: MIME/content/size/dimension validation, unique server-generated keys, no executables or archives | P7         |
-| Maximum 3 private reference images per enquiry                                                                     | P7         |
-| Rate limiting                                                                                                      | P10        |
-| Content Security Policy, HSTS, permissions policy                                                                  | P10        |
-| CSRF / request-integrity protection                                                                                | P10        |
-| Sensitive logging minimisation and safe production errors                                                          | P10        |
-| Privacy, retention and backup/recovery procedures                                                                  | P10, P12   |
+| Control                                                                                                            | Phase        |
+| ------------------------------------------------------------------------------------------------------------------ | ------------ |
+| Supabase Auth, session handling, secure cookies                                                                    | P3           |
+| Row Level Security policies and tests                                                                              | P3           |
+| Storage policies; private reference-image bucket                                                                   | P3, P7       |
+| Server-side authorization and IDOR protection                                                                      | P3, P6, P8   |
+| Server-side payload validation on every mutation                                                                   | P6 ✓, P7, P8 |
+| Upload hardening: MIME/content/size/dimension validation, unique server-generated keys, no executables or archives | P7           |
+| Maximum 3 private reference images per enquiry                                                                     | P7           |
+| Rate limiting — shared store, remaining surfaces (quote form done in P6)                                           | P10          |
+| Content Security Policy, HSTS, permissions policy                                                                  | P10          |
+| CSRF / request-integrity review (quote form covered by Server Actions in P6)                                       | P10          |
+| Sensitive logging minimisation and safe production errors                                                          | P10          |
+| Privacy, retention and backup/recovery procedures                                                                  | P10, P12     |
 
 ## Standing rules
 

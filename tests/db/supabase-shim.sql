@@ -82,3 +82,13 @@ grant select, insert, update, delete on storage.objects
 -- Reproduced here so the migrations' own REVOKE statements are meaningful.
 alter default privileges in schema public
   grant select, insert, update, delete on tables to anon, authenticated;
+
+-- `service_role` is granted table privileges by Supabase in the same way, and
+-- additionally carries BYPASSRLS (set above). Both halves matter: without the
+-- grant, trusted server code could not write at all, and the P6 enquiry-
+-- creation path — which is service-role only, because there is deliberately no
+-- anonymous INSERT policy — would be untestable.
+alter default privileges in schema public
+  grant select, insert, update, delete on tables to service_role;
+alter default privileges in schema public
+  grant usage, select on sequences to anon, authenticated, service_role;

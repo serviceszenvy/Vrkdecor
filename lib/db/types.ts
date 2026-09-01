@@ -158,6 +158,11 @@ export type EnquiryRow = {
   required_services: string[];
   notes: string | null;
   selected_design_id: string | null;
+  /**
+   * Optional context: the design_images row whose photo-level CTA started the
+   * enquiry. Always belongs to selected_design_id, enforced by a trigger.
+   */
+  selected_image_id: string | null;
   status: EnquiryStatus;
   consent: boolean;
   internal_notes: string | null;

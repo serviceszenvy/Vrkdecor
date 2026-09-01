@@ -50,6 +50,7 @@ lib/
   navigation.ts         Route map, primary nav, tel/WhatsApp/mail hrefs
   contrast.ts           WCAG contrast maths used by the design-system tests
   cn.ts                 Class-name join helper
+  rate-limit.ts         In-process fixed-window limiter; shared store in P10
 supabase/
   migrations/           Versioned SQL migrations (P3)
 tests/
@@ -73,6 +74,41 @@ gallery photo can start a quote for its parent Design, and the customer never
 re-selects the Design.
 
 Full entity definitions are in the Technical Development Specification section 6.
+
+## The quote flow (implemented in P6)
+
+A quote request can start from a Design page or from any individual photograph,
+and in both cases the parent Design is captured automatically — the customer
+never re-selects it.
+
+```
+/our-work/<slug>            design-level CTA  ->  /quote?design=<slug>
+/gallery lightbox           photo-level CTA   ->  /quote?design=<slug>&photo=<image id>
+header / footer / mobile    site-wide CTA     ->  /quote
+```
+
+`features/enquiries/quote-context.ts` is the only place a Design enters a quote.
+It resolves the slug through the published-only portfolio reader, accepts a
+photograph only when that photograph belongs to the resolved Design, and returns
+what the server found. The form renders that result read-only; there is no
+design chooser. On submit, the Server Action runs the same resolution again from
+the hidden field, so the field is a lookup key rather than a value — tampering
+with it can substitute another published Design, never a draft one.
+
+The write path is deliberately narrow:
+
+```
+form  ->  submitQuoteRequest (Server Action)
+            1. parseEnquiryForm       server-side validation, closed vocabularies
+            2. resolveQuoteContext    parent Design re-verified
+            3. checkQuoteThrottle     per client, per phone, per request
+            4. createEnquiry          service role; no anonymous INSERT policy exists
+            5. redirect               /quote/submitted
+```
+
+No email is sent to VRK Decor at any point: the Admin Panel is the internal
+inbox. The customer's confirmation email is P7's, and it runs after the enquiry
+is already stored so that an email failure can never cost a lead.
 
 ## Phase ownership
 

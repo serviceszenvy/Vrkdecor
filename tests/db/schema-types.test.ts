@@ -133,6 +133,7 @@ const declaredColumns: Record<string, string[]> = {
     'required_services',
     'notes',
     'selected_design_id',
+    'selected_image_id',
     'status',
     'consent',
     'internal_notes',
