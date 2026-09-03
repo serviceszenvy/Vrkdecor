@@ -1,29 +1,43 @@
 import type { ReactNode } from 'react';
 import { cn } from '@/lib/cn';
 import { Container } from './container';
+import { LeafRule } from './glass';
 
-type Spacing = 'compact' | 'default' | 'spacious';
-type Tone = 'surface' | 'subtle' | 'muted' | 'inverse';
+type Spacing = 'compact' | 'default' | 'spacious' | 'panel';
+type Tone = 'surface' | 'canvas' | 'subtle' | 'muted' | 'tint' | 'inverse' | 'panel';
 
 const spacings: Record<Spacing, string> = {
   compact: 'py-10 sm:py-12',
   default: 'py-14 sm:py-20',
   spacious: 'py-20 sm:py-28',
+  panel: 'py-12 sm:py-16',
 };
 
 const tones: Record<Tone, string> = {
   surface: 'bg-surface text-ink',
+  canvas: 'text-ink',
   subtle: 'bg-surface-subtle text-ink',
   muted: 'bg-surface-muted text-ink',
+  tint: 'bg-surface-tint text-ink',
   inverse: 'bg-surface-inverse text-ink-inverse',
+  panel: 'text-ink',
 };
 
+/**
+ * A page section.
+ *
+ * `tone="panel"` is the composition the approved reference design uses: a
+ * rounded surface inset from the page ground, rather than a full-bleed band.
+ * The panel keeps its own inset on small screens so the rounding is never
+ * clipped by the viewport edge.
+ */
 export function Section({
   children,
   spacing = 'default',
-  tone = 'surface',
+  tone = 'canvas',
   width = 'wide',
   className,
+  panelClassName,
   id,
   'aria-labelledby': ariaLabelledBy,
 }: {
@@ -32,9 +46,32 @@ export function Section({
   tone?: Tone;
   width?: 'narrow' | 'default' | 'wide' | 'full';
   className?: string;
+  /** Applied to the rounded panel itself when `tone="panel"`. */
+  panelClassName?: string;
   id?: string;
   'aria-labelledby'?: string;
 }) {
+  if (tone === 'panel') {
+    return (
+      <section
+        id={id}
+        aria-labelledby={ariaLabelledBy}
+        className={cn('px-3 sm:px-5 lg:px-6', className)}
+      >
+        <div
+          className={cn(
+            'bg-surface border-line-soft shadow-panel mx-auto w-full max-w-[86rem]',
+            'overflow-hidden rounded-3xl border',
+            spacings[spacing],
+            panelClassName,
+          )}
+        >
+          <Container width={width}>{children}</Container>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section
       id={id}
@@ -47,25 +84,39 @@ export function Section({
 }
 
 /**
- * Standard section heading: optional eyebrow, a heading and an optional lead
- * paragraph. Keeps heading rhythm and hierarchy consistent across the site.
+ * Standard section heading.
+ *
+ * `accent` renders one word of the title in the brand green, which is the
+ * device the approved reference design uses to give a heading its emphasis
+ * ("Our *Signature* Work"). It is applied with a `<span>` inside the same
+ * heading element, so the heading is still one string to a screen reader.
  */
 export function SectionHeading({
   eyebrow,
   title,
+  accent,
+  tail,
   lead,
   id,
   level = 2,
   align = 'start',
   tone = 'default',
+  rule = false,
 }: {
   eyebrow?: string;
+  /** Rendered before `accent`. */
   title: string;
+  /** Emphasised continuation of the title, in brand green. */
+  accent?: string;
+  /** The remainder of the title after the emphasised words. */
+  tail?: string;
   lead?: string;
   id?: string;
   level?: 1 | 2 | 3;
   align?: 'start' | 'center';
-  tone?: 'default' | 'inverse';
+  tone?: 'default' | 'inverse' | 'tint';
+  /** The small leaf rule the reference design places under a centred heading. */
+  rule?: boolean;
 }) {
   const Heading = `h${level}` as 'h1' | 'h2' | 'h3';
   const sizes = {
@@ -74,37 +125,51 @@ export function SectionHeading({
     3: 'text-2xl',
   } as const;
 
+  const eyebrowTone = {
+    default: 'text-brand-700',
+    inverse: 'text-accent-300',
+    tint: 'text-brand-800',
+  } as const;
+
+  const leadTone = {
+    default: 'text-ink-muted',
+    inverse: 'text-sand-200',
+    tint: 'text-ink-soft',
+  } as const;
+
+  const accentTone = {
+    default: 'text-brand-700',
+    inverse: 'text-accent-300',
+    tint: 'text-brand-800',
+  } as const;
+
   return (
     <div
       className={cn(
         'flex flex-col gap-3',
-        align === 'center' && 'items-center text-center',
-        align === 'center' ? 'mx-auto max-w-2xl' : 'max-w-2xl',
+        align === 'center' ? 'mx-auto max-w-2xl items-center text-center' : 'max-w-2xl',
       )}
     >
       {eyebrow ? (
         <p
           className={cn(
-            'text-xs font-semibold tracking-[0.18em] uppercase',
-            tone === 'inverse' ? 'text-accent-300' : 'text-brand-700',
+            'text-2xs font-semibold tracking-[0.22em] uppercase',
+            eyebrowTone[tone],
           )}
         >
           {eyebrow}
         </p>
       ) : null}
+
       <Heading id={id} className={cn(sizes[level], 'font-medium')}>
         {title}
+        {accent ? <span className={accentTone[tone]}> {accent}</span> : null}
+        {tail ? <span> {tail}</span> : null}
       </Heading>
-      {lead ? (
-        <p
-          className={cn(
-            'text-lg',
-            tone === 'inverse' ? 'text-sand-200' : 'text-ink-muted',
-          )}
-        >
-          {lead}
-        </p>
-      ) : null}
+
+      {rule ? <LeafRule className="mt-1" /> : null}
+
+      {lead ? <p className={cn('text-lg', leadTone[tone])}>{lead}</p> : null}
     </div>
   );
 }

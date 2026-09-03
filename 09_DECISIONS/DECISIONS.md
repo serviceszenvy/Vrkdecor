@@ -312,17 +312,262 @@ official brand guideline is supplied.
   real Supabase does. Without it the P6 write path — service-role only by
   design — could not be tested at all.
 
+## P7 — Uploads, customer email and continuation decisions (2026-09-01)
+
+- **File content is inspected in-process, with no image library.**
+  `lib/uploads/image-signature.ts` reads magic bytes and header fields to report
+  what a file actually is and how large its canvas is. Two reasons: an image
+  library means a large native binary in a Hostinger managed Node deployment for
+  three header reads, and decoding attacker-supplied images is itself an attack
+  surface. The parser reads headers and never touches pixel data.
+- **Dimension limits chosen (the open decision carried since P3): 200 px minimum
+  per edge, 12000 px maximum per edge, 40 megapixels overall.** The lower bound
+  keeps out thumbnails and tracking pixels that tell the design team nothing.
+  The upper bounds refuse a decompression bomb: a few hundred bytes of PNG can
+  declare a canvas of hundreds of megapixels, and while this application never
+  decodes the file, an admin's browser will.
+- **The whole submission is refused when any one file fails.** Accepting two of
+  three would leave the customer believing all three arrived, and the form
+  cannot repopulate a file input after an error, so the message says plainly
+  that the images need choosing again.
+- **Files are validated BEFORE the throttle.** A rejected attachment must not
+  consume the duplicate window; otherwise a customer who fixes their file and
+  resends is told we already have a request that was never created. The body has
+  already been received by the time the action runs, so nothing expensive is
+  moved ahead of the limiter.
+- **The enquiry row is written before the objects.** The storage key is
+  namespaced by the enquiry id, and more importantly a lead must never depend on
+  an upload succeeding. A partial upload is reported to the customer
+  (`?images=partial`) rather than hidden, and objects that were uploaded but
+  could not be recorded are deleted rather than left as unreferenced private
+  data.
+- **`experimental.serverActions.bodySizeLimit` raised to 16 MB.** Server Actions
+  default to a 1 MB body and the approved ceiling is three 5 MB images. This is
+  not a relaxation of anything: the per-file limit, the count and the content
+  check are all applied again server-side, and the bucket applies its own 5 MB
+  limit in Supabase Storage. It is a framework feature of Next.js and introduces
+  no Vercel dependency.
+- **No re-encoding or EXIF stripping in Phase 1.** Re-encoding needs the image
+  library this phase deliberately avoids, and the objects are never publicly
+  served and never rendered on a public page. The residual point is that a
+  customer's photograph may carry EXIF metadata, including location, which the
+  VRK Decor team will see. That is a private image shared deliberately with the
+  vendor, and it is recorded here so the retention decision (P10) covers it.
+- **The transactional email provider is configuration, not code.** The provider
+  is still an open client decision, so `lib/email/transport.ts` POSTs JSON to
+  whichever HTTPS endpoint `EMAIL_PROVIDER_API_URL` names, with
+  `EMAIL_PROVIDER_API_KEY` as a bearer token. No dependency was added, no vendor
+  was chosen on the client's behalf, and if the chosen provider wants a different
+  envelope, `buildRequestBody` is the single function to change. A plain-HTTP
+  endpoint is refused, because the key travels with the request.
+- **With email unconfigured, nothing is sent and nothing fails.** The transport
+  becomes a no-op, and the confirmation page correctly promises no email. A page
+  that promises a message nobody sent is worse than a page that promises
+  nothing.
+- **The confirmation send is awaited, not left running.** It is bounded by an
+  eight-second timeout, and awaiting it is what lets the confirmation page tell
+  the customer the truth about whether an email is coming. A fire-and-forget send
+  would have to guess.
+- **`Reply-To` is the approved business address.** A reply is something the
+  customer chooses to send; nothing is delivered to VRK Decor unless they write.
+  This is not the internal notification the requirements forbid, and a test
+  asserts the business address is never a recipient and appears exactly once in
+  the composer.
+- **The confirmation carries no link to the customer's own images.** A signed URL
+  in an inbox is a private image with a public door on it. The message names a
+  count and nothing more.
+- **A short reference code (`VRK-XXXXXXXX`) derived from the enquiry id**, so a
+  customer can quote it on the phone without the full identifier travelling
+  through an inbox. No public endpoint accepts either value.
+- **The confirmation page carries the published design slug, three flags and
+  nothing else.** The slug is public content and is what lets the page write the
+  customer's WhatsApp message for them. It is re-resolved through the same
+  published-only reader, so an invented or unpublished slug simply yields no
+  name. There is still no enquiry identifier anywhere in the URL.
+- **`WHATSAPP_PHONE_NUMBER` is reserved and deliberately unread.** The
+  click-to-chat number is an approved business fact in `lib/site-config.ts` with
+  a test behind it. An environment override would let the header, the footer and
+  the continuation links disagree with each other, which is a worse failure than
+  editing one approved constant. The variable is kept for the WhatsApp Business
+  API work that Requirements section 12 places outside Phase 1.
+- **Prefilled WhatsApp messages carry public content only.** The URL is visible
+  in the address bar, kept in browser history and read by WhatsApp, so it may
+  carry the name of a published design and nothing about the customer.
+- **`resolveImageUrl` now refuses a private key outright.** It would already
+  fail, because the object is in another bucket that grants `anon` nothing, but
+  a customer's inspiration image must never be handed to a function whose job is
+  to build a public URL, whatever a future caller believes it is holding.
+- **Vitest resolves `server-only` to the package's own empty build.** The marker
+  throws on import by design, which is exactly what keeps the service-role client
+  and the email transport out of a browser bundle; Vitest runs in Node, where
+  those modules are legitimately importable. `next build` still applies the real
+  marker and `npm run verify:bundle` independently proves nothing leaks.
+- **Image test fixtures are real files produced by a real encoder**, committed at
+  a few kilobytes each. Verifying a header parser against bytes written to
+  satisfy it proves nothing. The hostile files are built in code, because each
+  has to be wrong in one specific way.
+- **No database migration was needed.** `reference_images` and
+  `enquiries.confirmation_email_sent_at` were created in P3 with exactly the
+  columns and constraints this phase consumes.
+
+## P8 — Admin Panel decisions (2026-09-01)
+
+- **Two independent checks on every administrative operation, and the
+  service-role client is used nowhere in the Admin Panel.** `requireAdmin()`
+  decides whether the request proceeds; the caller's own session client means
+  Row Level Security decides, row by row, what each statement may touch. The
+  tempting alternative — guard the page, then use the service role because it is
+  simpler — would make the guard the only check standing, so one missed call
+  would expose everything instead of nothing. `requireAdminContext()` exists so
+  that holding an authorized identity and a service-role client at the same time
+  is awkward to write by accident, and a unit test fails the build if the service
+  role appears under `features/admin` or `app/admin` at all.
+- **The public pages moved into an `app/(site)` route group so the Admin Panel
+  could have its own shell.** A route group adds no URL segment, so every public
+  route is exactly where it was. The reason is not tidiness: an enquiry inbox
+  inside a marketing header, a "Get a Quote" sticky bar and a sales footer is
+  confusing to work in and careless to show anyone standing behind the person
+  using it. `app/not-found.tsx` sits outside the group, because Next.js renders
+  it inside the root layout for an unmatched URL, so it renders the public chrome
+  itself through the shared `SiteChrome` component.
+- **`set_design_cover` and `move_design_image` are database functions, not
+  sequences of PostgREST calls.** The cover is protected by a PARTIAL UNIQUE
+  index, so clearing the old one and setting the new one must happen in one
+  transaction; two round trips can leave a design with no cover if the second
+  fails, and a single multi-row UPDATE can trip the index part-way depending on
+  the order rows are visited. Reordering is a swap, which is two writes that must
+  both land. Both functions are SECURITY INVOKER, so Row Level Security still
+  applies inside them, and the `is_active_admin()` check at the top is there to
+  give a clear error rather than a silent no-op.
+- **Reordering is "move up / move down", not drag and drop.** It works with
+  JavaScript disabled, it is operable from a keyboard, it needs no client-side
+  state, and each move is one atomic call. Drag and drop would be nicer to
+  demonstrate and worse to rely on.
+- **A design cannot be published without a cover image.** Requirements & SOW
+  section 9 makes the cover the image every card and listing uses, and P5 built
+  the public portfolio on that promise. Publishing without one would put a broken
+  card on the live site, so it is refused with a sentence rather than discovered
+  later by a visitor.
+- **Designs are archived, never deleted.** `enquiries.selected_design_id` is
+  `ON DELETE RESTRICT` by the P3 decision, so a lead never loses the design it
+  came from. Archiving removes it from the website and keeps the relationship.
+- **Occasions, styles and services are deactivated, never deleted.** Designs
+  reference them with `ON DELETE RESTRICT`, and their slugs are public filter
+  URLs. Deactivating hides a term from the public site and from new designs while
+  leaving existing work and existing links intact, which is what an admin
+  actually means. Testimonials are the one thing the panel deletes outright,
+  because nothing references them and a customer may ask for removal.
+- **An enquiry's own answers are never editable; only `status` and
+  `internal_notes` are.** An inbox where a lead's phone number or event date
+  could be rewritten would be worth less than the paper record it replaced. The
+  update names exactly those two columns, and a test asserts the others are
+  absent.
+- **Enquiries cannot be created from the Admin Panel by anyone**, including an
+  active admin. They come from the public quote form through the server and from
+  nowhere else, so the inbox cannot be salted with rows that never came from a
+  customer. This falls out of the P3 decision to grant no INSERT policy, and P8
+  deliberately did not add one.
+- **Slugs are generated, never accepted.** An admin may override one, but the
+  override runs through the same `slugify`, so a public URL segment can never
+  carry a path, a query string, a percent-encoded sequence or a script.
+- **Video URLs are validated against the chosen provider's own hosts and must be
+  HTTPS.** A stored URL becomes an iframe on a public page; a lookalike host such
+  as `youtube.com.evil.test` is refused rather than embedded.
+- **Admin input is validated exactly as strictly as public input.** The panel is
+  behind authentication, which is precisely why the temptation exists to treat
+  its forms as trusted. They are a browser posting bytes, and what they post
+  lands in columns the public website renders.
+- **Private reference images are rendered with a plain `<img>`, never
+  `next/image`.** The optimiser would fetch a customer's private photograph and
+  cache it on disk under a URL derived from the signed one, which is the exact
+  thing a private bucket exists to prevent. `referrerPolicy="no-referrer"` keeps
+  the signed URL out of Referer headers, and the signed URL is issued with the
+  admin's own session so the storage policy applies as well as the guard.
+- **`next/image` `remotePatterns` added, scoped to the configured Supabase host
+  and the PUBLIC portfolio path only.** Without it, `next/image` refuses every
+  real storage URL, which P5 never hit because sample content is local. With a
+  broad pattern, a mistaken or tampered storage key could point the optimiser at
+  an arbitrary host. The private bucket is deliberately absent from the list.
+- **Portfolio uploads accept JPG, PNG and WEBP, not AVIF**, even though the
+  bucket allows AVIF for delivery. `lib/uploads/image-signature.ts` reads the
+  first three; adding a half-verified AVIF parser to accept a format that
+  `next/image` re-encodes to WebP anyway would be work with no benefit and one
+  more place to be wrong. Extending the probe is how to add it later.
+- **The application's own upload ceiling (15 MB) sits just under the framework's
+  (16 MB).** A request over the Server Action body limit is rejected before any
+  application code runs, and the admin would see a generic failure rather than a
+  sentence. The form states both limits.
+- **Portfolio images require 800 px on the shorter edge**, higher than the 200 px
+  floor for customer reference images, because these are shown full width on a
+  design page and anything smaller would be upscaled.
+- **Least privilege on `admin_users` tightened.** P3 granted `select` to
+  `authenticated` and left Supabase's default INSERT, UPDATE and DELETE grants in
+  place. No policy allowed them, so Row Level Security already refused — an
+  insert raised and an update matched no row — but P8 revokes the privileges as
+  well, so that a future migration adding a policy to that table cannot
+  accidentally open a door nobody meant to open.
+- **Sign-in is rate limited per client AND per email address.** Either limit
+  alone leaves an obvious way around: one client trying many addresses, or many
+  clients trying one. A wrong password and an unknown address are answered
+  identically so the form is not an address checker.
+- **The Admin Panel is honest when Supabase is not configured.** Rather than a
+  login box that silently fails, the sign-in page says there is no database
+  connected and what to set. That is the state a reviewer sees on a fresh
+  checkout, and `getCurrentAdmin()` returns null instead of throwing so every
+  admin route stays routable.
+
+## Visual redesign (post-P8)
+
+- **The logo-derived palette was kept, not replaced.** `brand-700` (#61764B) and
+  `accent-500` (#8EC840) are the exact colours measured in the supplied
+  artwork, which is already what "a refined green palette derived from the logo"
+  means. The redesign added surfaces around them rather than changing them.
+- **The primary button moved from `brand-800` to `brand-700`.** It matches the
+  mid-olive in the approved reference design, it is the logo's own sage, and
+  white on it is 5.00:1, comfortably over the 4.5:1 AA requirement.
+- **Glass degrades before it blurs.** The translucent values are applied only
+  inside `@supports (backdrop-filter)`. Every glass surface is a near-opaque
+  panel without it, so no browser is ever asked to render text over a
+  photograph. The blur radius is capped at 24px because `backdrop-filter`
+  repaints on every scroll frame.
+- **No glass behind data.** Admin tables, enquiry rows and form fields are
+  opaque white. Reading a customer's phone number through a blurred photograph
+  is a worse tool, whatever it looks like in a screenshot.
+- **Still no webfont.** The typeface licence remains an open client decision, and
+  a hosted font would add both a third-party request and a build-time network
+  dependency on Hostinger. The display and sans stacks in `app/globals.css` are
+  the swap point, and a test fails if an `@font-face` or a font CDN appears.
+- **The mobile action bar dropped WhatsApp.** WhatsApp became a floating action
+  present at every size, so keeping it in the bar as well would have put the same
+  action on screen twice and squeezed the two that remain.
+- **The footer has no social row.** No Instagram, Facebook or YouTube account has
+  been supplied. A link to a profile that does not exist is worse than no link,
+  so the contact column carries the channels VRK Decor actually answers on.
+- **The reference design's contact details were NOT adopted.** It shows a phone
+  number, an email address and opening hours that differ from the approved
+  requirements. Business facts come from the requirements, so the approved
+  values were kept and no opening hours were invented.
+  **Client action: confirm which contact details and opening hours are correct.**
+- **Placeholder imagery is generated, never sourced.** `scripts/generate-sample-images.py`
+  produces the green and ivory botanical placeholders procedurally. They are
+  obviously synthetic, they carry a visible notice wherever they appear, and
+  `public/samples/` is still deleted before the production build.
+- **The Admin Panel moved from tabs to a sidebar.** Six sections already
+  overflowed a phone in a row of tabs, and there will be more.
+
 ## Pending
 
 - Exact Hostinger plan
 - Supabase staging and production projects must be created and the migrations applied
-- Image upload dimension limits (file size limits chosen in P3)
-- Email provider
+- Transactional email provider selection, and its credentials
 - Retention period
 - Approval of the proposed design system (or supply of an official brand guideline)
 - Final typeface selection and licence
 - Reversed/light logo variant for dark surfaces
 - Approved hero photography or video, and real portfolio designs and photography
-  (the sample set in public/samples/ must be deleted before the production build)
+  (the sample set in public/samples/ must be deleted before the production build;
+  `lib/content/hero-media.ts` is the single replacement point for the hero image)
+- Confirmation of the contact details and opening hours shown in the approved
+  reference design, which differ from the approved requirements
 - Instagram / social account handle for the Home page showcase
 - Legal review of the draft Privacy Policy and Terms & Conditions

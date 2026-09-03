@@ -1,5 +1,282 @@
 # VRK Decor — Changelog
 
+## 0.8.1 — 2026-09-01 — Visual redesign (public website and Admin Panel)
+
+A design-only release. No database change, no business logic change, no
+dependency added, no security control altered. The Prompt 8 codebase is the
+baseline; every feature it delivered still works and is still proven by the same
+tests.
+
+### Added
+
+- **Glassmorphism tokens and primitives.** `glass` in `lib/design-tokens.ts`,
+  mirrored into `app/globals.css` as `--glass-*`, plus `.glass-surface`,
+  `.glass-surface-strong`, `.glass-surface-tint` and `.glass-edge`. The
+  translucent values live inside an `@supports (backdrop-filter)` block, so a
+  browser without blur gets a readable near-opaque panel rather than text on a
+  photograph. The blur radius is capped at 24px and a test enforces it.
+- **New surface tokens** for the redesign: `canvas` (the warm off-white page
+  ground), `canvas-deep`, `surface-tint`, `ink-soft` and `line-soft`. Eight new
+  pairings were added to the contrast contract, all measured and passing.
+- **New primitives.** `GlassPanel`, `IconChip`, `LeafRule` (`components/ui`),
+  `LeafDecor`, `HomeHero`, `StatBar`, `ValueBand`, `OccasionGrid`,
+  `serviceIcon` (`components/page`), `DesignRail` and `WhatsAppFab`.
+- **A floating WhatsApp action** on every page at every size, offset above the
+  mobile action bar so the two never overlap.
+- **An icon family** of roughly twenty inline SVG glyphs in
+  `components/layout/icons.tsx`, one per occasion and one per service. No icon
+  dependency was added.
+- **`lib/content/hero-media.ts`**, the single replacement point for the approved
+  hero photograph when it is supplied.
+- **`scripts/generate-sample-images.py`**, which regenerates the placeholder
+  imagery. The 24 portfolio placeholders were regenerated in the brand's green
+  and ivory palette and a hero placeholder was added.
+
+### Changed
+
+- **The public site** now composes as rounded panels floating on a warm
+  off-white ground rather than full-bleed alternating bands.
+- **Header.** A floating, rounded, translucent container over the hero, with a
+  current-page indicator, a phone action and "Get a Quote". `headerNav` adds Home
+  in front of the approved primary navigation.
+- **Mobile navigation** is a rounded glass sheet with a current-page state. Its
+  focus trap, Escape handling, portal, scroll lock and route-change close are
+  unchanged.
+- **Home page** rebuilt: photographic hero with a floating assurance panel, a
+  glass figures band, a featured-work rail, the value band, an occasion icon
+  grid, services, how it works, testimonials and a botanical closing action.
+- **Portfolio cards** are photography first: a tall image, a glass occasion chip
+  and the design name in a scrim. The design detail page now leads with its
+  cover photograph.
+- **Footer** is light and four-column, and carries "Developed with love by
+  Zenvy".
+- **Primary button colour** moved from `brand-800` to `brand-700`, the sage
+  measured in the logo itself. White on it is 5.00:1. Every action is a pill.
+- **The mobile action bar** carries Call and Get Quote. WhatsApp moved to its own
+  floating action rather than being repeated.
+- **The Admin Panel** gained a glass sidebar at `lg` and a compact bar below it,
+  brand-consistent cards, filter chips, list rows and form controls. Tables and
+  enquiry rows are deliberately opaque: no blur behind data anyone has to read.
+- **Customer facing copy rewritten** across every page. No em dashes, no
+  semicolons and no plus signs in marketing sentences; no claim that is not
+  supported by the approved requirements.
+
+### Fixed
+
+- Definition lists in the figures band, the credential list and the footer no
+  longer repeat their label in a visually hidden element, which a screen reader
+  read twice.
+- Occasion labels with a long Tamil term no longer overflow their tile.
+
+### Not changed, deliberately
+
+- The Design entity, its cover and related images, the parent relationship,
+  filters, gallery, lightbox, and both the design-level and photo-level quote
+  routes.
+- Supabase architecture, RLS, storage policies, authentication, authorization,
+  server-side validation, rate limiting and private reference-image handling.
+- The approved business facts. The reference design shows a phone number, an
+  email address and opening hours that differ from the approved requirements;
+  the approved values were kept and no opening hours were invented.
+
+## 0.8.0 — 2026-09-01 — P8 Admin Panel
+
+### Added
+
+- **The Admin Panel** at `/admin`, behind Supabase Auth, with a shell of its own:
+  overview, enquiries, designs, packages, testimonials, and occasions/styles/
+  services.
+- **Authentication.** `/admin/login` signs in through Supabase Auth as a Server
+  Action, rate limited per client and per email address, answering every failure
+  with one message so the form cannot be used to discover which addresses exist.
+  Sign-out clears the session.
+- **Design management.** Create, edit, publish, unpublish and archive. Occasion,
+  styles, services, location, description, featured flag, pricing mode, starting
+  price and SEO fields. A design cannot be published without a cover image.
+- **Media management.** Upload cover and related images, set the cover, reorder
+  with move up / move down, edit alt text per image, delete an image, and add or
+  remove provider video links.
+- **Two database functions**, `set_design_cover` and `move_design_image`, so a
+  cover change and a reorder each happen in one transaction. Both are SECURITY
+  INVOKER, so Row Level Security applies inside them.
+- **Occasions, styles and services management**, including the Tamil secondary
+  term and the partner-vendor delivery model. Terms are deactivated, never
+  deleted.
+- **Packages and testimonials management.** A package starts as a draft and a
+  testimonial as pending, so nothing reaches the public site without a
+  deliberate act.
+- **The enquiry inbox.** List and filter by pipeline step, open one lead, move it
+  through the approved pipeline, write internal notes, view the customer's
+  private reference images through five-minute signed URLs, and call or WhatsApp
+  the customer with the message already written.
+- **`lib/validation/admin.ts`** — the input contract for every admin form, and
+  **`lib/slug.ts`** — generated, never accepted, URL slugs.
+- **`lib/uploads/portfolio-images.ts`** — portfolio uploads through the same
+  content-validating gate as customer uploads, with the portfolio bucket's own
+  ceilings.
+- **`lib/storage/portfolio-upload.ts`** — writes portfolio objects as the CALLER,
+  so the storage policy applies as well as the guard.
+- **59 new unit tests**, **31 new database tests** and **36 new end-to-end
+  tests** covering the authorization guard on every page and action, RLS for
+  every administrative statement as four kinds of caller, storage access, admin
+  input validation, and what an unauthenticated visitor can reach.
+
+### Changed
+
+- **Public pages moved into an `app/(site)` route group** so the Admin Panel can
+  have a shell of its own. A route group adds no URL segment: every public route
+  is exactly where it was, and the end-to-end suite asserts the chrome is
+  unchanged. `app/not-found.tsx` renders that chrome itself, being outside the
+  group.
+- `app/layout.tsx` now carries the document only; the public chrome lives in the
+  new `SiteChrome` component.
+- `lib/auth/admin.ts` — `getCurrentAdmin()` returns null instead of throwing when
+  Supabase is unconfigured, and `requireAdminContext()` returns the guard's
+  identity together with the session client its queries must use.
+- `lib/storage/urls.ts` — `createReferenceSignedUrl` now takes the Supabase
+  client as a required argument, so the Admin Panel signs with its own session
+  and the storage policy applies too.
+- `lib/uploads/reference-images.ts` — the per-file gate generalised so the
+  customer and admin upload paths share one implementation and differ only in
+  their bucket, ceilings and wording.
+- `lib/navigation.ts` — `customerTelHref`, `customerWhatsAppHref` and
+  `adminFollowUpMessage` for reaching a customer from the inbox.
+- `next.config.ts` — `images.remotePatterns` scoped to the configured Supabase
+  host and the PUBLIC portfolio path only, and `X-Robots-Tag: noindex` plus
+  `Cache-Control: no-store` on every `/admin` response.
+- `lib/db/types.ts` — the two new database functions declared.
+- `tests/db/helpers.ts` — a style fixture, used by the new admin suite.
+- `docs/ARCHITECTURE.md`, `docs/SECURITY.md`, `docs/TESTING.md`,
+  `features/admin/README.md`, `09_DECISIONS/DECISIONS.md`.
+
+### Security
+
+- Every admin page and mutation applies TWO checks: `requireAdmin()`, and the
+  caller's own session client so Row Level Security decides row by row.
+- **The service-role client is used nowhere in the Admin Panel**, asserted by a
+  test. Using it would leave the guard as the only check standing.
+- Every administrative statement is tested as an active admin, a disabled admin,
+  a signed-in customer and an anonymous visitor.
+- Disabling an admin takes effect on the very next request.
+- Nobody can grant themselves admin rights, active admins included. P8 also
+  revokes the INSERT, UPDATE and DELETE privileges Supabase grants
+  `authenticated` on `admin_users` by default, which no policy allowed but which
+  should not be there.
+- Admin forms are parsed by schemas that read only the fields they declare, so
+  `status`, `published_at`, `created_at` and identifiers cannot be smuggled in.
+- Slugs are generated; video URLs must be HTTPS and belong to the provider
+  chosen; money is whole rupees in and paise out.
+- Only `status` and `internal_notes` of an enquiry are ever writable, and no
+  browser session can create one.
+- Private reference images are read under RLS, signed with the admin's own
+  session for five minutes, and rendered with a plain `<img>` so the image
+  optimiser never caches a customer's photograph.
+- No admin page is indexable or cacheable, and the public site links to `/admin`
+  from nowhere.
+
+### Unchanged deliberately
+
+- **No internal notification email to VRK Decor.** The Admin Panel is the
+  internal enquiry inbox, which is why its overview leads with new enquiries.
+  `tests/unit/enquiry-no-internal-email.test.ts` still passes unchanged.
+- **No dependency was added.**
+
+## 0.7.0 — 2026-09-01 — P7 Uploads, Customer Email & WhatsApp
+
+### Added
+
+- **Private reference-image uploads** on the quote form. Up to three inspiration
+  images per enquiry (JPG, PNG or WEBP, 5 MB each), written to the private
+  `references` bucket under a server-generated key and never publicly readable.
+  The control is a plain file input, so it works with JavaScript disabled.
+- **`lib/uploads/`** — secure upload validation. `image-signature.ts` reads magic
+  bytes and header fields to report what a file actually is and how large its
+  canvas is, parsing headers only and never decoding pixel data.
+  `reference-images.ts` applies count, size, declared-type, CONTENT and dimension
+  checks, and sanitises the filename for display. No dependency was added.
+- **Dimension limits**, the open decision carried since P3: 200 px minimum per
+  edge, 12000 px maximum per edge, 40 megapixels overall, so a decompression
+  bomb is refused before it can be stored.
+- **`lib/storage/reference-upload.ts`** — writes validated images to the private
+  bucket with `upsert: false`, using the type proven by the bytes, and removes
+  objects that were uploaded but could not be recorded.
+- **`lib/email/`** — the customer confirmation. `confirmation-message.ts`
+  composes it (pure, no I/O), `transport.ts` sends it over a provider-agnostic
+  HTTPS JSON API described entirely by environment variables, and
+  `send-confirmation.ts` orchestrates and never throws.
+- **`features/enquiries/confirmation.ts`** — sends the confirmation only after
+  the enquiry is stored, and writes `confirmation_email_sent_at` only when the
+  provider accepted the message.
+- **WhatsApp and phone continuation.** Prefilled click-to-chat links on the quote
+  page, the confirmation page, the confirmation email, and inside the error
+  summary when a submission fails or is throttled — the moment a customer is
+  most likely to give up. Messages are built server-side from public content
+  only.
+- **`EMAIL_PROVIDER_API_URL`** in the environment contract and `.env.example`.
+- **111 new unit tests**, **15 new database tests** and **42 new end-to-end
+  tests** covering content-based file validation, decompression bombs, the
+  three-image ceiling, private-image exposure, email composition and failure
+  handling, ordering guarantees, continuation links and no-JavaScript uploads.
+- **Real image fixtures** in `tests/fixtures/images/`, produced by a real
+  encoder, so the header parser is verified against genuine files rather than
+  against bytes written to satisfy it.
+
+### Changed
+
+- `features/enquiries/actions.ts` — files are validated before the throttle (so
+  a rejected attachment cannot consume the duplicate window), the enquiry is
+  persisted, then images are uploaded, then the confirmation is attempted, then
+  the redirect carries the design slug and the honest outcome flags.
+- `features/enquiries/data.ts` — uploads and links reference images after the
+  enquiry row exists; adds `markConfirmationEmailSent`.
+- `app/quote/submitted/page.tsx` — reads `design`, `email` and `images` flags,
+  offers both continuation channels, and promises a confirmation email only when
+  one was actually accepted.
+- `features/enquiries/components/quote-form.tsx` — the reference-image field,
+  `multipart/form-data`, an honest email hint, and continuation links in the
+  error summary.
+- `features/portfolio/image-url.ts` — refuses to build a public URL from a
+  private reference key.
+- `lib/navigation.ts` — `whatsAppHrefWithMessage` and the two message builders.
+- `next.config.ts` — `serverActions.bodySizeLimit` raised to 16 MB for three
+  5 MB images; every other limit is unchanged and re-applied server-side.
+- `vitest.config.mts` — `server-only` resolves to the package's own empty build
+  so server modules can be unit-tested. `next build` still applies the real
+  marker, and `npm run verify:bundle` independently proves nothing leaks.
+- `.env.example`, `docs/ARCHITECTURE.md`, `docs/SECURITY.md`, `docs/TESTING.md`,
+  `docs/ENVIRONMENT.md`, `features/enquiries/README.md`,
+  `09_DECISIONS/DECISIONS.md`.
+
+### Security
+
+- Files are validated by their bytes, not their labels: an SVG, HTML page, PHP
+  script, ZIP, GIF, PDF or a file that merely begins with JPEG magic bytes is
+  refused however it is named or labelled, and so is a genuine PNG announced as
+  a JPEG.
+- Storage keys stay server-generated and random; the customer's filename is
+  display metadata and appears in no key.
+- No code path can build a public URL for a reference image, and the Admin
+  Panel's summary carries a count rather than a key.
+- The enquiry is persisted before any upload or email is attempted. Neither can
+  fail the request, and a partial upload is reported to the customer plainly.
+- The confirmation email has exactly one recipient, the customer. VRK Decor is
+  never notified by email; `Reply-To` delivers nothing unless the customer
+  writes. The message carries no signed URL, storage key, price, tracking pixel
+  or state-changing link.
+- Email transport is HTTPS-only, timeout-bounded, and never logs the recipient,
+  the message or the API key.
+- Prefilled WhatsApp messages carry public content only and cannot be redirected
+  through their own text.
+
+### Unchanged deliberately
+
+- **No internal notification email to VRK Decor.** The Admin Panel remains the
+  internal enquiry inbox, and `tests/unit/enquiry-no-internal-email.test.ts`
+  still passes unchanged.
+- **No new dependency**, and **no new migration** — P3 created
+  `reference_images` and `enquiries.confirmation_email_sent_at` with exactly the
+  columns and constraints this phase consumes.
+
 ## 0.6.0 — 2026-09-01 — P6 Quote Engine
 
 ### Added

@@ -113,7 +113,7 @@ describe('derived copy stays within what is approved', () => {
  */
 describe('pricing presentation', () => {
   const packagesPage = readFileSync(
-    fileURLToPath(new URL('../../app/packages/page.tsx', import.meta.url)),
+    fileURLToPath(new URL('../../app/(site)/packages/page.tsx', import.meta.url)),
     'utf8',
   );
 

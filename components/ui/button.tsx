@@ -8,32 +8,45 @@ export type ButtonVariant =
   | 'secondary'
   | 'outline'
   | 'ghost'
-  | 'inverse';
+  | 'inverse'
+  | 'glass';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 /**
  * Every variant meets WCAG 2.1 AA for its label colour against its background;
  * the pairings are asserted in `tests/unit/design-tokens.test.ts`.
+ *
+ * `primary` uses `brand-700`, which is the sage measured in the logo itself.
+ * White on it is 5.00:1, and it is the mid-olive the approved reference design
+ * uses for its primary actions.
+ *
+ * `glass` is the white pill from the reference — a translucent surface that
+ * sits on photography without hiding it. It falls back to a near-opaque white
+ * panel where `backdrop-filter` is unsupported, so its label is never left
+ * floating on an image.
  */
 const variants: Record<ButtonVariant, string> = {
-  primary: 'bg-brand-800 text-white hover:bg-brand-900 border border-transparent',
+  primary:
+    'bg-brand-700 text-white hover:bg-brand-800 border border-transparent shadow-[0_10px_24px_-14px_rgb(36_44_28/0.85)]',
   accent: 'bg-accent-500 text-ink hover:bg-accent-600 border border-transparent',
   secondary: 'bg-sand-100 text-ink hover:bg-sand-200 border border-transparent',
   outline: 'bg-transparent text-brand-700 border border-brand-700 hover:bg-brand-50',
   ghost: 'bg-transparent text-ink border border-transparent hover:bg-sand-100',
   inverse: 'bg-white text-ink hover:bg-sand-100 border border-transparent',
+  glass: 'glass-surface-strong text-ink hover:bg-white',
 };
 
 /** `min-h` values keep every control at or above the 44px touch target. */
 const sizes: Record<ButtonSize, string> = {
   sm: 'min-h-11 px-4 text-sm gap-1.5',
   md: 'min-h-12 px-5 text-base gap-2',
-  lg: 'min-h-14 px-7 text-lg gap-2.5',
+  lg: 'min-h-14 px-7 text-base sm:text-lg gap-2.5',
 };
 
 const base = cn(
-  'inline-flex items-center justify-center rounded-md font-medium',
-  'transition-colors duration-150',
+  'inline-flex items-center justify-center rounded-full font-medium',
+  'transition-[background-color,box-shadow,transform,color] duration-200',
+  'motion-safe:active:translate-y-px',
   'disabled:pointer-events-none disabled:opacity-50',
 );
 

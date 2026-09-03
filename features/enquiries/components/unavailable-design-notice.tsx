@@ -13,12 +13,12 @@ export function UnavailableDesignNotice() {
   return (
     <div
       data-testid="unavailable-design-notice"
-      className="border-line bg-surface-subtle rounded-lg border p-4 text-sm"
+      className="border-line-soft bg-canvas-deep/60 rounded-2xl border p-4 text-sm"
     >
       <p>
         <strong>That design is not available.</strong> We could not attach the design
-        from your link, so this will reach us as a general enquiry — please describe
-        what you have in mind in the notes.{' '}
+        from your link, so this will reach us as a general enquiry. Please describe what
+        you have in mind in the notes.{' '}
         <Link
           href={routes.work}
           className="text-brand-700 underline underline-offset-4"

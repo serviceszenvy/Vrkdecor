@@ -52,9 +52,9 @@ export function PhotoGallery({
               }}
               onClick={() => setOpenIndex(index)}
               data-testid="gallery-thumb"
-              className="group block w-full cursor-zoom-in text-left"
+              className="group block w-full cursor-zoom-in rounded-2xl text-left"
             >
-              <ImageFrame ratio="landscape" zoomOnHover>
+              <ImageFrame ratio="landscape" radius="xl" zoomOnHover>
                 <Image
                   src={photo.image.url}
                   alt={photo.image.alt}
@@ -64,7 +64,7 @@ export function PhotoGallery({
                 />
               </ImageFrame>
               {showDesignName ? (
-                <span className="text-ink-muted mt-2 block text-sm">
+                <span className="text-ink-muted group-hover:text-brand-800 mt-2 block text-sm transition-colors">
                   {photo.design.name}
                 </span>
               ) : null}

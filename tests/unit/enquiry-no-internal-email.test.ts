@@ -15,15 +15,18 @@ import { siteConfig } from '@/lib/site-config';
  * violate by accident: adding an internal notification is the obvious thing to
  * do when building a lead form, and nothing else in the codebase would object.
  *
- * So it is asserted structurally. P7 adds a transactional email provider for
- * the CUSTOMER confirmation; on the day it does, this test must still pass.
+ * So it is asserted structurally. P7 added a transactional email provider for
+ * the CUSTOMER confirmation, and this test still passes: the quote path itself
+ * still contains no transport, no business address and no notification
+ * variable, and the second half of this file checks the one message that DOES
+ * exist and proves VRK Decor is not its recipient.
  */
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
 
 const WATCHED_PATHS = [
   'features/enquiries',
-  'app/quote',
+  'app/(site)/quote',
   'lib/validation/enquiry.ts',
   'lib/rate-limit.ts',
 ];
@@ -131,5 +134,84 @@ describe('the enquiry reaches the Admin Panel instead', () => {
     expect(insertBlock).not.toMatch(/\bstatus:/);
     expect(insertBlock).not.toMatch(/internal_notes:/);
     expect(insertBlock).not.toMatch(/confirmation_email_sent_at:/);
+  });
+});
+
+describe('P7 — the one message that exists goes to the customer', () => {
+  function readEmailModule(name: string): string {
+    return readFileSync(join(root, 'lib/email', name), 'utf8');
+  }
+
+  it("addresses the enquiry's own email address and nothing else", () => {
+    const message = stripComments(readEmailModule('confirmation-message.ts'));
+
+    // The recipient comes from the enquiry, never from configuration.
+    expect(message).toMatch(/to:\s*details\.email/);
+    expect(message).not.toMatch(/to:\s*siteConfig\.contact\.email/);
+  });
+
+  it('uses the business address only as a reply path', () => {
+    const message = stripComments(readEmailModule('confirmation-message.ts'));
+    const businessMentions = [...message.matchAll(/siteConfig\.contact\.email/g)]
+      .length;
+
+    expect(businessMentions).toBe(1);
+    expect(message).toMatch(/replyTo:\s*siteConfig\.contact\.email/);
+  });
+
+  it('sends exactly one message per enquiry, to one recipient', () => {
+    const transport = stripComments(readEmailModule('transport.ts'));
+    expect(transport).toMatch(/to:\s*\[message\.to\]/);
+    expect(transport).not.toMatch(/\bcc\b|\bbcc\b/i);
+  });
+
+  it('sends nothing when the customer gave no email address', () => {
+    const send = stripComments(readEmailModule('send-confirmation.ts'));
+    expect(send).toMatch(/if \(!details\.email\) return/);
+  });
+});
+
+describe('P7 — the enquiry is persisted before anything else is attempted', () => {
+  const action = readFileSync(join(root, 'features/enquiries/actions.ts'), 'utf8');
+
+  it('creates the enquiry before it tries to send a confirmation', () => {
+    const created = action.indexOf('await createEnquiry(');
+    const confirmed = action.indexOf('await sendEnquiryConfirmation(');
+
+    expect(created).toBeGreaterThan(-1);
+    expect(confirmed).toBeGreaterThan(created);
+  });
+
+  it('returns a failure to the customer only for a failed enquiry, never a failed email', () => {
+    const afterCreate = action.slice(action.indexOf('await createEnquiry('));
+    const failureBranch = afterCreate.slice(
+      0,
+      afterCreate.indexOf('sendEnquiryConfirmation'),
+    );
+
+    // The only `status: 'failed'` after persistence is the one that reports the
+    // enquiry itself failing. Nothing downstream may add another.
+    expect(failureBranch).toContain("status: 'failed'");
+    expect(
+      afterCreate.slice(afterCreate.indexOf('sendEnquiryConfirmation')),
+    ).not.toContain("status: 'failed'");
+  });
+
+  it('validates uploaded files before the enquiry is stored', () => {
+    const validated = action.indexOf('validateReferenceImageUploads');
+    const created = action.indexOf('await createEnquiry(');
+    expect(validated).toBeGreaterThan(-1);
+    expect(validated).toBeLessThan(created);
+  });
+
+  it('marks the confirmation timestamp only after a successful send', () => {
+    const confirmation = stripComments(
+      readFileSync(join(root, 'features/enquiries/confirmation.ts'), 'utf8'),
+    );
+    const guard = confirmation.indexOf("if (delivery.status !== 'sent') return");
+    const mark = confirmation.indexOf('markConfirmationEmailSent(enquiryId)');
+
+    expect(guard).toBeGreaterThan(-1);
+    expect(mark).toBeGreaterThan(guard);
   });
 });

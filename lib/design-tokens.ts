@@ -79,6 +79,16 @@ export const palette = {
 export const semanticColors = {
   /** Page background. */
   surface: '#FFFFFF',
+  /**
+   * The page ground for the redesign. A warm off-white with a green cast, so
+   * white and translucent panels read as surfaces floating on it rather than
+   * as part of it. Every panel, card and glass surface sits on this.
+   */
+  canvas: '#F5F7F1',
+  /** Second ground, used where two tinted bands meet. */
+  canvasDeep: '#EDF1E5',
+  /** Soft green panel: why-choose band, contact card, admin sidebar. */
+  surfaceTint: '#ECF2E6',
   /** Alternating section background. */
   surfaceSubtle: palette.sand[50],
   /** Inset panels and image placeholders. */
@@ -87,20 +97,38 @@ export const semanticColors = {
   surfaceInverse: palette.sand[950],
   /** Primary body and heading text. */
   ink: palette.sand[950],
-  /** Secondary text, captions and metadata. */
+  /** Secondary text, captions and metadata on white or canvas. */
   inkMuted: palette.sand[600],
+  /**
+   * Body text on a TINTED surface. `inkMuted` drops below 4.5:1 on
+   * `surfaceTint`, so tinted panels use this one step darker value instead.
+   */
+  inkSoft: palette.sand[700],
   /** Text on dark surfaces. */
   inkInverse: '#FFFFFF',
   /** Hairlines and dividers. */
   border: palette.sand[200],
-  /** Primary action background. */
-  actionPrimary: palette.brand[800],
-  actionPrimaryHover: palette.brand[900],
+  /** Hairline on the canvas ground, where `border` reads as a hard edge. */
+  borderSoft: '#E4E7DD',
+  /**
+   * Primary action background.
+   *
+   * `brand.700` is the sage measured in the logo itself. White on it is 5.00:1,
+   * so it clears WCAG AA for a button label, and it is the mid-olive the
+   * approved reference design uses for its primary buttons.
+   */
+  actionPrimary: palette.brand[700],
+  actionPrimaryHover: palette.brand[800],
   /** Accent action background — pairs with ink text only. */
   actionAccent: palette.accent[500],
   actionAccentHover: palette.accent[600],
-  /** Brand-coloured text and links on light surfaces. */
+  /** Brand-coloured text and links on white or canvas. */
   brandText: palette.brand[700],
+  /**
+   * Brand-coloured text on a TINTED panel. `brand.700` falls to 4.38:1 on
+   * `surfaceTint`, so tinted panels use the next step down instead.
+   */
+  brandTextStrong: palette.brand[800],
   /** Focus ring. */
   focus: palette.brand[700],
 } as const;
@@ -190,7 +218,82 @@ export const contrastContract = [
     bg: semanticColors.surface,
     min: 1.2,
   },
+  {
+    name: 'body text on canvas',
+    fg: semanticColors.ink,
+    bg: semanticColors.canvas,
+    min: 4.5,
+  },
+  {
+    name: 'muted text on canvas',
+    fg: semanticColors.inkMuted,
+    bg: semanticColors.canvas,
+    min: 4.5,
+  },
+  {
+    name: 'brand text on canvas',
+    fg: semanticColors.brandText,
+    bg: semanticColors.canvas,
+    min: 4.5,
+  },
+  {
+    name: 'body text on tinted panel',
+    fg: semanticColors.ink,
+    bg: semanticColors.surfaceTint,
+    min: 4.5,
+  },
+  {
+    name: 'soft body text on tinted panel',
+    fg: semanticColors.inkSoft,
+    bg: semanticColors.surfaceTint,
+    min: 4.5,
+  },
+  {
+    name: 'brand text on tinted panel',
+    fg: semanticColors.brandTextStrong,
+    bg: semanticColors.surfaceTint,
+    min: 4.5,
+  },
+  {
+    name: 'soft body text on deep canvas',
+    fg: semanticColors.inkSoft,
+    bg: semanticColors.canvasDeep,
+    min: 4.5,
+  },
+  {
+    name: 'focus ring on canvas',
+    fg: semanticColors.focus,
+    bg: semanticColors.canvas,
+    min: 3,
+  },
 ] as const;
+
+/**
+ * Glassmorphism tokens.
+ *
+ * The reference design uses translucency as a way of letting photography stay
+ * visible through the interface, not as a decorative finish on every box. These
+ * values are therefore deliberately restrained, and `blur` is capped: a large
+ * `backdrop-filter` radius is repainted on every scroll frame and is the single
+ * most expensive thing a glass design can do to a mid-range phone.
+ *
+ * Where each one is allowed to appear is documented in docs/DESIGN-SYSTEM.md.
+ */
+export const glass = {
+  /** Default translucent panel over photography or the canvas. */
+  surface: 'rgb(255 255 255 / 0.62)',
+  /** Used where text density is higher and legibility must not depend on luck. */
+  surfaceStrong: 'rgb(255 255 255 / 0.86)',
+  /** Green-tinted glass for brand moments such as the closing call to action. */
+  surfaceTint: 'rgb(236 242 230 / 0.74)',
+  /** Dark glass for chips and controls sitting on light photography. */
+  surfaceInverse: 'rgb(37 37 34 / 0.42)',
+  border: 'rgb(255 255 255 / 0.55)',
+  borderSoft: 'rgb(97 118 75 / 0.16)',
+  highlight: 'rgb(255 255 255 / 0.65)',
+  blur: '16px',
+  blurStrong: '24px',
+} as const;
 
 /**
  * Fluid type scale. Values are `clamp(min, preferred, max)` so headings scale
@@ -214,13 +317,17 @@ export const sectionSpacing = {
   compact: 'py-10 sm:py-12',
   default: 'py-14 sm:py-20',
   spacious: 'py-20 sm:py-28',
+  /** Inside a rounded panel, which already carries its own inset. */
+  panel: 'py-12 sm:py-16',
 } as const;
 
 export const radii = {
   sm: '0.25rem',
   md: '0.5rem',
   lg: '0.875rem',
-  xl: '1.5rem',
+  xl: '1.25rem',
+  '2xl': '1.75rem',
+  '3xl': '2.25rem',
   full: '9999px',
 } as const;
 
@@ -241,3 +348,4 @@ export const minTouchTargetPx = 44;
 
 export type Palette = typeof palette;
 export type SemanticColors = typeof semanticColors;
+export type Glass = typeof glass;

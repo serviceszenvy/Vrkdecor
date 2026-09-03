@@ -9,7 +9,7 @@ export function DraftNotice({ children }: { children: React.ReactNode }) {
   return (
     <div
       data-draft-notice
-      className="border-accent-400 bg-accent-50 text-accent-900 rounded-lg border p-4 text-sm"
+      className="border-accent-400/70 bg-accent-50 text-accent-900 rounded-2xl border p-4 text-sm"
     >
       <p>
         <strong>Draft, pending review.</strong> {children}

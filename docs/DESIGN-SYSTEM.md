@@ -43,8 +43,10 @@ Two consequences drive the whole system:
    by an automated test.
 
 The logo is drawn for light backgrounds. It has no reversed or single-colour
-variant, which is why the dark footer presents it on a white plate.
-**Recommended client action: supply a reversed logo variant for dark surfaces.**
+variant. The redesign removed the last dark surface it had to sit on (the footer
+is now light), so it is used unmodified everywhere.
+**Recommended client action: supply a reversed logo variant for dark surfaces**,
+which would allow a dark band to be used again if one is ever wanted.
 
 ---
 
@@ -57,19 +59,19 @@ variables in `app/globals.css`.
 
 Anchored at `brand-700 = #61764B`, the exact sage measured in the logo.
 
-| Step    | Hex           | Typical use                                        |
-| ------- | ------------- | -------------------------------------------------- |
-| 50      | `#F6F9F3`     | Tinted panel, outline-button hover                 |
-| 100     | `#ECF2E6`     | Badge background                                   |
-| 200     | `#DAE5CF`     | Badge border                                       |
-| 300     | `#C2D2B2`     | Decorative rules                                   |
-| 400     | `#A4BB8B`     | Illustration                                       |
-| 500     | `#85A06A`     | Illustration                                       |
-| 600     | `#6D8455`     | Secondary graphic                                  |
-| **700** | **`#61764B`** | **Brand text, links, outline buttons, focus ring** |
-| 800     | `#475637`     | Primary button background                          |
-| 900     | `#37432B`     | Primary button hover                               |
-| 950     | `#242C1C`     | Deep accent                                        |
+| Step    | Hex           | Typical use                                       |
+| ------- | ------------- | ------------------------------------------------- |
+| 50      | `#F6F9F3`     | Tinted panel, outline-button hover                |
+| 100     | `#ECF2E6`     | Badge background                                  |
+| 200     | `#DAE5CF`     | Badge border                                      |
+| 300     | `#C2D2B2`     | Decorative rules                                  |
+| 400     | `#A4BB8B`     | Illustration                                      |
+| 500     | `#85A06A`     | Illustration                                      |
+| 600     | `#6D8455`     | Secondary graphic                                 |
+| **700** | **`#61764B`** | **Brand text, links, primary button, focus ring** |
+| 800     | `#475637`     | Primary button hover, brand text on tinted panels |
+| 900     | `#37432B`     | Deep gradient stop                                |
+| 950     | `#242C1C`     | Deep accent                                       |
 
 ### accent — lime
 
@@ -101,21 +103,34 @@ cast.
 
 Components reference these, never a raw palette step:
 
-| Role              | Value       |
-| ----------------- | ----------- |
-| `surface`         | `#FFFFFF`   |
-| `surface-subtle`  | `sand-50`   |
-| `surface-muted`   | `sand-100`  |
-| `surface-inverse` | `sand-950`  |
-| `ink`             | `sand-950`  |
-| `ink-muted`       | `sand-600`  |
-| `ink-inverse`     | `#FFFFFF`   |
-| `line`            | `sand-200`  |
-| `focus`           | `brand-700` |
+| Role              | Value       | Notes                                                 |
+| ----------------- | ----------- | ----------------------------------------------------- |
+| `surface`         | `#FFFFFF`   | Panels and cards                                      |
+| `canvas`          | `#F5F7F1`   | The page ground everything floats on                  |
+| `canvas-deep`     | `#EDF1E5`   | Second ground where two tinted areas meet             |
+| `surface-tint`    | `#ECF2E6`   | Soft green panel (value band, contact, CTA)           |
+| `surface-subtle`  | `sand-50`   | Legacy alternating band                               |
+| `surface-muted`   | `sand-100`  | Image placeholder                                     |
+| `surface-inverse` | `sand-950`  | Dark surface, now used only in the lightbox           |
+| `ink`             | `sand-950`  | Body and heading text                                 |
+| `ink-muted`       | `sand-600`  | Secondary text on white or canvas                     |
+| `ink-soft`        | `sand-700`  | Secondary text on a TINTED panel (see below)          |
+| `ink-inverse`     | `#FFFFFF`   | Text on dark                                          |
+| `line`            | `sand-200`  | Hairline on white                                     |
+| `line-soft`       | `#E4E7DD`   | Hairline on canvas, where `line` reads as a hard edge |
+| `focus`           | `brand-700` | Focus ring                                            |
+
+Two rules follow from measurement rather than taste, and both are enforced by
+the contrast test:
+
+- **`ink-muted` is not legible enough on `surface-tint`** (4.24:1). Tinted panels
+  use `ink-soft` instead (5.9:1).
+- **`brand-700` is not legible enough on `surface-tint`** either (4.38:1). Tinted
+  panels use `brand-800` for brand-coloured text (6.9:1).
 
 ### Contrast contract
 
-Thirteen text/background pairings are declared in `contrastContract` and
+Twenty-one text/background pairings are declared in `contrastContract` and
 asserted by `tests/unit/design-tokens.test.ts`. A palette change that drops any
 pairing below its required ratio fails the build. Headline results:
 
@@ -124,7 +139,9 @@ pairing below its required ratio fails the build. Headline results:
 | Body text on white   | 15.37:1 | 4.5         |
 | Muted text on white  | 4.89:1  | 4.5         |
 | Brand text on white  | 5.00:1  | 4.5         |
-| Primary button label | 7.91:1  | 4.5         |
+| Body text on canvas  | 14.24:1 | 4.5         |
+| Muted text on canvas | 4.53:1  | 4.5         |
+| Primary button label | 5.00:1  | 4.5         |
 | Accent button label  | 7.68:1  | 4.5         |
 | Accent text on dark  | 11.23:1 | 4.5         |
 
@@ -192,9 +209,49 @@ rhythms so pages never drift into ad-hoc padding:
 Container widths: `narrow` (2xl) for prose, `default` (5xl), `wide` (7xl) for
 photography grids. Horizontal gutters are `px-5 sm:px-6 lg:px-8`.
 
-Radii: `sm` 4px, `md` 8px (buttons), `lg` 14px (cards and image frames),
-`xl` 24px. Elevation is deliberately restrained — two shadow tokens — so
-photography, not chrome, carries the visual weight.
+Radii: `sm` 4px, `md` 8px, `lg` 14px, `xl` 20px, `2xl` 28px (cards and glass
+panels), `3xl` 36px (page panels, hero, portfolio cards). Every action is a full
+pill. Elevation has five tokens: `card` and `raised` for opaque surfaces,
+`glass` for translucent ones, `panel` for the large rounded page sections, and
+`float` for the fixed actions.
+
+### The panel composition
+
+Pages are not full-bleed bands. Each section is a rounded surface inset from the
+page ground by `px-3 sm:px-5 lg:px-6`, capped at `86rem`, with `gap-4 sm:gap-6`
+between them. `Section tone="panel"` renders that shape; the ground itself is
+`canvas` plus `canvas-wash`, two very wide, very low-opacity radial gradients.
+
+---
+
+## 4b. Glassmorphism
+
+Translucency exists so photography stays visible **through** the interface. It is
+not a finish applied to every box: a page where everything is glass has no depth,
+because nothing is behind anything.
+
+| Token                  | Value                     | Where it is allowed                                             |
+| ---------------------- | ------------------------- | --------------------------------------------------------------- |
+| `glass-surface`        | `rgb(255 255 255 / 0.62)` | Floating chips and small panels over photography                |
+| `glass-surface-strong` | `rgb(255 255 255 / 0.86)` | Header, hero panel, statistics bar, mobile sheet, admin sidebar |
+| `glass-surface-tint`   | `rgb(236 242 230 / 0.74)` | Brand moments such as the closing call to action                |
+| `glass-border`         | `rgb(255 255 255 / 0.55)` | Edge of a glass surface                                         |
+| `glass-highlight`      | `rgb(255 255 255 / 0.65)` | The thin top highlight (`.glass-edge`)                          |
+| `glass-blur`           | `16px`                    | Default backdrop blur                                           |
+| `glass-blur-strong`    | `24px`                    | Header only                                                     |
+
+Three rules, each enforced by a test in `tests/unit/design-tokens.test.ts`:
+
+1. **The blur radius is capped at 24px.** `backdrop-filter` repaints on every
+   scroll frame and is the single most expensive thing a glass design can ask of
+   a mid-range phone.
+2. **Every glass surface degrades to a near-opaque panel** when `backdrop-filter`
+   is unsupported. The translucent values live only inside an `@supports` block,
+   so a browser without blur gets a readable panel, never text floating on a
+   photograph.
+3. **Never behind data.** Tables, enquiry rows and form fields in the Admin Panel
+   are opaque white. Nobody should read a customer's phone number through a
+   blurred photograph.
 
 ---
 
@@ -202,17 +259,19 @@ photography, not chrome, carries the visual weight.
 
 ### Buttons
 
-Six variants, three sizes. Every size is at least 44x44 CSS pixels, which
-exceeds the WCAG 2.1 AA target-size minimum and suits one-handed mobile use.
+Seven variants, three sizes, all rendered as full pills. Every size is at least
+44x44 CSS pixels, which exceeds the WCAG 2.1 AA target-size minimum and suits
+one-handed mobile use.
 
-| Variant     | Use                                                  |
-| ----------- | ---------------------------------------------------- |
-| `primary`   | The main action on a light surface — "Get a Quote"   |
-| `accent`    | The main action on a dark surface or photograph      |
-| `secondary` | Neutral secondary action                             |
-| `outline`   | Tertiary action, filters, "View Design"              |
-| `ghost`     | Low-emphasis action, toolbars, the mobile action bar |
-| `inverse`   | Action on a dark surface                             |
+| Variant     | Use                                                       |
+| ----------- | --------------------------------------------------------- |
+| `primary`   | The main action on a light surface, "Get a Quote"         |
+| `accent`    | The main action on a dark surface or photograph           |
+| `secondary` | Neutral secondary action                                  |
+| `outline`   | Tertiary action, filters, "View Design"                   |
+| `ghost`     | Low-emphasis action, toolbars, the mobile action bar      |
+| `inverse`   | Action on a dark surface                                  |
+| `glass`     | Secondary action sitting on photography or a tinted panel |
 
 **Rule:** control responsive visibility by wrapping a button, never by passing
 `hidden` in `className`. The button base sets `inline-flex`, and class order in
@@ -234,8 +293,12 @@ style, `accent` for a featured flag, `inverse` on dark surfaces.
 
 The portfolio is photography-first, so image handling is a system-level concern:
 
-- `ImageFrame` fixes an aspect ratio (`square`, `portrait`, `landscape`, `wide`,
-  `hero`) so grids never shift while images load.
+- `ImageFrame` fixes an aspect ratio (`square`, `portrait`, `tall`, `landscape`,
+  `wide`, `hero`, `card`) so grids never shift while images load.
+- The portfolio card is the picture: a `card` (5:6) frame, a glass occasion chip
+  over it, and the design name in a scrim across the foot. The name is always
+  visible, never hover-only, because a hover-only title is unusable on a touch
+  screen.
 - The placeholder is `surface-muted`, a warm neutral, not grey.
 - `zoomOnHover` applies a restrained 4% scale, wrapped in `motion-safe:` so it
   is disabled under `prefers-reduced-motion`.
@@ -256,11 +319,16 @@ The portfolio is photography-first, so image handling is a system-level concern:
   containing block for its fixed children). It manages `aria-expanded`,
   `aria-controls`, focus entry, a focus trap, Escape-to-close with focus return
   and body scroll locking, and it closes on route change.
-- **Mobile sticky action bar** — Call, WhatsApp and Get Quote, required by the
+- **Mobile sticky action bar** — Call and Get Quote, required by the
   Requirements & SOW section 4. Hidden at `lg` and above.
   `--mobile-cta-height` reserves the space it occupies so it never covers
   content.
-- **Footer** — dark inverse band with the logo, the site structure, contact
+- **Floating WhatsApp action** — persistent at every size, offset above the
+  action bar by `--mobile-cta-height` so the two never overlap. WhatsApp moved
+  out of the bar and into its own action, which is why the bar has two items
+  rather than three.
+- **Footer** — light four-column band with the logo, the approved figures, the
+  site structure, the service list and contact
   actions, coverage areas and legal links.
 
 Navigation targets come from `lib/navigation.ts`. Phone and WhatsApp hrefs are
@@ -274,8 +342,15 @@ Mobile-first. Breakpoints are Tailwind's defaults: `sm` 640, `md` 768, `lg` 1024
 `xl` 1280, `2xl` 1536 px.
 
 - `lg` is the shell breakpoint: below it, the mobile menu and sticky action bar;
-  at and above it, the full horizontal navigation.
-- Photography grids go 1 → 2 → 3 columns at `sm` and `lg`.
+  at and above it, the full horizontal navigation and the admin sidebar.
+- Photography grids go 1 → 2 → 3 columns at `sm` and `lg`. The featured work is
+  a scroll-snap rail at every size, four across at `lg`.
+- Mobile is designed, not scaled down. The hero assurance panel appears from `sm`
+  up only; the figures band is 2x2 on a phone and 4 across from `sm`; the value
+  band is 2x2 white cards on a phone and a four-column divided row at `lg`; the
+  occasion tiles are 3 across on a phone and 6 at `lg`.
+- Horizontal page scrolling is a defect. Rails opt in explicitly with the `rail`
+  utility; an end-to-end test asserts no page scrolls horizontally at 390px.
 - Type scales fluidly rather than stepping at breakpoints.
 - Touch targets stay at 44px at every size.
 - Layouts use flex and grid with relative units; no fixed-width containers.
@@ -309,12 +384,15 @@ keyboard behaviour. A full accessibility audit is P11.
 
 Delivered by later phases, against these same tokens:
 
-| Not yet covered                                          | Phase                   |
-| -------------------------------------------------------- | ----------------------- |
-| Form controls, labels, validation and error styling      | P6                      |
-| File upload control for reference images                 | P7                      |
-| Portfolio grid, filter chips, lightbox and gallery       | P5                      |
-| Admin panel tables, drag-and-drop ordering, status chips | P8                      |
-| Toasts and confirmation states                           | P6–P8                   |
-| Approved photography and final copy                      | P4                      |
-| Final typeface                                           | Pending client decision |
+| Not yet covered                       | Phase                   |
+| ------------------------------------- | ----------------------- |
+| Structured data and analytics chrome  | P9                      |
+| Approved photography                  | Pending client supply   |
+| Final typeface and licence            | Pending client decision |
+| Reversed logo variant                 | Pending client supply   |
+| Social account handles for the footer | Pending client supply   |
+
+Delivered since this document was first written: form controls and validation
+styling (P6), the reference-image upload control (P7), the portfolio grid,
+filter chips, gallery and lightbox (P5), and the Admin Panel shell, lists and
+forms (P8, restyled in the redesign).

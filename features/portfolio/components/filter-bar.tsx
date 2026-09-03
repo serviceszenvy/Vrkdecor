@@ -38,22 +38,30 @@ function FilterRow({
   if (options.length === 0) return null;
   const active = filters[paramKey];
 
+  const chip = (isActive: boolean) =>
+    cn(
+      'inline-flex min-h-10 items-center rounded-full border px-4 text-sm transition-colors',
+      isActive
+        ? 'border-brand-700 bg-brand-700 text-white'
+        : 'border-line-soft bg-surface text-ink hover:border-brand-300 hover:bg-brand-50',
+    );
+
   return (
-    <div className="flex flex-col gap-2">
-      <h3 className="text-ink-muted text-2xs font-semibold tracking-[0.16em] uppercase">
+    <div className="flex flex-col gap-2.5">
+      <h3 className="text-ink-muted text-2xs font-semibold tracking-[0.18em] uppercase">
         {label}
       </h3>
-      <ul className="flex flex-wrap gap-2">
-        <li>
+      {/*
+        A horizontal rail below `sm`. Three rows of wrapped chips push the
+        designs themselves off a phone screen entirely, which is the wrong way
+        round on a portfolio page.
+      */}
+      <ul className="rail -mx-4 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:px-0">
+        <li className="rail-item shrink-0">
           <Link
             href={buildHref(filters, paramKey, undefined)}
             aria-current={active ? undefined : 'true'}
-            className={cn(
-              'inline-flex min-h-9 items-center rounded-full border px-3 text-sm',
-              active
-                ? 'border-line text-ink-muted hover:bg-sand-50'
-                : 'border-brand-800 bg-brand-800 text-white',
-            )}
+            className={chip(!active)}
           >
             All
           </Link>
@@ -61,16 +69,11 @@ function FilterRow({
         {options.map((option) => {
           const isActive = active === option.slug;
           return (
-            <li key={option.slug}>
+            <li key={option.slug} className="rail-item shrink-0">
               <Link
                 href={buildHref(filters, paramKey, isActive ? undefined : option.slug)}
                 aria-current={isActive ? 'true' : undefined}
-                className={cn(
-                  'inline-flex min-h-9 items-center rounded-full border px-3 text-sm',
-                  isActive
-                    ? 'border-brand-800 bg-brand-800 text-white'
-                    : 'border-line text-ink hover:bg-sand-50',
-                )}
+                className={chip(isActive)}
               >
                 {option.name}
               </Link>
@@ -98,7 +101,10 @@ export function FilterBar({
   const hasFilters = Boolean(filters.occasion || filters.style || filters.service);
 
   return (
-    <section aria-labelledby="filters" className="flex flex-col gap-5">
+    <section
+      aria-labelledby="filters"
+      className="border-line-soft bg-surface/70 flex flex-col gap-5 rounded-3xl border p-5 sm:p-6"
+    >
       <h2 id="filters" className="sr-only">
         Filter designs
       </h2>

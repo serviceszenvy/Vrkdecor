@@ -1,33 +1,33 @@
 import { ButtonLink } from '@/components/ui';
-import { routes, telHref, whatsAppHref } from '@/lib/navigation';
-import { PhoneIcon, WhatsAppIcon } from './icons';
+import { routes, telHref } from '@/lib/navigation';
+import { PhoneIcon } from './icons';
 
 /**
- * Persistent mobile action bar: Call, WhatsApp and Get a Quote.
- * Required by the Requirements & SOW section 4 ("Mobile sticky CTA").
+ * Persistent mobile action bar — required by Requirements & SOW section 4.
  *
- * Hidden at `lg` and above, where the header CTA is always visible.
+ * Two actions rather than three since the redesign: WhatsApp has its own
+ * floating button directly above this bar, so repeating it here would have put
+ * the same action on screen twice and squeezed the two that remain.
+ *
+ * Hidden at `lg` and above, where the header call to action is always visible.
  * `--mobile-cta-height` in `app/globals.css` reserves the space it occupies so
- * it never covers page content.
+ * it never covers page content, and the floating WhatsApp button is offset by
+ * the same variable so the two never overlap.
  */
 export function StickyMobileCta() {
   return (
     <div
       data-testid="sticky-mobile-cta"
-      className="bg-surface/95 border-line fixed inset-x-0 bottom-0 z-20 border-t backdrop-blur-sm lg:hidden"
-      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+      className="fixed inset-x-0 bottom-0 z-20 px-3 pb-3 lg:hidden"
+      style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))' }}
     >
-      <div className="mx-auto grid max-w-md grid-cols-3 gap-2 px-3 py-2">
+      <div className="glass-surface-strong glass-edge mx-auto flex max-w-md items-center gap-2 rounded-full p-1.5">
         <ButtonLink href={telHref} variant="ghost" size="sm" fullWidth>
-          <PhoneIcon />
-          <span className="text-xs">Call</span>
-        </ButtonLink>
-        <ButtonLink href={whatsAppHref} variant="ghost" size="sm" fullWidth>
-          <WhatsAppIcon />
-          <span className="text-xs">WhatsApp</span>
+          <PhoneIcon className="size-4" />
+          Call
         </ButtonLink>
         <ButtonLink href={routes.quote} variant="primary" size="sm" fullWidth>
-          <span className="text-xs">Get Quote</span>
+          Get Quote
         </ButtonLink>
       </div>
     </div>

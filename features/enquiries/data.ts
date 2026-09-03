@@ -4,6 +4,10 @@ import { isSupabaseConfigured } from '@/lib/auth/supabase-anon';
 import { createSupabaseServiceRoleClient } from '@/lib/auth/supabase-service';
 import { createSupabaseServerClient } from '@/lib/auth/supabase-server';
 import { MAX_REFERENCE_IMAGES_PER_ENQUIRY } from '@/lib/storage';
+import {
+  removeReferenceObjects,
+  uploadReferenceImages,
+} from '@/lib/storage/reference-upload';
 import { referenceImagesSchema } from '@/lib/validation/enquiry';
 import { isUsingLocalEnquiryStore, storeEnquiryLocally } from './store';
 import type { CreateEnquiryInput, CreateEnquiryResult, EnquirySummary } from './types';
@@ -23,9 +27,14 @@ import type { CreateEnquiryInput, CreateEnquiryResult, EnquirySummary } from './
  *
  * NO EMAIL IS SENT FROM HERE, in either direction. VRK Decor is notified by the
  * Admin Panel, never by email (Requirements section 11, Master Implementation
- * Specification section 9). The customer's confirmation email is P7's, and it
- * is sent after this function has already returned — an email failure must
- * never cost a lead.
+ * Specification section 9). The customer's confirmation is composed and
+ * delivered by `lib/email`, called only after this function has already
+ * returned `created` — a delivery failure must never cost a lead.
+ *
+ * P7 adds the reference-image upload. The ORDER inside `createEnquiry` is the
+ * design: the enquiry row is written first and the private objects are written
+ * afterwards, under a key derived from the new enquiry's id. A storage failure
+ * therefore costs the customer their attachments, never their enquiry.
  */
 
 /** Columns the Admin Panel lists. Never selects `internal_notes` in bulk. */
@@ -39,14 +48,13 @@ export async function createEnquiry(
   input: CreateEnquiryInput,
   fingerprint: string,
 ): Promise<CreateEnquiryResult> {
-  const referenceImages = referenceImagesSchema.safeParse(input.referenceImages ?? []);
-
-  if (!referenceImages.success) {
-    // The caller validated these already; reaching here is a programming error,
-    // not customer input, so it is reported without touching the database.
-    console.error('[enquiries] Rejected reference images that failed validation.');
-    return { status: 'failed' };
-  }
+  // Defence in depth. The caller has already validated every file's type,
+  // content, size and dimensions; this is the ceiling asserted one more time,
+  // in the module that does the writing.
+  const requested = (input.referenceImages ?? []).slice(
+    0,
+    MAX_REFERENCE_IMAGES_PER_ENQUIRY,
+  );
 
   if (isUsingLocalEnquiryStore()) {
     const stored = storeEnquiryLocally(input, fingerprint);
@@ -92,18 +100,45 @@ export async function createEnquiry(
       return { status: 'failed' };
     }
 
+    // The enquiry is now safe. Everything after this point is best effort.
+    const upload = await uploadReferenceImages(data.id, requested);
+
+    const parsed = referenceImagesSchema.safeParse(upload.stored);
+    if (!parsed.success) {
+      // Unreachable from customer input — the objects were built by the server
+      // from already-validated files — so it is a programming error, and the
+      // orphaned objects are removed rather than left in the private bucket.
+      console.error('[enquiries] Rejected reference images that failed validation.');
+      await removeReferenceObjects(upload.stored.map((object) => object.storageKey));
+      return {
+        status: 'created',
+        enquiryId: data.id,
+        referenceImageCount: 0,
+        referenceImagesIncomplete: requested.length > 0,
+      };
+    }
+
     const linked = await linkReferenceImages(
       supabase,
       data.id,
       input.designId,
-      referenceImages.data,
+      parsed.data,
     );
+
+    if (linked < parsed.data.length) {
+      // Anything uploaded but not recorded is unreachable by the Admin Panel,
+      // so it is deleted rather than left behind as private customer data with
+      // nothing pointing at it.
+      await removeReferenceObjects(
+        parsed.data.slice(linked).map((object) => object.storageKey),
+      );
+    }
 
     return {
       status: 'created',
       enquiryId: data.id,
       referenceImageCount: linked,
-      referenceImagesIncomplete: linked < referenceImages.data.length,
+      referenceImagesIncomplete: upload.incomplete || linked < requested.length,
     };
   } catch {
     console.error('[enquiries] Could not store an enquiry.');
@@ -114,10 +149,10 @@ export async function createEnquiry(
 /**
  * Links already-stored private reference images to an enquiry.
  *
- * P6 owns this relationship; P7 owns putting the files in the private bucket
- * and calling in with their keys. The ceiling of three is applied here as well
- * as by the database trigger, because a limit worth having is worth enforcing
- * on both sides.
+ * P6 owned this relationship; P7 put the files in the private bucket and calls
+ * in with their server-generated keys. The ceiling of three is applied here as
+ * well as by the database trigger, because a limit worth having is worth
+ * enforcing on both sides.
  *
  * A failure here is logged and reported, never thrown: the enquiry is already
  * stored and reaching the Admin Panel, and losing a lead over an image link
@@ -222,5 +257,36 @@ export async function listEnquiries(limit = 50): Promise<EnquirySummary[]> {
   } catch {
     console.error('[enquiries] Could not read the enquiry inbox.');
     return [];
+  }
+}
+
+/**
+ * Records that the customer's confirmation email was accepted by the provider.
+ *
+ * Called only after a successful send, and never from the validation or insert
+ * path, so `confirmation_email_sent_at` means exactly one thing: the provider
+ * took the message. A failure to record it is logged and swallowed — the
+ * enquiry is already in the Admin Panel, and losing a lead over a timestamp
+ * would be the worse outcome.
+ */
+export async function markConfirmationEmailSent(enquiryId: string): Promise<boolean> {
+  if (isUsingLocalEnquiryStore()) return false;
+
+  try {
+    const supabase = createSupabaseServiceRoleClient();
+    const { error } = await supabase
+      .from('enquiries')
+      .update({ confirmation_email_sent_at: new Date().toISOString() })
+      .eq('id', enquiryId);
+
+    if (error) {
+      console.error('[enquiries] Could not record the confirmation email timestamp.');
+      return false;
+    }
+
+    return true;
+  } catch {
+    console.error('[enquiries] Could not record the confirmation email timestamp.');
+    return false;
   }
 }

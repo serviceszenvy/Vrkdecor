@@ -1,4 +1,5 @@
-import type { EnquiryInput, ReferenceImageInput } from '@/lib/validation/enquiry';
+import type { ValidatedReferenceImage } from '@/lib/uploads';
+import type { EnquiryInput } from '@/lib/validation/enquiry';
 
 /**
  * Enquiry view models and service types.
@@ -49,14 +50,19 @@ export type CreateEnquiryInput = EnquiryInput & {
   designId: string | null;
   /** Resolved server-side and verified to belong to `designId`. */
   imageId: string | null;
-  referenceImages?: ReferenceImageInput[];
+  /**
+   * Files that have already passed every server-side check in
+   * `lib/uploads/reference-images.ts`. They are uploaded to the PRIVATE bucket
+   * after the enquiry row exists, because the enquiry id namespaces the key.
+   */
+  referenceImages?: ValidatedReferenceImage[];
 };
 
 export type CreateEnquiryResult =
   | {
       status: 'created';
       enquiryId: string;
-      /** Reference images that were linked (P7 supplies them; P6 links them). */
+      /** Private reference images stored and linked to this enquiry. */
       referenceImageCount: number;
       /**
        * True when the enquiry was stored but one or more reference images could

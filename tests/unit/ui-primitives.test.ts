@@ -13,9 +13,17 @@ describe('button variants', () => {
     const primary = buttonClassNames('primary', 'md', false);
     const outline = buttonClassNames('outline', 'md', false);
 
-    expect(primary).toContain('bg-brand-800');
+    // `brand-700` is the sage measured in the logo. White on it is 5.00:1, and
+    // the pairing is asserted in tests/unit/design-tokens.test.ts.
+    expect(primary).toContain('bg-brand-700');
     expect(outline).toContain('border-brand-700');
     expect(primary).not.toBe(outline);
+  });
+
+  it('renders every action as a pill, as the approved reference design does', () => {
+    for (const variant of ['primary', 'accent', 'outline', 'glass'] as const) {
+      expect(buttonClassNames(variant, 'md', false), variant).toContain('rounded-full');
+    }
   });
 
   it('never drops below the 44px minimum touch target', () => {

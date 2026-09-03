@@ -103,7 +103,7 @@ function mapDesign(raw: RawDesign): PortfolioDesign {
       // inherited (Requirements section 9).
       alt:
         image.alt_text?.trim() ||
-        `${raw.name}${raw.location ? ` — ${raw.location}` : ''}`,
+        `${raw.name}${raw.location ? `, ${raw.location}` : ''}`,
       isCover: image.is_cover,
       sortOrder: image.sort_order,
       width: image.width,

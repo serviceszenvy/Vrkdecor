@@ -1,6 +1,38 @@
 import type { NextConfig } from 'next';
 
 /**
+ * The Supabase host that serves published portfolio images.
+ *
+ * `next/image` refuses a remote URL that no pattern allows, which is exactly
+ * the behaviour we want: without this, a compromised or mistaken storage key
+ * could point the optimiser at an arbitrary host. The pattern is derived from
+ * the configured project rather than hard-coded, and it is narrowed to the
+ * PUBLIC portfolio path.
+ *
+ * Private reference images are deliberately absent. They are served through
+ * short-lived signed URLs and are rendered with a plain `<img>` so they never
+ * enter the image optimiser's cache (P8).
+ */
+function portfolioImagePatterns(): NonNullable<NextConfig['images']>['remotePatterns'] {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!url) return [];
+
+  try {
+    const { protocol, hostname } = new URL(url);
+    if (protocol !== 'https:') return [];
+    return [
+      {
+        protocol: 'https',
+        hostname,
+        pathname: '/storage/v1/object/public/portfolio/**',
+      },
+    ];
+  } catch {
+    return [];
+  }
+}
+
+/**
  * Baseline security headers.
  *
  * Scope note: this is the P1 foundation baseline only. Full security hardening
@@ -14,13 +46,44 @@ const baselineSecurityHeaders = [
   { key: 'X-DNS-Prefetch-Control', value: 'off' },
 ];
 
+/**
+ * The Admin Panel is never indexed and never cached by an intermediary.
+ *
+ * The pages also carry `robots: { index: false }` metadata; this says the same
+ * thing at the HTTP level, so a crawler that ignores the meta tag still gets
+ * the instruction and a shared cache never keeps an admin response.
+ */
+const adminHeaders = [
+  { key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' },
+  { key: 'Cache-Control', value: 'no-store, max-age=0' },
+];
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  experimental: {
+    serverActions: {
+      /*
+        Two upload surfaces need more than the 1 MB Server Actions default: the
+        quote form's three 5 MB reference images (Requirements & SOW section 13)
+        and the Admin Panel's portfolio uploads at 10 MB each.
+
+        16 MB is NOT a general relaxation. `lib/uploads` re-applies the per-file
+        limit, the file count and the whole content check on the server, and the
+        buckets apply their own limits again in Supabase Storage. The
+        application's own request ceiling (`MAX_UPLOAD_REQUEST_BYTES`, 15 MB)
+        sits just under this one so an oversized batch is refused with a
+        sentence rather than by the framework with a generic error. This value
+        only decides how large a body Next will read before rejecting it.
+      */
+      bodySizeLimit: '16mb',
+    },
+  },
   // Hostinger managed Node.js hosting runs `next build` + `next start`.
   // Do not introduce Vercel-only capabilities (see CLAUDE.md).
   output: undefined,
   images: {
+    remotePatterns: portfolioImagePatterns(),
     /*
       WebP only. AVIF encodes far more slowly than WebP, and Next optimises on
       demand at request time — on Hostinger's shared Node hosting a first
@@ -47,6 +110,14 @@ const nextConfig: NextConfig = {
       {
         source: '/:path*',
         headers: baselineSecurityHeaders,
+      },
+      {
+        source: '/admin/:path*',
+        headers: adminHeaders,
+      },
+      {
+        source: '/admin',
+        headers: adminHeaders,
       },
     ];
   },

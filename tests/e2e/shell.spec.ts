@@ -74,7 +74,7 @@ test.describe('application shell', () => {
 test.describe('mobile shell', () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
-  test('sticky action bar offers Call, WhatsApp and Get Quote', async ({ page }) => {
+  test('sticky action bar offers Call and Get Quote', async ({ page }) => {
     await page.goto('/');
 
     const bar = page.getByTestId('sticky-mobile-cta');
@@ -83,14 +83,31 @@ test.describe('mobile shell', () => {
       'href',
       'tel:+919994072435',
     );
-    await expect(bar.getByRole('link', { name: 'WhatsApp' })).toHaveAttribute(
-      'href',
-      'https://wa.me/919994072435',
-    );
     await expect(bar.getByRole('link', { name: 'Get Quote' })).toHaveAttribute(
       'href',
       '/quote',
     );
+  });
+
+  test('the floating WhatsApp action is reachable and clear of the action bar', async ({
+    page,
+  }) => {
+    await page.goto('/');
+
+    // WhatsApp moved out of the bar and into its own persistent action, so the
+    // two actions that remain in the bar are not squeezed and the approved
+    // primary channel is one tap away from anywhere on the site.
+    const fab = page.getByTestId('whatsapp-fab');
+    await expect(fab).toBeVisible();
+    await expect(fab).toHaveAttribute('href', 'https://wa.me/919994072435');
+
+    const box = (await fab.boundingBox())!;
+    expect(box.width).toBeGreaterThanOrEqual(44);
+    expect(box.height).toBeGreaterThanOrEqual(44);
+
+    const bar = (await page.getByTestId('sticky-mobile-cta').boundingBox())!;
+    // The floating button sits entirely above the bar; neither covers the other.
+    expect(box.y + box.height).toBeLessThanOrEqual(bar.y + 1);
   });
 
   test('mobile menu opens, traps focus, and closes on Escape', async ({ page }) => {

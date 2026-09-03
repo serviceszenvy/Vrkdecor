@@ -2,16 +2,17 @@
 
 ## Layers
 
-| Layer                                | Tool                | Location        | Status                                  |
-| ------------------------------------ | ------------------- | --------------- | --------------------------------------- |
-| Unit and integration                 | Vitest              | `tests/unit/`   | Active from P1                          |
-| End-to-end                           | Playwright          | `tests/e2e/`    | Smoke tests from P1; expanded per phase |
-| Authorization / RLS / storage policy | Vitest + Playwright | added in P3, P8 | Pending                                 |
-| Upload security                      | Playwright          | added in P7     | Pending                                 |
-| Quote validation and rate limiting   | Vitest + Playwright | `tests/`        | Active from P6                          |
-| XSS / CSRF / full rate-limit review  | Playwright          | added in P10    | Pending                                 |
-| SEO and analytics                    | Playwright          | added in P9     | Pending                                 |
-| Accessibility and performance        | Playwright          | added in P11    | Pending                                 |
+| Layer                                | Tool                | Location      | Status                                  |
+| ------------------------------------ | ------------------- | ------------- | --------------------------------------- |
+| Unit and integration                 | Vitest              | `tests/unit/` | Active from P1                          |
+| End-to-end                           | Playwright          | `tests/e2e/`  | Smoke tests from P1; expanded per phase |
+| Authorization / RLS / storage policy | Vitest + Playwright | `tests/`      | Active from P3, admin surface from P8   |
+| Upload security                      | Vitest + Playwright | `tests/`      | Active from P7                          |
+| Customer email and continuation      | Vitest + Playwright | `tests/`      | Active from P7                          |
+| Quote validation and rate limiting   | Vitest + Playwright | `tests/`      | Active from P6                          |
+| XSS / CSRF / full rate-limit review  | Playwright          | added in P10  | Pending                                 |
+| SEO and analytics                    | Playwright          | added in P9   | Pending                                 |
+| Accessibility and performance        | Playwright          | added in P11  | Pending                                 |
 
 ## Commands
 
@@ -36,6 +37,143 @@ npm run verify     # format check + lint + typecheck + unit tests + build
   runners never collide.
 
 ## Current coverage
+
+### P8 — the Admin Panel
+
+Authorization is tested in two independent ways, because the two halves of it
+can fail independently.
+
+**Structurally, in `tests/unit/admin-authorization.test.ts`.** It walks the
+source rather than the behaviour, because the failure mode being defended
+against is somebody adding one more admin page in six months and forgetting one
+line, which nothing else would object to:
+
+- every page under `app/admin` calls the guard, with the sign-in page the single
+  declared exception, and that page is proven to read no admin data;
+- every exported Server Action under `features/admin/actions` calls the guard,
+  and the guard appears before the first write in the module;
+- **the service-role client appears nowhere** under `features/admin` or
+  `app/admin`, so Row Level Security is never bypassed;
+- every admin form is parsed by a schema rather than spread into a row, and no
+  action writes an identifier or a timestamp column;
+- the enquiry update writes `status` and `internal_notes` and nothing else;
+- sign-in is rate limited per client and per address, answers every failure
+  identically, and never echoes or logs the password.
+
+**Behaviourally, in `tests/db/admin-operations.test.ts`**, against real
+PostgreSQL with the real migrations. Every administrative statement the Admin
+Panel issues is run as an active admin, a disabled admin, a signed-in customer
+and an anonymous visitor:
+
+- designs can be created, edited, published and archived by an active admin and
+  by nobody else; a new design is always a draft whatever the caller asked for;
+- draft designs stay invisible to everyone else;
+- images can be added, described and deleted by an active admin only;
+- `set_design_cover` moves the cover in one transaction, leaving exactly one;
+  refuses an image belonging to another design; refuses one that does not exist;
+  and refuses every caller who is not an active admin;
+- `move_design_image` swaps with its neighbour, does nothing at the end of the
+  list rather than failing, refuses to reorder the cover, refuses a direction
+  that is not up or down, and refuses non-admins;
+- occasions, styles and services can be added and switched off by an admin only,
+  and an inactive term disappears from the public site while staying visible in
+  the Admin Panel;
+- a package starts as a draft and a testimonial starts as pending, so nothing
+  reaches the public site without a deliberate act;
+- an enquiry's pipeline and notes are writable by an active admin, unreachable by
+  everyone else, restricted to the approved pipeline steps, and **impossible to
+  create from any browser session including an admin's**;
+- private reference images are readable and deletable by an active admin only,
+  in the table and in storage;
+- portfolio storage objects are writable by an active admin only;
+- **nobody can grant themselves admin rights**, active admins included, and
+  disabling an admin takes effect on the very next statement.
+
+**From the outside, in `tests/e2e/admin.spec.ts`.** This environment has no
+Supabase project, so there is no signed-in journey to walk; what it proves is
+what an unauthenticated visitor gets:
+
+- every admin route redirects to sign-in;
+- the sign-in page leaks nothing — no identities, no counts, no table names;
+- it says plainly that the panel is not connected rather than showing a login
+  box that cannot work;
+- every admin response carries `X-Robots-Tag: noindex` and `Cache-Control:
+no-store`, and the page carries noindex metadata;
+- the public site links to `/admin` from nowhere;
+- the public pages and the 404 page still render the site chrome after the route
+  grouping, and no admin page renders the public marketing chrome.
+
+**Admin input, in `tests/unit/admin-validation.test.ts`**: slugs cannot become a
+path, a query string or a script; an admin-supplied slug is sanitised rather
+than trusted; money is stored in paise and refuses decimals; a pricing mode and
+price that disagree are refused in both directions; a video URL must be HTTPS
+and belong to the provider chosen, with lookalike hosts refused; only declared
+fields are read, so `status`, `published_at` and `id` cannot be smuggled in.
+
+### P7 — uploads, customer email and continuation
+
+Image fixtures live in `tests/fixtures/images/` and are **real files produced by
+a real encoder**, a few kilobytes each. Verifying a header parser against bytes
+written to satisfy it proves nothing. The hostile files are built in code,
+because each has to be wrong in one specific way.
+
+- **Content, not labels.** An SVG, an HTML page, a PHP script, a ZIP, a GIF, a
+  PDF and a file that merely starts with JPEG magic bytes are each attached as
+  `holiday.jpg` with `Content-Type: image/jpeg` and each refused. A genuine PNG
+  announced as a JPEG is refused too.
+- **The probe is verified against real images** of all three accepted formats,
+  including both WebP encodings and the extended container, and is proven to
+  terminate on a JPEG made of nothing but marker padding.
+- **Decompression bombs.** A PNG under a kilobyte declaring a 20000x20000 canvas
+  is refused, as is an 11000x11000 canvas whose edges are both inside the limit
+  but whose pixel count is not.
+- **Counts and sizes.** Three images are accepted, a fourth is refused rather
+  than silently dropped, an oversized file is refused, and a file exactly at the
+  5 MB limit is accepted.
+- **Filenames.** Paths, control characters and direction overrides are stripped;
+  the result can never be empty or a dotfile; the storage key is proven never to
+  contain any of it.
+- **The empty part a browser posts for an untouched input is ignored**, through
+  a Server Action and through a plain HTML POST, so an ordinary submission with
+  no attachment is never turned into an error. An empty file the customer really
+  chose is still refused.
+- **A rejected attachment does not consume the duplicate window**, proven end to
+  end: the customer fixes the file, resends, and gets a new enquiry rather than
+  "we already have your request".
+- **The rest of the form survives a rejected attachment** and nothing is retyped.
+- **Uploads work with JavaScript disabled**, and a bad file is refused and
+  re-rendered server-side.
+- **Nothing private is exposed.** After an upload, the public pages are loaded
+  and asserted to contain no bucket name, no object key, no `enquiries/<uuid>/`
+  path and no customer filename. `resolveImageUrl` refuses a reference key
+  outright, the server-only modules are proven not to be exported from the
+  shared storage index, and the admin summary type is proven to carry a count
+  rather than a key.
+- **Under RLS**: reference rows are unreachable by an anonymous visitor holding
+  the exact key, invisible to a signed-in non-admin, readable by an active
+  admin, uncreatable from any browser role including an admin's, and deleted
+  with their enquiry. The mime-type constraint refuses SVG, PDF, ZIP, HTML and
+  AVIF even from the service role, an empty file is refused, and a storage key
+  already in use cannot be claimed by another enquiry.
+- **The confirmation email goes to the customer and only the customer.** The
+  business address appears exactly once in the composer, as `Reply-To`. The
+  message is asserted to carry no signed URL, storage key, price, tracking pixel
+  or state-changing link, and every interpolated value is proven escaped.
+- **Email failure is proven harmless**: a refusal, an unreachable provider, a
+  timeout and a transport that throws all resolve to a value, and none of them
+  logs the recipient, the message or the API key. A plain-HTTP endpoint is
+  refused outright.
+- **Ordering is asserted structurally** in the sources: files are validated
+  before the enquiry is stored, the confirmation is attempted after it, no
+  failure path after persistence can return a failure to the customer, and
+  `confirmation_email_sent_at` is written only after a successful send.
+- **The confirmation page promises an email only when one was accepted.** With
+  no provider configured, the end-to-end suite asserts the promise is absent.
+- **Continuation links** are proven to be `wa.me` click-to-chat only, fully
+  percent-encoded, length-bounded, stripped of control and direction-override
+  characters, impossible to redirect through their own message, and to carry the
+  design name but never the customer's name, number, email or an enquiry id. An
+  invented design slug produces a plain link that reveals nothing.
 
 ### P6 — quote engine
 

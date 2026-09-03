@@ -23,6 +23,11 @@ export const envSchema = z.object({
   // Server-only — must never be exposed to the browser.
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
   WHATSAPP_PHONE_NUMBER: z.string().min(1).optional(),
+  // Transactional email for the CUSTOMER confirmation (P7). The provider is a
+  // configuration choice, not a code dependency: `lib/email/transport.ts` posts
+  // JSON to whichever HTTPS endpoint is named here. With any of the three
+  // missing, no message is attempted and nothing fails.
+  EMAIL_PROVIDER_API_URL: z.url().startsWith('https://').optional(),
   EMAIL_PROVIDER_API_KEY: z.string().min(1).optional(),
   EMAIL_FROM_ADDRESS: z.email().optional(),
 });

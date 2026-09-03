@@ -88,10 +88,12 @@ describe('local enquiry store behaviour', () => {
     store.resetLocalEnquiries();
 
     const image = {
-      storageKey: 'references/x.jpg',
-      originalFilename: 'x.jpg',
-      mimeType: 'image/jpeg',
+      mimeType: 'image/jpeg' as const,
+      bytes: new Uint8Array([0xff, 0xd8, 0xff]),
       sizeBytes: 1024,
+      width: 800,
+      height: 600,
+      originalFilename: 'x.jpg',
     };
 
     const stored = store.storeEnquiryLocally(

@@ -91,6 +91,11 @@ export async function seedFixtures(client: PoolClient) {
   );
   const occasionId = occasions[0]!.id;
 
+  const { rows: styles } = await client.query<{ id: string }>(
+    `select id from public.styles order by sort_order limit 1`,
+  );
+  const styleId = styles[0]!.id;
+
   const { rows: publishedDesigns } = await client.query<{ id: string }>(
     `insert into public.designs (name, slug, occasion_id, status, published_at, location)
      values ('Published Mandap', 'published-mandap', $1, 'published', now(), 'Nagercoil')
@@ -150,6 +155,7 @@ export async function seedFixtures(client: PoolClient) {
     disabledAdminUserId: disabledUser.id,
     outsiderUserId: outsiderUser.id,
     occasionId,
+    styleId,
     publishedDesignId,
     draftDesignId,
     publishedImageId: publishedImages[0]!.id,

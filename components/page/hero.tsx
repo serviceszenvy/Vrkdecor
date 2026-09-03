@@ -1,19 +1,23 @@
 import type { ReactNode } from 'react';
 import { Container } from '@/components/ui';
 import { cn } from '@/lib/cn';
+import { LeafDecor } from './leaf-decor';
 
 /**
- * Page hero.
+ * Hero for the inner pages.
  *
- * Requirements section 7 asks for a premium hero image or video on the Home
- * page. No approved photography has been supplied yet, so the hero is built to
- * read as finished without one: brand-toned panel, editorial typography and the
- * primary calls to action. When photography arrives, pass it as `media` and the
- * layout accepts it without change.
+ * A calm tinted band rather than a photograph: these pages lead with their own
+ * content (a portfolio grid, a service list, a form), and a second full-bleed
+ * image above them would compete with it. The home page has its own
+ * photographic hero in `home-hero.tsx`.
+ *
+ * `media` is still accepted for a page that does want a picture beside the
+ * headline; the layout takes it without change.
  */
 export function Hero({
   eyebrow,
   title,
+  accent,
   lead,
   actions,
   media,
@@ -21,48 +25,84 @@ export function Hero({
 }: {
   eyebrow?: string;
   title: string;
+  /** Emphasised continuation of the title, in brand green. */
+  accent?: string;
   lead?: string;
   actions?: ReactNode;
   media?: ReactNode;
   compact?: boolean;
 }) {
   return (
-    <section className={cn('bg-surface-subtle border-line border-b')}>
-      <Container width="wide">
+    <section className="px-3 pt-3 sm:px-5 sm:pt-4 lg:px-6">
+      <div
+        className={cn(
+          'from-brand-50 via-canvas to-accent-50/60 relative isolate mx-auto w-full max-w-[86rem]',
+          'border-line-soft overflow-hidden rounded-3xl border bg-gradient-to-br',
+        )}
+      >
         <div
-          className={cn(
-            'grid items-center gap-10 lg:grid-cols-2 lg:gap-16',
-            compact ? 'py-12 sm:py-16' : 'py-14 sm:py-20 lg:py-24',
-          )}
-        >
-          <div className="flex flex-col gap-5">
-            {eyebrow ? (
-              <p className="text-brand-700 text-xs font-semibold tracking-[0.18em] uppercase">
-                {eyebrow}
-              </p>
-            ) : null}
-            <h1
-              className={cn(
-                'font-medium',
-                compact ? 'text-3xl sm:text-4xl' : 'text-4xl sm:text-5xl',
-              )}
-            >
-              {title}
-            </h1>
-            {lead ? <p className="text-ink-muted max-w-xl text-lg">{lead}</p> : null}
-            {actions ? (
-              <div className="mt-2 flex flex-wrap gap-3">{actions}</div>
-            ) : null}
-          </div>
+          aria-hidden="true"
+          className="bg-accent-300/25 absolute -top-24 -right-20 size-72 rounded-full blur-3xl"
+        />
+        {/*
+          Botanical decoration in the space to the right of the headline. It is
+          hidden below `lg`, where the copy fills the panel and there is no
+          empty space for it to occupy.
+        */}
+        {media ? null : (
+          <LeafDecor
+            className="text-brand-500/30 -right-8 -bottom-16 hidden size-80 lg:block"
+            flip
+          />
+        )}
 
-          {/*
-            `w-full` is required: a grid item that is only `justify-self-end`
-            shrinks to its content, which collapses a percentage-width child to
-            zero.
-          */}
-          {media ? <div className="w-full lg:pl-4">{media}</div> : null}
-        </div>
-      </Container>
+        <Container width="wide">
+          <div
+            className={cn(
+              'grid items-center gap-10 lg:gap-16',
+              media ? 'lg:grid-cols-2' : '',
+              compact
+                ? 'pt-24 pb-10 sm:pt-28 sm:pb-12 lg:pt-32 lg:pb-16'
+                : 'pt-24 pb-12 sm:pt-32 sm:pb-16 lg:pt-40 lg:pb-24',
+            )}
+          >
+            <div className="flex max-w-2xl flex-col gap-4">
+              {eyebrow ? (
+                <p className="text-brand-800 text-2xs font-semibold tracking-[0.24em] uppercase">
+                  {eyebrow}
+                </p>
+              ) : null}
+
+              <h1
+                className={cn(
+                  'font-medium',
+                  compact ? 'text-3xl sm:text-4xl' : 'text-4xl sm:text-5xl',
+                )}
+              >
+                {title}
+                {accent ? <span className="text-brand-700"> {accent}</span> : null}
+              </h1>
+
+              {lead ? (
+                <p className="text-ink-soft max-w-xl text-base leading-relaxed sm:text-lg">
+                  {lead}
+                </p>
+              ) : null}
+
+              {actions ? (
+                <div className="mt-2 flex flex-wrap gap-3">{actions}</div>
+              ) : null}
+            </div>
+
+            {/*
+              `w-full` is required: a grid item that is only `justify-self-end`
+              shrinks to its content, which collapses a percentage-width child
+              to zero.
+            */}
+            {media ? <div className="w-full lg:pl-4">{media}</div> : null}
+          </div>
+        </Container>
+      </div>
     </section>
   );
 }

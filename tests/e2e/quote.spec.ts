@@ -222,7 +222,10 @@ test.describe('submitting a quote request', () => {
     await fillQuoteForm(page, phone, { email: 'meena@example.test' });
     await page.getByTestId('quote-submit').click();
 
-    await expect(page).toHaveURL('/quote/submitted');
+    // The captured design travels to the confirmation as a slug, which is
+    // public content, so the page can offer a WhatsApp message that already
+    // says what the enquiry was about. Nothing else is in the URL.
+    await expect(page).toHaveURL(/^.*\/quote\/submitted\?design=[a-z0-9-]+$/);
     await expect(
       page.getByRole('heading', { name: 'Your request has reached us' }),
     ).toBeVisible();
@@ -236,6 +239,7 @@ test.describe('submitting a quote request', () => {
     await fillQuoteForm(page, phone);
     await page.getByTestId('quote-submit').click();
 
+    // No design, so nothing at all in the URL.
     await expect(page).toHaveURL('/quote/submitted');
   });
 
@@ -247,10 +251,10 @@ test.describe('submitting a quote request', () => {
     await page.goto('/quote?design=golden-mandap-setting');
     await fillQuoteForm(page, phone);
     await page.getByTestId('quote-submit').click();
-    await expect(page).toHaveURL('/quote/submitted');
+    await expect(page).toHaveURL('/quote/submitted?design=golden-mandap-setting');
 
     await page.reload();
-    await expect(page).toHaveURL('/quote/submitted');
+    await expect(page).toHaveURL('/quote/submitted?design=golden-mandap-setting');
     await expect(
       page.getByRole('heading', { name: 'Your request has reached us' }),
     ).toBeVisible();
@@ -264,13 +268,15 @@ test.describe('submitting a quote request', () => {
     await page.goto('/quote?design=golden-mandap-setting');
     await fillQuoteForm(page, phone);
     await page.getByTestId('quote-submit').click();
-    await expect(page).toHaveURL('/quote/submitted');
+    await expect(page).toHaveURL('/quote/submitted?design=golden-mandap-setting');
 
     await page.goto('/quote?design=golden-mandap-setting');
     await fillQuoteForm(page, phone);
     await page.getByTestId('quote-submit').click();
 
-    await expect(page).toHaveURL('/quote/submitted?repeat=1');
+    await expect(page).toHaveURL(
+      '/quote/submitted?repeat=1&design=golden-mandap-setting',
+    );
     await expect(
       page.getByRole('heading', { name: 'We already have your request' }),
     ).toBeVisible();
@@ -452,7 +458,7 @@ test.describe('without JavaScript', () => {
       await fillQuoteForm(page, phone);
       await page.getByTestId('quote-submit').click();
 
-      await expect(page).toHaveURL('/quote/submitted');
+      await expect(page).toHaveURL('/quote/submitted?design=golden-mandap-setting');
     } finally {
       await context.close();
     }

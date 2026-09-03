@@ -110,7 +110,7 @@ export function Lightbox({
       aria-labelledby={titleId}
       data-testid="lightbox"
       ref={dialogRef}
-      className="bg-ink/95 fixed inset-0 z-50 flex flex-col"
+      className="bg-brand-950/96 fixed inset-0 z-50 flex flex-col backdrop-blur-sm"
       onTouchStart={(event) => {
         const touch = event.changedTouches[0];
         if (touch) touchStart.current = { x: touch.clientX, y: touch.clientY };
@@ -136,7 +136,7 @@ export function Lightbox({
           type="button"
           onClick={onClose}
           data-testid="lightbox-close"
-          className="inline-flex size-11 items-center justify-center rounded-md hover:bg-white/10"
+          className="inline-flex size-11 items-center justify-center rounded-full border border-white/20 transition-colors hover:bg-white/15"
         >
           <CloseIcon />
           <span className="sr-only">Close gallery</span>
@@ -148,7 +148,7 @@ export function Lightbox({
           type="button"
           onClick={() => goTo(-1)}
           data-testid="lightbox-previous"
-          className="absolute left-2 z-10 inline-flex size-11 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20"
+          className="absolute left-2 z-10 inline-flex size-11 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition-colors hover:bg-white/25"
         >
           <span aria-hidden="true">&#8249;</span>
           <span className="sr-only">Previous photograph</span>
@@ -169,14 +169,14 @@ export function Lightbox({
           type="button"
           onClick={() => goTo(1)}
           data-testid="lightbox-next"
-          className="absolute right-2 z-10 inline-flex size-11 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20"
+          className="absolute right-2 z-10 inline-flex size-11 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition-colors hover:bg-white/25"
         >
           <span aria-hidden="true">&#8250;</span>
           <span className="sr-only">Next photograph</span>
         </button>
       </div>
 
-      <div className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 border-t border-white/10 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="text-white">
           <p id={titleId} className="font-display text-lg font-medium">
             {photo.design.name}
@@ -199,7 +199,7 @@ export function Lightbox({
           </ButtonLink>
           <Link
             href={designHref(photo.design.slug)}
-            className="inline-flex min-h-12 items-center rounded-md border border-white/30 px-5 text-white hover:bg-white/10"
+            className="inline-flex min-h-12 items-center rounded-full border border-white/30 px-5 text-white transition-colors hover:bg-white/10"
           >
             View design
           </Link>

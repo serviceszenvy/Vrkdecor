@@ -10,9 +10,32 @@ Variable names come from the Technical Development Specification section 14.
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Browser     | P3           | Supabase anon key; safe only because RLS is enforced |
 | `NEXT_PUBLIC_GA_MEASUREMENT_ID` | Browser     | P9           | Google Analytics measurement ID                      |
 | `SUPABASE_SERVICE_ROLE_KEY`     | Server only | P3           | Bypasses RLS; must never reach the browser           |
-| `WHATSAPP_PHONE_NUMBER`         | Server only | P7           | Click-to-chat number                                 |
+| `WHATSAPP_PHONE_NUMBER`         | Server only | Reserved     | Not read by the website — see below                  |
+| `EMAIL_PROVIDER_API_URL`        | Server only | P7           | Provider send endpoint; HTTPS only                   |
 | `EMAIL_PROVIDER_API_KEY`        | Server only | P7           | Transactional email provider credential              |
 | `EMAIL_FROM_ADDRESS`            | Server only | P7           | Verified sender address                              |
+
+## Email (P7)
+
+The transactional provider is still an open client decision, so the transport is
+configuration rather than code: `lib/email/transport.ts` POSTs JSON to
+`EMAIL_PROVIDER_API_URL` with `EMAIL_PROVIDER_API_KEY` as a bearer token. Set
+all three email variables to enable the customer confirmation. With any one of
+them missing nothing is sent, nothing fails, and the confirmation page correctly
+promises no email. See [lib/email/README.md](../lib/email/README.md).
+
+**The endpoint must be HTTPS.** A plain-HTTP value is rejected rather than used,
+because the API key travels with the request.
+
+## `WHATSAPP_PHONE_NUMBER` is reserved
+
+The click-to-chat number is an approved business fact and lives in
+`lib/site-config.ts`, where a unit test asserts it against the requirements. The
+website never reads this variable. An environment override would let the header,
+the footer and the continuation links disagree with each other, which is a worse
+failure than editing one approved constant. The name is kept for a future
+WhatsApp Business API integration, which Requirements & SOW section 12 places
+outside Phase 1.
 
 ## Rules
 

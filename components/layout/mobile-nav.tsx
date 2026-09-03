@@ -6,13 +6,20 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ButtonLink } from '@/components/ui';
 import { cn } from '@/lib/cn';
-import { primaryNav, routes, telHref, whatsAppHref } from '@/lib/navigation';
-import { CloseIcon, MenuIcon, PhoneIcon, WhatsAppIcon } from './icons';
+import { headerNav, routes, telHref, whatsAppHref } from '@/lib/navigation';
+import {
+  ChevronRightIcon,
+  CloseIcon,
+  MenuIcon,
+  PhoneIcon,
+  WhatsAppIcon,
+} from './icons';
+import { isCurrent } from './nav-links';
 
 /**
  * Mobile navigation disclosure.
  *
- * Accessibility behaviour:
+ * Accessibility behaviour, unchanged by the redesign:
  * - the trigger owns `aria-expanded` and `aria-controls`
  * - Escape closes the panel and returns focus to the trigger
  * - focus moves into the panel on open and is trapped while it is open
@@ -81,6 +88,8 @@ export function MobileNav() {
     };
   }, [open]);
 
+  const current = pathname ?? routes.home;
+
   return (
     <>
       <button
@@ -90,7 +99,7 @@ export function MobileNav() {
         aria-expanded={open}
         aria-controls={panelId}
         data-testid="mobile-nav-trigger"
-        className="text-ink hover:bg-sand-100 inline-flex size-11 items-center justify-center rounded-md lg:hidden"
+        className="glass-surface text-ink hover:text-brand-800 inline-flex size-11 items-center justify-center rounded-full transition-colors hover:bg-white lg:hidden"
       >
         {open ? <CloseIcon /> : <MenuIcon />}
         <span className="sr-only">{open ? 'Close menu' : 'Open menu'}</span>
@@ -105,7 +114,7 @@ export function MobileNav() {
         ? createPortal(
             <>
               <div
-                className="bg-ink/50 fixed inset-0 z-40 lg:hidden"
+                className="bg-brand-950/45 fixed inset-0 z-40 backdrop-blur-[2px] lg:hidden"
                 onClick={() => setOpen(false)}
                 aria-hidden="true"
               />
@@ -115,34 +124,45 @@ export function MobileNav() {
                 id={panelId}
                 data-testid="mobile-nav-panel"
                 className={cn(
-                  // Sits directly below the sticky header so the close control
-                  // stays visible and usable while the panel is open.
-                  'bg-surface border-line fixed inset-x-0 top-16 z-40 border-b sm:top-20 lg:hidden',
-                  'flex max-h-[calc(100dvh-4rem)] flex-col gap-1 overflow-y-auto p-4',
+                  // Sits below the floating header so the close control stays
+                  // visible and usable while the panel is open.
+                  'fixed inset-x-3 top-[4.75rem] z-40 sm:inset-x-4 sm:top-[5.5rem] lg:hidden',
+                  'glass-surface-strong glass-edge rounded-3xl',
+                  'flex max-h-[calc(100dvh-6.5rem)] flex-col overflow-y-auto p-3',
                 )}
               >
                 <nav aria-label="Mobile">
                   <ul className="flex flex-col">
-                    {primaryNav.map((item) => (
-                      <li key={item.href}>
-                        <Link
-                          href={item.href}
-                          className="text-ink hover:bg-sand-100 flex min-h-12 items-center rounded-md px-3 text-lg"
-                        >
-                          {item.label}
-                        </Link>
-                      </li>
-                    ))}
+                    {headerNav.map((item) => {
+                      const active = isCurrent(current, item.href);
+                      return (
+                        <li key={item.href}>
+                          <Link
+                            href={item.href}
+                            aria-current={active ? 'page' : undefined}
+                            className={cn(
+                              'flex min-h-12 items-center justify-between gap-3 rounded-2xl px-4 text-base transition-colors',
+                              active
+                                ? 'bg-brand-50 text-brand-800 font-semibold'
+                                : 'text-ink hover:bg-white/70',
+                            )}
+                          >
+                            {item.label}
+                            <ChevronRightIcon className="text-brand-500 size-4" />
+                          </Link>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </nav>
 
-                <div className="border-line mt-3 flex flex-col gap-2 border-t pt-4">
+                <div className="border-line-soft mt-3 flex flex-col gap-2 border-t px-1 pt-4 pb-1">
                   <ButtonLink href={routes.quote} variant="primary" size="md" fullWidth>
                     Get a Quote
                   </ButtonLink>
                   <div className="grid grid-cols-2 gap-2">
                     <ButtonLink href={telHref} variant="outline" size="md" fullWidth>
-                      <PhoneIcon />
+                      <PhoneIcon className="size-4" />
                       Call
                     </ButtonLink>
                     <ButtonLink
@@ -151,7 +171,7 @@ export function MobileNav() {
                       size="md"
                       fullWidth
                     >
-                      <WhatsAppIcon />
+                      <WhatsAppIcon className="size-4" />
                       WhatsApp
                     </ButtonLink>
                   </div>

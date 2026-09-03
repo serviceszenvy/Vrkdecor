@@ -209,6 +209,18 @@ export type Database = {
     Views: Record<never, never>;
     Functions: {
       is_active_admin: { Args: Record<never, never>; Returns: boolean };
+      /**
+       * P8 — atomic cover selection and image reordering. Both are SECURITY
+       * INVOKER, so Row Level Security still decides what the caller may write.
+       */
+      set_design_cover: {
+        Args: { p_design_id: string; p_image_id: string };
+        Returns: undefined;
+      };
+      move_design_image: {
+        Args: { p_image_id: string; p_direction: number };
+        Returns: undefined;
+      };
     };
     Enums: Record<never, never>;
     CompositeTypes: Record<never, never>;

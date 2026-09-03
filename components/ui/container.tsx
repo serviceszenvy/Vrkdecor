@@ -6,7 +6,7 @@ type ContainerWidth = 'narrow' | 'default' | 'wide' | 'full';
 const widths: Record<ContainerWidth, string> = {
   narrow: 'max-w-2xl',
   default: 'max-w-5xl',
-  wide: 'max-w-7xl',
+  wide: 'max-w-[82rem]',
   full: 'max-w-none',
 };
 
@@ -23,7 +23,7 @@ export function Container({
 }) {
   return (
     <Tag
-      className={cn('mx-auto w-full px-5 sm:px-6 lg:px-8', widths[width], className)}
+      className={cn('mx-auto w-full px-4 sm:px-6 lg:px-10', widths[width], className)}
     >
       {children}
     </Tag>

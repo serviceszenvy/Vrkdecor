@@ -3,10 +3,15 @@
 import { useActionState, useId } from 'react';
 import { useFormStatus } from 'react-dom';
 import Link from 'next/link';
-import { Button } from '@/components/ui';
+import { Button, ButtonLink } from '@/components/ui';
 import { PARTNER_VENDOR_LABEL, occasions, services } from '@/lib/content';
 import { cn } from '@/lib/cn';
-import { routes } from '@/lib/navigation';
+import {
+  designEnquiryMessage,
+  routes,
+  telHref,
+  whatsAppHrefWithMessage,
+} from '@/lib/navigation';
 import {
   BUDGET_MAX,
   CITY_MAX,
@@ -18,6 +23,7 @@ import {
 import { submitQuoteRequest } from '../actions';
 import { initialQuoteFormState } from '../form-state';
 import type { CapturedDesign, QuoteSourcePhoto } from '../types';
+import { ReferenceImageField } from './reference-image-field';
 
 /**
  * The quote request form.
@@ -38,6 +44,11 @@ import type { CapturedDesign, QuoteSourcePhoto } from '../types';
  *   - the event type and services are pre-selected from the captured Design
  *     when it has them, which the customer can change: they are stating their
  *     own requirement, not re-selecting the design
+ *   - up to three PRIVATE inspiration images may be attached (P7). The control
+ *     is a plain file input, so it degrades too; every file is validated
+ *     server-side by its actual bytes before anything is stored
+ *   - when a submission fails or is throttled, the error carries the WhatsApp
+ *     and phone continuation with it, so a customer is never left at a dead end
  */
 export function QuoteForm({
   design,
@@ -69,7 +80,12 @@ export function QuoteForm({
   const hasErrors = errorEntries.length > 0;
 
   return (
-    <form action={formAction} noValidate className="flex flex-col gap-8">
+    <form
+      action={formAction}
+      noValidate
+      encType="multipart/form-data"
+      className="flex flex-col gap-8"
+    >
       {/*
         The parent Design. Hidden, because the customer does not choose it — and
         harmless if tampered with, because the server re-resolves the slug and
@@ -84,7 +100,7 @@ export function QuoteForm({
           role="alert"
           tabIndex={-1}
           data-testid="quote-error-summary"
-          className="rounded-lg border border-red-300 bg-red-50 p-4 text-sm text-red-900"
+          className="rounded-2xl border border-red-300 bg-red-50 p-4 text-sm text-red-900"
         >
           <p className="font-medium">
             {state.message ?? 'Please check the highlighted fields and try again.'}
@@ -99,6 +115,28 @@ export function QuoteForm({
                 </li>
               ))}
             </ul>
+          ) : null}
+          {/*
+            A failed or throttled submission is exactly the moment a customer
+            gives up. Both are offered a way through that does not depend on
+            this form working at all.
+          */}
+          {state.status === 'failed' || state.status === 'rate_limited' ? (
+            <div
+              className="mt-4 flex flex-wrap gap-3"
+              data-testid="quote-error-continuation"
+            >
+              <ButtonLink
+                href={whatsAppHrefWithMessage(designEnquiryMessage(design?.name))}
+                variant="primary"
+                size="md"
+              >
+                WhatsApp us instead
+              </ButtonLink>
+              <ButtonLink href={telHref} variant="outline" size="md">
+                Call us
+              </ButtonLink>
+            </div>
           ) : null}
         </div>
       ) : null}
@@ -127,7 +165,7 @@ export function QuoteForm({
           label="Phone or WhatsApp number"
           required
           error={state.errors.phone}
-          hint="We follow up by phone and WhatsApp — this is how we reach you."
+          hint="We follow up by phone and on WhatsApp, so this is how we reach you."
         >
           {(props) => (
             <input
@@ -146,9 +184,7 @@ export function QuoteForm({
           field="email"
           label="Email address"
           error={state.errors.email}
-          // P7 adds the automatic confirmation email; until it does, this hint
-          // promises only what actually happens today.
-          hint="Optional. Add it if you would like us to reply by email as well."
+          hint="Optional. Add it and we will email you a confirmation of this request straight away."
         >
           {(props) => (
             <input
@@ -208,7 +244,7 @@ export function QuoteForm({
           label="Venue"
           required
           error={state.errors.venue}
-          hint="Hall, hotel, temple or home — whatever you have in mind."
+          hint="Hall, hotel, temple or home, whichever you have in mind."
         >
           {(props) => (
             <input
@@ -268,7 +304,7 @@ export function QuoteForm({
         <ul className="grid gap-2 sm:grid-cols-2">
           {services.map((service) => (
             <li key={service.slug}>
-              <label className="border-line hover:bg-surface-subtle flex min-h-11 cursor-pointer items-start gap-3 rounded-md border p-3">
+              <label className="border-line-soft hover:border-brand-300 hover:bg-brand-50/60 flex min-h-11 cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors">
                 <input
                   type="checkbox"
                   name="requiredServices"
@@ -299,7 +335,7 @@ export function QuoteForm({
           field="budget"
           label="Budget in mind"
           error={state.errors.budget}
-          hint="Optional. Tell us in your own words — we do not publish price ranges."
+          hint="Optional. Tell us in your own words. We do not publish price ranges."
         >
           {(props) => (
             <input
@@ -326,14 +362,16 @@ export function QuoteForm({
             />
           )}
         </Field>
+
+        <ReferenceImageField />
       </Fieldset>
 
       <div className="flex flex-col gap-3">
         <label
           id="field-consent"
           className={cn(
-            'flex cursor-pointer items-start gap-3 rounded-md border p-4',
-            state.errors.consent ? 'border-red-400 bg-red-50' : 'border-line',
+            'flex cursor-pointer items-start gap-3 rounded-2xl border p-4',
+            state.errors.consent ? 'border-red-400 bg-red-50' : 'border-line-soft',
           )}
         >
           <input
@@ -369,7 +407,7 @@ export function QuoteForm({
         <SubmitButton />
         <p className="text-ink-muted text-sm">
           We will get back to you by phone or WhatsApp. We never calculate a final
-          quotation automatically — every design is priced by our team.
+          quotation automatically. Every design is priced by our team.
         </p>
       </div>
     </form>
@@ -474,7 +512,7 @@ function Field({
         'aria-invalid': error ? true : undefined,
         'aria-describedby': describedBy,
         className: cn(
-          'border-line bg-surface w-full rounded-md border px-3 py-2.5 text-base',
+          'border-line-soft bg-surface w-full rounded-xl border px-3 py-2.5 text-base',
           'min-h-12 focus-visible:outline-2 focus-visible:outline-offset-2',
           error && 'border-red-400',
         ),

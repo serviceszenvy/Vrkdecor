@@ -52,29 +52,38 @@
 
   /* Semantic roles — components use these, not raw palette steps */
   --color-surface: #ffffff;
+  --color-canvas: #f5f7f1;
+  --color-canvas-deep: #edf1e5;
+  --color-surface-tint: #ecf2e6;
   --color-surface-subtle: #f7f7f5;
   --color-surface-muted: #edeeea;
   --color-surface-inverse: #252522;
   --color-ink: #252522;
   --color-ink-muted: #707267;
+  --color-ink-soft: #5b5c54;
   --color-ink-inverse: #ffffff;
   --color-line: #dcddd7;
+  --color-line-soft: #e4e7dd;
 
   /*
    * Typography.
    *
-   * Webfonts are intentionally NOT loaded yet: typeface selection and licensing
-   * are an open client decision (09_DECISIONS/DECISIONS.md). These stacks are
-   * the swap point — replace the first entry with a self-hosted `next/font/local`
-   * family once the client approves one. No third-party font request is made,
-   * which keeps the site fast, private and Hostinger-friendly.
+   * Webfonts are intentionally NOT loaded: typeface selection and licensing are
+   * an open client decision (09_DECISIONS/DECISIONS.md), and a hosted font would
+   * add both a third-party request and a build-time network dependency on
+   * Hostinger. These stacks are the swap point — replace the first entry with a
+   * self-hosted `next/font/local` family once the client approves one.
+   *
+   * The display stack leads with transitional serifs that are present on macOS,
+   * iOS, Windows and most Linux desktops, so the editorial character of the
+   * headings survives on every platform rather than falling back to a slab.
    */
   --font-display:
-    'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia,
-    'Times New Roman', serif;
+    'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', 'Hoefler Text',
+    Constantia, Georgia, 'Times New Roman', serif;
   --font-sans:
-    system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
-    sans-serif;
+    'Inter', 'Segoe UI Variable Text', system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
 
   /* Fluid type scale */
   --text-2xs: 0.75rem;
@@ -92,19 +101,41 @@
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.875rem;
-  --radius-xl: 1.5rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.75rem;
+  --radius-3xl: 2.25rem;
 
   /* Elevation — restrained, so photography stays the focus */
   --shadow-card: 0 1px 2px rgb(37 37 34 / 0.04), 0 8px 24px -12px rgb(37 37 34 / 0.18);
   --shadow-raised:
     0 2px 4px rgb(37 37 34 / 0.06), 0 18px 40px -18px rgb(37 37 34 / 0.28);
+  --shadow-glass:
+    0 1px 1px rgb(255 255 255 / 0.4) inset, 0 12px 32px -14px rgb(36 44 28 / 0.28);
+  --shadow-panel: 0 1px 2px rgb(36 44 28 / 0.04), 0 24px 60px -32px rgb(36 44 28 / 0.3);
+  --shadow-float: 0 6px 16px -6px rgb(36 44 28 / 0.32), 0 2px 6px rgb(36 44 28 / 0.12);
 }
 
 @layer base {
   :root {
     color-scheme: light;
     /* Height of the mobile sticky action bar; reserved so it never covers content. */
-    --mobile-cta-height: 4rem;
+    --mobile-cta-height: 4.25rem;
+
+    /*
+     * Glassmorphism tokens. Mirrors `glass` in lib/design-tokens.ts.
+     * `--glass-blur` is capped deliberately: backdrop-filter repaints on every
+     * scroll frame, and a large radius is the most expensive thing a glass
+     * design can ask of a mid-range phone.
+     */
+    --glass-surface: rgb(255 255 255 / 0.62);
+    --glass-surface-strong: rgb(255 255 255 / 0.86);
+    --glass-surface-tint: rgb(236 242 230 / 0.74);
+    --glass-surface-inverse: rgb(37 37 34 / 0.42);
+    --glass-border: rgb(255 255 255 / 0.55);
+    --glass-border-soft: rgb(97 118 75 / 0.16);
+    --glass-highlight: rgb(255 255 255 / 0.65);
+    --glass-blur: 16px;
+    --glass-blur-strong: 24px;
   }
 
   html {
@@ -113,7 +144,7 @@
   }
 
   body {
-    @apply bg-surface text-ink font-sans antialiased;
+    @apply bg-canvas text-ink font-sans antialiased;
     font-synthesis-weight: none;
     text-rendering: optimizeLegibility;
   }
@@ -122,7 +153,7 @@
   h2,
   h3 {
     @apply font-display text-balance;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.018em;
   }
 
   p {
@@ -141,6 +172,81 @@
   }
 }
 
+@layer components {
+  /*
+   * The three glass surfaces the design system allows.
+   *
+   * `backdrop-filter` creates a containing block for fixed descendants and its
+   * own stacking context, which is why the mobile navigation panel is portalled
+   * to the body rather than nested inside the header.
+   *
+   * Each one degrades honestly: without `backdrop-filter` support the surface is
+   * still an opaque-enough panel with a border, never unreadable text on a
+   * photograph. The `@supports` rule lowers the opacity only once blur is known
+   * to be applied.
+   */
+  .glass-surface {
+    background-color: rgb(255 255 255 / 0.9);
+    border: 1px solid var(--glass-border-soft);
+    box-shadow: var(--shadow-glass);
+  }
+
+  .glass-surface-strong {
+    background-color: rgb(255 255 255 / 0.95);
+    border: 1px solid var(--glass-border-soft);
+    box-shadow: var(--shadow-glass);
+  }
+
+  .glass-surface-tint {
+    background-color: rgb(236 242 230 / 0.94);
+    border: 1px solid var(--glass-border-soft);
+    box-shadow: var(--shadow-glass);
+  }
+
+  @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+    .glass-surface {
+      background-color: var(--glass-surface);
+      border-color: var(--glass-border);
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.35);
+      backdrop-filter: blur(var(--glass-blur)) saturate(1.35);
+    }
+
+    .glass-surface-strong {
+      background-color: var(--glass-surface-strong);
+      border-color: var(--glass-border);
+      -webkit-backdrop-filter: blur(var(--glass-blur-strong)) saturate(1.3);
+      backdrop-filter: blur(var(--glass-blur-strong)) saturate(1.3);
+    }
+
+    .glass-surface-tint {
+      background-color: var(--glass-surface-tint);
+      border-color: var(--glass-border);
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+      backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+    }
+  }
+
+  /* The thin top highlight that makes a glass edge read as glass. */
+  .glass-edge {
+    position: relative;
+  }
+
+  .glass-edge::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(
+      to bottom,
+      var(--glass-highlight),
+      transparent 42%,
+      transparent
+    );
+    opacity: 0.5;
+  }
+}
+
 @layer utilities {
   /* Reserves space for the mobile sticky CTA bar below the `lg` breakpoint. */
   .pb-mobile-cta {
@@ -151,6 +257,46 @@
     .pb-mobile-cta {
       padding-bottom: 0;
     }
+  }
+
+  /*
+   * Horizontal rails (signature work, filter rows). The scrollbar is hidden
+   * because the rail carries its own arrow controls and a snap rhythm; keyboard
+   * users still reach every card through normal tab order, and the container is
+   * focusable so it can be scrolled with the arrow keys.
+   */
+  .rail {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+  }
+
+  .rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  .rail-item {
+    scroll-snap-align: start;
+  }
+
+  /*
+   * The soft botanical wash behind the page. Two very wide, very low-opacity
+   * radial gradients — cheap to paint, fixed to the element, and invisible
+   * enough that photography still leads.
+   */
+  .canvas-wash {
+    background-image:
+      radial-gradient(
+        58rem 32rem at 82% -6%,
+        rgb(142 200 64 / 0.1),
+        rgb(142 200 64 / 0) 62%
+      ),
+      radial-gradient(
+        46rem 28rem at 4% 12%,
+        rgb(97 118 75 / 0.08),
+        rgb(97 118 75 / 0) 60%
+      );
   }
 }
 

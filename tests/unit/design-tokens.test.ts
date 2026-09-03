@@ -4,9 +4,11 @@ import { describe, expect, it } from 'vitest';
 import { contrastRatio } from '@/lib/contrast';
 import {
   contrastContract,
+  glass,
   logoColors,
   minTouchTargetPx,
   palette,
+  radii,
   semanticColors,
 } from '@/lib/design-tokens';
 
@@ -47,13 +49,18 @@ describe('design tokens — CSS parity', () => {
   it('declares the semantic surface and ink roles used by components', () => {
     const expected: Record<string, string> = {
       'color-surface': semanticColors.surface,
+      'color-canvas': semanticColors.canvas,
+      'color-canvas-deep': semanticColors.canvasDeep,
+      'color-surface-tint': semanticColors.surfaceTint,
       'color-surface-subtle': semanticColors.surfaceSubtle,
       'color-surface-muted': semanticColors.surfaceMuted,
       'color-surface-inverse': semanticColors.surfaceInverse,
       'color-ink': semanticColors.ink,
       'color-ink-muted': semanticColors.inkMuted,
+      'color-ink-soft': semanticColors.inkSoft,
       'color-ink-inverse': semanticColors.inkInverse,
       'color-line': semanticColors.border,
+      'color-line-soft': semanticColors.borderSoft,
     };
 
     for (const [variable, hex] of Object.entries(expected)) {
@@ -64,6 +71,61 @@ describe('design tokens — CSS parity', () => {
   it('declares the display and sans font stacks as the webfont swap point', () => {
     expect(cssVar('font-display')).toBeDefined();
     expect(cssVar('font-sans')).toBeDefined();
+  });
+
+  it('loads no third-party webfont, which is still an open client decision', () => {
+    expect(globalsCss).not.toContain('@font-face');
+    expect(globalsCss).not.toContain('fonts.googleapis.com');
+    expect(globalsCss).not.toContain('fonts.gstatic.com');
+  });
+
+  it('mirrors every radius step into app/globals.css', () => {
+    for (const [step, value] of Object.entries(radii)) {
+      if (step === 'full') continue;
+      expect(cssVar(`radius-${step}`), `--radius-${step}`).toBe(value);
+    }
+  });
+
+  it('mirrors the glass tokens into app/globals.css', () => {
+    const expected: Record<string, string> = {
+      'glass-surface': glass.surface,
+      'glass-surface-strong': glass.surfaceStrong,
+      'glass-surface-tint': glass.surfaceTint,
+      'glass-surface-inverse': glass.surfaceInverse,
+      'glass-border': glass.border,
+      'glass-border-soft': glass.borderSoft,
+      'glass-highlight': glass.highlight,
+      'glass-blur': glass.blur,
+      'glass-blur-strong': glass.blurStrong,
+    };
+
+    for (const [variable, value] of Object.entries(expected)) {
+      expect(cssVar(variable), `--${variable}`).toBe(value);
+    }
+  });
+
+  it('keeps the backdrop blur radius small enough for a mid-range phone', () => {
+    // A large backdrop-filter radius repaints on every scroll frame. The design
+    // system commits to a ceiling rather than leaving it to taste.
+    for (const value of [glass.blur, glass.blurStrong]) {
+      expect(Number.parseFloat(value)).toBeLessThanOrEqual(24);
+    }
+  });
+
+  it('degrades every glass surface to an opaque-enough panel without blur', () => {
+    // The base rules must not depend on backdrop-filter; the translucent values
+    // are applied only inside the @supports block.
+    for (const rule of [
+      '.glass-surface {',
+      '.glass-surface-strong {',
+      '.glass-surface-tint {',
+    ]) {
+      const start = globalsCss.indexOf(rule);
+      expect(start, rule).toBeGreaterThan(-1);
+      const block = globalsCss.slice(start, globalsCss.indexOf('}', start));
+      expect(block, rule).toContain('background-color');
+      expect(block, rule).not.toContain('backdrop-filter');
+    }
   });
 });
 

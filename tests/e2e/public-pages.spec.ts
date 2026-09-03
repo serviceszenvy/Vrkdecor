@@ -16,10 +16,10 @@ test.beforeEach(async ({ page }) => {
 });
 
 const PAGES = [
-  { path: '/', heading: /Celebrations designed with care/i },
-  { path: '/our-work', heading: /Celebrations we have designed/i },
+  { path: '/', heading: /Your celebration, exactly as you pictured it/i },
+  { path: '/our-work', heading: /Celebrations we have designed and set up/i },
   { path: '/services', heading: /Complete celebration solutions/i },
-  { path: '/occasions', heading: /Every celebration, designed for the moment/i },
+  { path: '/occasions', heading: /Perfect for every occasion/i },
   { path: '/packages', heading: /Celebration packages/i },
   { path: '/gallery', heading: /Photographs from our celebrations/i },
   { path: '/about', heading: /Premium Event Design/i },
@@ -105,9 +105,12 @@ test.describe('approved content', () => {
   test('home page shows the approved figures exactly', async ({ page }) => {
     await page.goto('/');
 
-    await expect(page.getByText('14+', { exact: true })).toBeVisible();
-    await expect(page.getByText('600+', { exact: true })).toBeVisible();
-    await expect(page.getByText('35+', { exact: true })).toBeVisible();
+    // Scoped to the figures band. The footer restates the same three values, so
+    // an unscoped text match would resolve to two elements each.
+    const figures = page.getByRole('region', { name: 'VRK Decor at a glance' });
+    await expect(figures.getByText('14+', { exact: true })).toBeVisible();
+    await expect(figures.getByText('600+', { exact: true })).toBeVisible();
+    await expect(figures.getByText('35+', { exact: true })).toBeVisible();
   });
 
   test('services page marks partner-vendor delivery accurately', async ({ page }) => {
