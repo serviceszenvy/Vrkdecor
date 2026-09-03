@@ -1,12 +1,15 @@
 # VRK Decor — Project Checkpoint
 
-Version: 0.8.1
-Status: VISUAL REDESIGN COMPLETE — the public website and the Admin Panel have
-been redesigned to the approved reference design. P8 remains the last
-functional phase.
-Current phase: Redesign of P8 (complete). Next functional phase: P9.
-Completed phases: P1, P2, P3, P4, P5, P6, P7, P8, plus this redesign
-Last updated: 2026-09-01
+Version: 0.8.2
+Status: VISUAL REDESIGN COMPLETE, plus a public-site-only polish pass
+(glassmorphism balance, brand-coloured ambient motion, scroll-reveal, hover/
+press micro-interactions). P8 remains the last functional phase; the Admin
+Panel was intentionally not touched by the polish pass.
+Current phase: Redesign of P8 (complete) + public-site polish (complete).
+Next functional phase: P9.
+Completed phases: P1, P2, P3, P4, P5, P6, P7, P8, plus the redesign and this
+polish pass
+Last updated: 2026-09-03
 
 ## What this release is
 
@@ -263,6 +266,15 @@ regression: private reference images are still rendered with a plain `<img>` and
 `referrerPolicy="no-referrer"`, never `next/image`.
 
 ## Known issues
+
+**Pre-existing, discovered during the 0.8.2 polish pass, unrelated to it:**
+`tests/unit/admin-authorization.test.ts` fails against the current
+`features/admin/actions/auth.ts` and `shared.ts` (`signInAction` and the
+`shared.ts` exports are not recognised as guarded/exported the way the test
+expects). Confirmed by stashing every 0.8.2 change and re-running the suite —
+the failure reproduces identically on the unmodified 0.8.1 code, so it predates
+this pass. Not investigated further because the Admin Panel was out of scope
+for 0.8.2. Needs a look before the next Admin Panel phase.
 
 Redesign-specific:
 

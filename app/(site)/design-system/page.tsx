@@ -142,7 +142,7 @@ export default function DesignSystemPage() {
           title="Glass surfaces"
           lead="Translucency is used to let photography stay visible through the interface, not as a finish on every box. Each surface falls back to a near-opaque panel where backdrop-filter is unsupported."
         />
-        <div className="from-brand-700 to-brand-900 mt-8 grid gap-4 rounded-3xl bg-gradient-to-br p-6 sm:grid-cols-3">
+        <div className="from-brand-700 to-brand-900 mt-8 grid gap-4 rounded-3xl bg-gradient-to-br p-6 sm:grid-cols-2 lg:grid-cols-4">
           <GlassPanel tone="default" radius="2xl" className="p-5">
             <p className="text-ink font-semibold">Default</p>
             <p className="text-ink-soft text-sm">
@@ -159,6 +159,12 @@ export default function DesignSystemPage() {
             <p className="text-ink font-semibold">Tint</p>
             <p className="text-ink-soft text-sm">
               Green-tinted glass for brand moments such as the closing action.
+            </p>
+          </GlassPanel>
+          <GlassPanel tone="vivid" radius="2xl" className="p-5">
+            <p className="text-ink font-semibold">Vivid</p>
+            <p className="text-ink-soft text-sm">
+              Warmer highlight glass for a small number of featured moments.
             </p>
           </GlassPanel>
         </div>

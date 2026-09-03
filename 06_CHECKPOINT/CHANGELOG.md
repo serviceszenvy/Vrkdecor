@@ -1,5 +1,61 @@
 # VRK Decor — Changelog
 
+## 0.8.2 — 2026-09-03 — Public site polish: glassmorphism, colour and motion
+
+A design-only refinement of the 0.8.1 redesign, scoped to the public site only
+(the Admin Panel was not touched). No design token value changed, no business
+logic, route, API, or dependency changed. `tests/unit/design-tokens.test.ts`
+and `contrast.test.ts` pass unmodified.
+
+### Added
+
+- **`Reveal`** (`components/ui/reveal.tsx`) and **`useInView`**
+  (`lib/hooks/use-in-view.ts`): a dependency-free scroll-reveal primitive built
+  on `IntersectionObserver`. Content is never hidden from a visitor without
+  JavaScript — the `.reveal` CSS only applies inside `@media (scripting:
+  enabled)` — and reduced-motion visitors get the end state instantly via the
+  existing global `prefers-reduced-motion` rule. Applied with a small stagger
+  to card grids, list items and portfolio galleries across every public page.
+- **`glass-surface-vivid`** — a fourth, warmer glass tone (`lib/design-tokens.ts`
+  `glass.surfaceVivid`, mirrored into `app/globals.css` and `GlassPanel`'s
+  `tone="vivid"`) for a small number of highlight moments, alongside the
+  existing default/strong/tint surfaces.
+- **Ambient motion tokens** (`--animate-drift-slow`, `--animate-drift-slower`,
+  `--animate-gradient-pan`, `--animate-fade-in`, `--animate-sheet-in`) and a
+  reusable `.ambient-blob` utility, used for slow-drifting, low-opacity
+  brand-coloured background blobs on the hero, inner-page hero band, closing
+  CTA and value band — always inside each panel's existing `overflow-hidden`,
+  so they cannot introduce horizontal scroll. All applied with `motion-safe:`.
+- **`--shadow-glow`** — a brand-tinted hover shadow used on interactive cards,
+  primary/accent buttons and portfolio cards, replacing the plain
+  `shadow-raised` lift in those specific spots.
+
+### Changed
+
+- **Buttons, cards, badges, icon chips** — richer but still restrained hover/
+  press motion (a subtle lift, glow shadow, scale) layered onto the existing
+  transitions; no variant's asserted class tokens changed
+  (`tests/unit/ui-primitives.test.ts` passes unmodified).
+- **Mobile navigation** — the panel and overlay now animate in
+  (`sheet-in`/`fade-in`) instead of appearing instantly; trigger and nav links
+  get press/hover feedback. Focus trap, Escape handling, body-scroll lock and
+  every `data-testid` are unchanged.
+- **Header, sticky mobile CTA, WhatsApp FAB, footer** — press/hover feedback,
+  an entrance transition, and a thin brand-gradient hairline at the top of the
+  footer. FAB size, position and the "above the sticky bar" geometry are
+  unchanged.
+- **Portfolio** (`DesignCard`, `DesignRail`, `DesignGrid`, `FilterBar`,
+  `Lightbox`, `PhotoGallery`) — staggered reveal, richer hover glow and scrim,
+  lightbox entrance and press feedback. The single stretched-link-per-card
+  pattern, all lightbox `data-testid`s, and swipe-gesture thresholds are
+  unchanged.
+- **Quote form** — focus/hover polish on every field, and `has-[:checked]`
+  highlighting on the service and consent checkboxes so a selection is visible
+  at a glance. No field name, validation rule, or markup structure changed.
+- **`.canvas-wash`** — three low-opacity radial gradients instead of two
+  (opacity nudged up modestly); still well inside the contrast contract's
+  margin (body text on canvas is 14+:1 against a 4.5:1 requirement).
+
 ## 0.8.1 — 2026-09-01 — Visual redesign (public website and Admin Panel)
 
 A design-only release. No database change, no business logic change, no
