@@ -1,4 +1,4 @@
-import { Container, IconChip } from '@/components/ui';
+import { Container, IconChip, Reveal } from '@/components/ui';
 import { FlowerIcon, LeafIcon, SparkIcon, TeamIcon } from '@/components/layout/icons';
 import { LeafRule } from '@/components/ui';
 import { whyChooseUs } from '@/lib/content';
@@ -20,8 +20,11 @@ export function ValueBand() {
   return (
     <section className="px-3 sm:px-5 lg:px-6" aria-labelledby="why-vrk">
       <div className="from-brand-50 via-surface-tint to-accent-50 border-brand-200/50 relative isolate mx-auto w-full max-w-[86rem] overflow-hidden rounded-3xl border bg-gradient-to-br">
-        <LeafDecor className="text-brand-500/25 -top-6 -left-10 size-56" />
-        <LeafDecor className="text-brand-500/25 -right-10 -bottom-8 size-56" flip />
+        <LeafDecor className="text-brand-500/25 motion-safe:animate-drift-slow -top-6 -left-10 size-56" />
+        <LeafDecor
+          className="text-brand-500/25 motion-safe:animate-drift-slower -right-10 -bottom-8 size-56"
+          flip
+        />
 
         <Container width="wide">
           <div className="py-12 sm:py-16">
@@ -36,9 +39,11 @@ export function ValueBand() {
               {whyChooseUs.map((reason, index) => {
                 const ValueIcon = VALUE_ICONS[index] ?? FlowerIcon;
                 return (
-                  <li
+                  <Reveal
                     key={reason.title}
-                    className="bg-surface/70 border-brand-200/50 lg:not-first:border-l-brand-300/50 flex h-full flex-col items-center gap-2.5 rounded-2xl border px-3 py-6 text-center lg:rounded-none lg:border-transparent lg:bg-transparent lg:px-6 lg:py-2"
+                    as="li"
+                    delay={Math.min(index * 80, 240)}
+                    className="bg-surface/70 border-brand-200/50 lg:not-first:border-l-brand-300/50 group flex h-full flex-col items-center gap-2.5 rounded-2xl border px-3 py-6 text-center lg:rounded-none lg:border-transparent lg:bg-transparent lg:px-6 lg:py-2"
                   >
                     <IconChip tone="tint" size="lg">
                       <ValueIcon className="size-6" />
@@ -49,7 +54,7 @@ export function ValueBand() {
                     <p className="text-ink-soft text-xs leading-relaxed text-pretty sm:text-sm">
                       {reason.body}
                     </p>
-                  </li>
+                  </Reveal>
                 );
               })}
             </ul>

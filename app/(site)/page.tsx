@@ -18,6 +18,7 @@ import {
   CardMeta,
   CardTitle,
   IconChip,
+  Reveal,
   Section,
   SectionHeading,
 } from '@/components/ui';
@@ -185,27 +186,29 @@ export default async function HomePage() {
         </div>
 
         <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {featuredServices.map((service) => {
+          {featuredServices.map((service, index) => {
             const ServiceIcon = serviceIcon(service.slug);
             return (
-              <Card key={service.slug} as="li" tone="surface" interactive>
-                <CardBody>
-                  <IconChip tone="brand" size="sm">
-                    <ServiceIcon className="size-4" />
-                  </IconChip>
-                  <CardTitle as="h3" className="mt-1">
-                    {service.name}
-                  </CardTitle>
-                  {service.description ? (
-                    <CardMeta>{service.description}</CardMeta>
-                  ) : null}
-                  {service.deliveryModel === 'partner_vendor' ? (
-                    <div>
-                      <Badge tone="neutral">{PARTNER_VENDOR_LABEL}</Badge>
-                    </div>
-                  ) : null}
-                </CardBody>
-              </Card>
+              <Reveal key={service.slug} as="li" delay={Math.min(index * 60, 240)}>
+                <Card tone="surface" interactive className="h-full">
+                  <CardBody>
+                    <IconChip tone="brand" size="sm">
+                      <ServiceIcon className="size-4" />
+                    </IconChip>
+                    <CardTitle as="h3" className="mt-1">
+                      {service.name}
+                    </CardTitle>
+                    {service.description ? (
+                      <CardMeta>{service.description}</CardMeta>
+                    ) : null}
+                    {service.deliveryModel === 'partner_vendor' ? (
+                      <div>
+                        <Badge tone="neutral">{PARTNER_VENDOR_LABEL}</Badge>
+                      </div>
+                    ) : null}
+                  </CardBody>
+                </Card>
+              </Reveal>
             );
           })}
         </ul>
@@ -222,16 +225,15 @@ export default async function HomePage() {
         />
         <ol className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {howItWorks.map((step, index) => (
-            <li
-              key={step.title}
-              className="border-line-soft bg-canvas/60 flex flex-col gap-2 rounded-2xl border p-5"
-            >
-              <span className="bg-brand-700 flex size-9 items-center justify-center rounded-full text-sm font-semibold text-white">
-                {index + 1}
-              </span>
-              <h3 className="font-display mt-1 text-lg font-medium">{step.title}</h3>
-              <p className="text-ink-muted text-sm leading-relaxed">{step.body}</p>
-            </li>
+            <Reveal key={step.title} as="li" delay={Math.min(index * 70, 240)}>
+              <div className="border-line-soft bg-canvas/60 hover:border-brand-300/70 hover:shadow-card flex h-full flex-col gap-2 rounded-2xl border p-5 transition-[border-color,box-shadow] duration-300">
+                <span className="bg-brand-700 flex size-9 items-center justify-center rounded-full text-sm font-semibold text-white">
+                  {index + 1}
+                </span>
+                <h3 className="font-display mt-1 text-lg font-medium">{step.title}</h3>
+                <p className="text-ink-muted text-sm leading-relaxed">{step.body}</p>
+              </div>
+            </Reveal>
           ))}
         </ol>
       </Section>
@@ -272,21 +274,23 @@ export default async function HomePage() {
         <div className="mt-10">
           {testimonials.length > 0 ? (
             <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {testimonials.map((testimonial) => (
-                <Card key={testimonial.id} as="li" tone="tint">
-                  <CardBody>
-                    <IconChip tone="tint" size="sm">
-                      <StarIcon className="size-4" />
-                    </IconChip>
-                    <blockquote className="text-ink mt-1 leading-relaxed">
-                      {testimonial.body}
-                    </blockquote>
-                    <CardMeta className="text-ink-soft">
-                      {testimonial.name}
-                      {testimonial.eventType ? ` · ${testimonial.eventType}` : ''}
-                    </CardMeta>
-                  </CardBody>
-                </Card>
+              {testimonials.map((testimonial, index) => (
+                <Reveal key={testimonial.id} as="li" delay={Math.min(index * 70, 240)}>
+                  <Card tone="tint" className="h-full">
+                    <CardBody>
+                      <IconChip tone="tint" size="sm">
+                        <StarIcon className="size-4" />
+                      </IconChip>
+                      <blockquote className="text-ink mt-1 leading-relaxed">
+                        {testimonial.body}
+                      </blockquote>
+                      <CardMeta className="text-ink-soft">
+                        {testimonial.name}
+                        {testimonial.eventType ? ` · ${testimonial.eventType}` : ''}
+                      </CardMeta>
+                    </CardBody>
+                  </Card>
+                </Reveal>
               ))}
             </ul>
           ) : (

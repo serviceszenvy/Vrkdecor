@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/cn';
 import { ArrowLeftIcon, ArrowRightIcon } from '@/components/layout/icons';
+import { Reveal } from '@/components/ui';
 import { DesignCard } from './design-card';
 import type { PortfolioDesign } from '../types';
 
@@ -67,8 +68,10 @@ export function DesignRail({ designs }: { designs: readonly PortfolioDesign[] })
         className="rail -mx-4 flex gap-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0"
       >
         {designs.map((design, index) => (
-          <li
+          <Reveal
             key={design.id}
+            as="li"
+            delay={Math.min(index * 70, 280)}
             className="rail-item w-[72vw] max-w-[19rem] shrink-0 sm:w-[46vw] lg:w-[calc((100%-3rem)/4)] lg:max-w-none"
           >
             <DesignCard
@@ -77,7 +80,7 @@ export function DesignRail({ designs }: { designs: readonly PortfolioDesign[] })
               showFeatured={false}
               sizes="(min-width: 1024px) 24vw, (min-width: 640px) 46vw, 72vw"
             />
-          </li>
+          </Reveal>
         ))}
       </ul>
 

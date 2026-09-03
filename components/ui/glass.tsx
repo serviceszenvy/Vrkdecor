@@ -21,13 +21,14 @@ import { cn } from '@/lib/cn';
  *     repaints on every scroll frame
  */
 
-type GlassTone = 'default' | 'strong' | 'tint';
+type GlassTone = 'default' | 'strong' | 'tint' | 'vivid';
 type GlassRadius = 'lg' | 'xl' | '2xl' | '3xl' | 'pill';
 
 const tones: Record<GlassTone, string> = {
   default: 'glass-surface',
   strong: 'glass-surface-strong',
   tint: 'glass-surface-tint',
+  vivid: 'glass-surface-vivid',
 };
 
 const radii: Record<GlassRadius, string> = {
@@ -103,6 +104,8 @@ export function IconChip({
       aria-hidden="true"
       className={cn(
         'inline-flex shrink-0 items-center justify-center rounded-full',
+        'transition-[transform,background-color,box-shadow] duration-300 ease-out',
+        'motion-safe:group-hover:-translate-y-0.5 motion-safe:group-hover:scale-105',
         tones[tone],
         sizes[size],
         className,

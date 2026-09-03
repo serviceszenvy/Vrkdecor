@@ -29,7 +29,7 @@ const ASSURANCE_ICONS = [GemIcon, SparkIcon, ShieldIcon] as const;
 export function HomeHero({ actions }: { actions: ReactNode }) {
   return (
     <section className="px-3 pt-3 sm:px-5 sm:pt-4 lg:px-6" aria-labelledby="hero-title">
-      <div className="from-brand-800 via-brand-700 to-brand-900 relative isolate mx-auto w-full max-w-[86rem] overflow-hidden rounded-3xl bg-gradient-to-br">
+      <div className="from-brand-800 via-brand-700 to-brand-900 motion-safe:animate-gradient-pan relative isolate mx-auto w-full max-w-[86rem] overflow-hidden rounded-3xl bg-gradient-to-br bg-[length:200%_200%]">
         {heroImage.src ? (
           <Image
             src={heroImage.src}
@@ -41,6 +41,20 @@ export function HomeHero({ actions }: { actions: ReactNode }) {
             className="absolute inset-0 -z-10 h-full w-full object-cover"
           />
         ) : null}
+
+        {/*
+          Ambient colour, above the photograph but under the legibility scrims
+          below so it reads as a glow rather than reducing headline contrast.
+          Contained by the panel's own overflow-hidden.
+        */}
+        <div
+          aria-hidden="true"
+          className="ambient-blob bg-accent-400/30 motion-safe:animate-drift-slow -top-16 right-10 -z-10 size-72"
+        />
+        <div
+          aria-hidden="true"
+          className="ambient-blob bg-brand-300/25 motion-safe:animate-drift-slower -bottom-24 left-1/3 -z-10 size-96"
+        />
 
         {/*
           Two scrims. The vertical one keeps the floating header legible at the
@@ -58,7 +72,7 @@ export function HomeHero({ actions }: { actions: ReactNode }) {
 
         <Container width="wide">
           <div className="grid gap-8 pt-24 pb-14 sm:grid-cols-[minmax(0,1fr)_20rem] sm:items-center sm:pt-28 sm:pb-16 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-10 lg:pt-40 lg:pb-28">
-            <div className="flex max-w-2xl flex-col gap-5">
+            <div className="motion-safe:animate-fade-in flex max-w-2xl flex-col gap-5">
               <p className="text-brand-800 text-2xs font-semibold tracking-[0.24em] uppercase">
                 {heroCopy.eyebrow}
               </p>

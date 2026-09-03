@@ -56,7 +56,7 @@ export function SiteHeader() {
               <a
                 href={telHref}
                 aria-label={`Call ${siteConfig.name} on ${DISPLAY_PHONE}`}
-                className="glass-surface text-brand-700 hover:text-brand-800 inline-flex size-11 items-center justify-center rounded-full transition-colors hover:bg-white xl:hidden"
+                className="glass-surface text-brand-700 hover:text-brand-800 inline-flex size-11 items-center justify-center rounded-full transition-[background-color,color,transform] duration-200 hover:bg-white motion-safe:active:scale-90 xl:hidden"
               >
                 <PhoneIcon />
               </a>

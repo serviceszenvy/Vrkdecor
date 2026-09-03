@@ -21,7 +21,7 @@ export function StickyMobileCta() {
       className="fixed inset-x-0 bottom-0 z-20 px-3 pb-3 lg:hidden"
       style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))' }}
     >
-      <div className="glass-surface-strong glass-edge mx-auto flex max-w-md items-center gap-2 rounded-full p-1.5">
+      <div className="glass-surface-strong glass-edge motion-safe:animate-sheet-in mx-auto flex max-w-md items-center gap-2 rounded-full p-1.5">
         <ButtonLink href={telHref} variant="ghost" size="sm" fullWidth>
           <PhoneIcon className="size-4" />
           Call

@@ -286,6 +286,8 @@ export const glass = {
   surfaceStrong: 'rgb(255 255 255 / 0.86)',
   /** Green-tinted glass for brand moments such as the closing call to action. */
   surfaceTint: 'rgb(236 242 230 / 0.74)',
+  /** Warmer, more saturated glass for a small number of highlight moments. */
+  surfaceVivid: 'rgb(221 240 196 / 0.8)',
   /** Dark glass for chips and controls sitting on light photography. */
   surfaceInverse: 'rgb(37 37 34 / 0.42)',
   border: 'rgb(255 255 255 / 0.55)',

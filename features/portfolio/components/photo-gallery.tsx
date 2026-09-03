@@ -2,7 +2,7 @@
 
 import { useCallback, useRef, useState } from 'react';
 import Image from 'next/image';
-import { ImageFrame } from '@/components/ui';
+import { ImageFrame, Reveal } from '@/components/ui';
 import { Lightbox } from './lightbox';
 import type { PortfolioPhoto } from '../types';
 
@@ -44,7 +44,7 @@ export function PhotoGallery({
     <>
       <ul className={gridClass} data-testid="photo-gallery">
         {photos.map((photo, index) => (
-          <li key={photo.image.id}>
+          <Reveal key={photo.image.id} as="li" delay={Math.min((index % 6) * 60, 240)}>
             <button
               type="button"
               ref={(node) => {
@@ -52,7 +52,7 @@ export function PhotoGallery({
               }}
               onClick={() => setOpenIndex(index)}
               data-testid="gallery-thumb"
-              className="group block w-full cursor-zoom-in rounded-2xl text-left"
+              className="group hover:shadow-glow block w-full cursor-zoom-in rounded-2xl text-left transition-shadow duration-300"
             >
               <ImageFrame ratio="landscape" radius="xl" zoomOnHover>
                 <Image
@@ -72,7 +72,7 @@ export function PhotoGallery({
                 Open {photo.image.alt} from {photo.design.name}
               </span>
             </button>
-          </li>
+          </Reveal>
         ))}
       </ul>
 

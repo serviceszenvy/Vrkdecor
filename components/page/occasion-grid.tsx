@@ -1,6 +1,6 @@
 import type { ComponentType, SVGProps } from 'react';
 import Link from 'next/link';
-import { IconChip } from '@/components/ui';
+import { IconChip, Reveal } from '@/components/ui';
 import {
   BuildingIcon,
   CakeIcon,
@@ -62,13 +62,13 @@ export type OccasionTile = {
 export function OccasionGrid({ occasions }: { occasions: readonly OccasionTile[] }) {
   return (
     <ul className="grid grid-cols-3 gap-3 sm:gap-4 lg:grid-cols-6">
-      {occasions.map((occasion) => {
+      {occasions.map((occasion, index) => {
         const OccasionIcon = OCCASION_ICONS[occasion.slug] ?? CalendarIcon;
         return (
-          <li key={occasion.slug}>
+          <Reveal key={occasion.slug} as="li" delay={Math.min(index * 40, 240)}>
             <Link
               href={`${routes.work}?occasion=${encodeURIComponent(occasion.slug)}`}
-              className="border-line-soft bg-surface hover:border-brand-300 hover:bg-brand-50/60 group flex h-full min-h-[7.5rem] flex-col items-center justify-center gap-2 overflow-hidden rounded-2xl border px-1.5 py-5 text-center transition-colors sm:px-3"
+              className="border-line-soft bg-surface hover:border-brand-300 hover:bg-brand-50/60 hover:shadow-card group flex h-full min-h-[7.5rem] flex-col items-center justify-center gap-2 overflow-hidden rounded-2xl border px-1.5 py-5 text-center transition-[background-color,border-color,box-shadow] duration-300 sm:px-3"
             >
               <IconChip
                 tone="brand"
@@ -86,7 +86,7 @@ export function OccasionGrid({ occasions }: { occasions: readonly OccasionTile[]
                 </span>
               ) : null}
             </Link>
-          </li>
+          </Reveal>
         );
       })}
     </ul>

@@ -4,6 +4,7 @@ import {
   ButtonLink,
   Container,
   IconChip,
+  Reveal,
   Section,
   SectionHeading,
 } from '@/components/ui';
@@ -73,58 +74,69 @@ export default function ContactPage() {
               />
 
               <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <li className="bg-surface/80 border-brand-200/50 flex flex-col gap-2 rounded-2xl border p-5">
-                  <IconChip tone="brand" size="md">
-                    <PhoneIcon />
-                  </IconChip>
-                  <h3 className="font-display mt-1 text-lg font-medium">Phone</h3>
-                  <a
-                    className="text-brand-800 inline-flex min-h-9 items-center text-sm underline underline-offset-4"
-                    href={telHref}
-                  >
-                    {displayPhone}
-                  </a>
-                </li>
-
-                <li className="bg-surface/80 border-brand-200/50 flex flex-col gap-2 rounded-2xl border p-5">
-                  <IconChip tone="brand" size="md">
-                    <WhatsAppIcon />
-                  </IconChip>
-                  <h3 className="font-display mt-1 text-lg font-medium">WhatsApp</h3>
-                  <a
-                    className="text-brand-800 inline-flex min-h-9 items-center text-sm underline underline-offset-4"
-                    href={whatsAppHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Message us on WhatsApp
-                  </a>
-                </li>
-
-                <li className="bg-surface/80 border-brand-200/50 flex flex-col gap-2 rounded-2xl border p-5">
-                  <IconChip tone="brand" size="md">
-                    <MailIcon />
-                  </IconChip>
-                  <h3 className="font-display mt-1 text-lg font-medium">Email</h3>
-                  <a
-                    className="text-brand-800 inline-flex min-h-9 items-center text-sm break-all underline underline-offset-4"
-                    href={mailHref}
-                  >
-                    {email}
-                  </a>
-                </li>
-
-                <li className="bg-surface/80 border-brand-200/50 flex flex-col gap-2 rounded-2xl border p-5">
-                  <IconChip tone="brand" size="md">
-                    <PinIcon />
-                  </IconChip>
-                  <h3 className="font-display mt-1 text-lg font-medium">Studio</h3>
-                  <address className="text-ink-soft text-sm not-italic">
-                    {address.street}
-                    <br />
-                    {address.city}, {address.state} {address.postalCode}
-                  </address>
-                </li>
+                {[
+                  {
+                    icon: <PhoneIcon />,
+                    title: 'Phone',
+                    content: (
+                      <a
+                        className="text-brand-800 inline-flex min-h-9 items-center text-sm underline underline-offset-4"
+                        href={telHref}
+                      >
+                        {displayPhone}
+                      </a>
+                    ),
+                  },
+                  {
+                    icon: <WhatsAppIcon />,
+                    title: 'WhatsApp',
+                    content: (
+                      <a
+                        className="text-brand-800 inline-flex min-h-9 items-center text-sm underline underline-offset-4"
+                        href={whatsAppHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Message us on WhatsApp
+                      </a>
+                    ),
+                  },
+                  {
+                    icon: <MailIcon />,
+                    title: 'Email',
+                    content: (
+                      <a
+                        className="text-brand-800 inline-flex min-h-9 items-center text-sm break-all underline underline-offset-4"
+                        href={mailHref}
+                      >
+                        {email}
+                      </a>
+                    ),
+                  },
+                  {
+                    icon: <PinIcon />,
+                    title: 'Studio',
+                    content: (
+                      <address className="text-ink-soft text-sm not-italic">
+                        {address.street}
+                        <br />
+                        {address.city}, {address.state} {address.postalCode}
+                      </address>
+                    ),
+                  },
+                ].map((item, index) => (
+                  <Reveal key={item.title} as="li" delay={Math.min(index * 70, 240)}>
+                    <div className="bg-surface/80 border-brand-200/50 hover:border-brand-300 hover:shadow-card group flex h-full flex-col gap-2 rounded-2xl border p-5 transition-[border-color,box-shadow] duration-300">
+                      <IconChip tone="brand" size="md">
+                        {item.icon}
+                      </IconChip>
+                      <h3 className="font-display mt-1 text-lg font-medium">
+                        {item.title}
+                      </h3>
+                      {item.content}
+                    </div>
+                  </Reveal>
+                ))}
               </ul>
 
               <p className="text-ink-soft mt-8 text-sm">

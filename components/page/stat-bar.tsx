@@ -1,5 +1,5 @@
 import type { ComponentType, SVGProps } from 'react';
-import { Container, IconChip } from '@/components/ui';
+import { Container, IconChip, Reveal } from '@/components/ui';
 import { cn } from '@/lib/cn';
 
 export type Stat = {
@@ -25,7 +25,8 @@ export function StatBar({ stats }: { stats: readonly Stat[] }) {
         <h2 id="figures" className="sr-only">
           VRK Decor at a glance
         </h2>
-        <dl
+        <Reveal
+          as="dl"
           className={cn(
             'glass-surface-strong glass-edge relative z-10 mx-auto -mt-6 grid rounded-3xl',
             'grid-cols-2 gap-y-2 p-3 sm:grid-cols-4 sm:p-4 lg:-mt-10',
@@ -63,7 +64,7 @@ export function StatBar({ stats }: { stats: readonly Stat[] }) {
               </div>
             );
           })}
-        </dl>
+        </Reveal>
       </Container>
     </section>
   );

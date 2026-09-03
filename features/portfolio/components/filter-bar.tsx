@@ -40,10 +40,12 @@ function FilterRow({
 
   const chip = (isActive: boolean) =>
     cn(
-      'inline-flex min-h-10 items-center rounded-full border px-4 text-sm transition-colors',
+      'inline-flex min-h-10 items-center rounded-full border px-4 text-sm',
+      'transition-[background-color,border-color,box-shadow,transform] duration-200',
+      'motion-safe:active:scale-95',
       isActive
-        ? 'border-brand-700 bg-brand-700 text-white'
-        : 'border-line-soft bg-surface text-ink hover:border-brand-300 hover:bg-brand-50',
+        ? 'border-brand-700 bg-brand-700 text-white shadow-[0_8px_18px_-10px_rgb(97_118_75/0.7)]'
+        : 'border-line-soft bg-surface text-ink hover:border-brand-300 hover:bg-brand-50 hover:shadow-card',
     );
 
   return (
@@ -103,7 +105,7 @@ export function FilterBar({
   return (
     <section
       aria-labelledby="filters"
-      className="border-line-soft bg-surface/70 flex flex-col gap-5 rounded-3xl border p-5 sm:p-6"
+      className="border-line-soft bg-surface/70 shadow-card flex flex-col gap-5 rounded-3xl border p-5 sm:p-6"
     >
       <h2 id="filters" className="sr-only">
         Filter designs

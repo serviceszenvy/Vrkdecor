@@ -7,6 +7,7 @@ import {
   CardBody,
   CardMeta,
   CardTitle,
+  Reveal,
   Section,
   SectionHeading,
 } from '@/components/ui';
@@ -50,25 +51,27 @@ export default async function OccasionsPage() {
           lead="Some of these are known by more than one name, so both are listed and you can find yours quickly. Pick one to see the work we have done for it."
         />
         <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {occasions.map((occasion) => (
-            <Card key={occasion.slug} as="li" interactive>
-              <CardBody>
-                <CardTitle as="h3">
-                  <Link
-                    href={`${routes.work}?occasion=${encodeURIComponent(occasion.slug)}`}
-                    className="hover:text-brand-800 transition-colors"
-                  >
-                    {occasion.name}
-                  </Link>
-                </CardTitle>
-                {occasion.secondaryTerm ? (
-                  <p className="text-brand-700 text-sm">{occasion.secondaryTerm}</p>
-                ) : null}
-                {occasion.description ? (
-                  <CardMeta>{occasion.description}</CardMeta>
-                ) : null}
-              </CardBody>
-            </Card>
+          {occasions.map((occasion, index) => (
+            <Reveal key={occasion.slug} as="li" delay={Math.min(index * 50, 240)}>
+              <Card interactive className="h-full">
+                <CardBody>
+                  <CardTitle as="h3">
+                    <Link
+                      href={`${routes.work}?occasion=${encodeURIComponent(occasion.slug)}`}
+                      className="hover:text-brand-800 transition-colors"
+                    >
+                      {occasion.name}
+                    </Link>
+                  </CardTitle>
+                  {occasion.secondaryTerm ? (
+                    <p className="text-brand-700 text-sm">{occasion.secondaryTerm}</p>
+                  ) : null}
+                  {occasion.description ? (
+                    <CardMeta>{occasion.description}</CardMeta>
+                  ) : null}
+                </CardBody>
+              </Card>
+            </Reveal>
           ))}
         </ul>
       </Section>

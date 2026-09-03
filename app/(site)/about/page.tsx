@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { CtaBand, Hero, StatList } from '@/components/page';
-import { ButtonLink, Section, SectionHeading } from '@/components/ui';
+import { ButtonLink, Reveal, Section, SectionHeading } from '@/components/ui';
 import { coverage, credentials, positioning, whyChooseUs } from '@/lib/content';
 import { routes } from '@/lib/navigation';
 import { pageMetadata } from '@/lib/seo';
@@ -51,11 +51,16 @@ export default function AboutPage() {
           lead="We design and run events from end to end. Stage and mandap, florals, entrance, furniture and seating, return gifts and full event management, all handled by the same people."
         />
         <ul className="mt-8 grid gap-6 sm:grid-cols-2">
-          {whyChooseUs.map((point) => (
-            <li key={point.title} className="flex flex-col gap-1.5">
+          {whyChooseUs.map((point, index) => (
+            <Reveal
+              key={point.title}
+              as="li"
+              delay={Math.min(index * 70, 240)}
+              className="flex flex-col gap-1.5"
+            >
               <h3 className="font-display text-xl font-medium">{point.title}</h3>
               <p className="text-ink-muted">{point.body}</p>
-            </li>
+            </Reveal>
           ))}
         </ul>
       </Section>

@@ -40,7 +40,11 @@ export function SiteFooter() {
   const { address } = siteConfig.contact;
 
   return (
-    <footer className="border-line-soft bg-surface mt-4 border-t sm:mt-6">
+    <footer className="border-line-soft bg-surface relative mt-4 border-t sm:mt-6">
+      <div
+        aria-hidden="true"
+        className="from-brand-400/0 via-brand-500/50 to-accent-400/0 absolute inset-x-0 top-0 h-px bg-gradient-to-r"
+      />
       <Container width="wide">
         <div className="grid gap-10 py-14 sm:py-16 lg:grid-cols-12 lg:gap-8">
           <div className="flex flex-col gap-5 lg:col-span-4">

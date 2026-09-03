@@ -42,7 +42,11 @@ export function Hero({
       >
         <div
           aria-hidden="true"
-          className="bg-accent-300/25 absolute -top-24 -right-20 size-72 rounded-full blur-3xl"
+          className="ambient-blob bg-accent-300/30 motion-safe:animate-drift-slow -top-24 -right-20 size-72"
+        />
+        <div
+          aria-hidden="true"
+          className="ambient-blob bg-brand-300/20 motion-safe:animate-drift-slower -bottom-16 -left-16 size-64"
         />
         {/*
           Botanical decoration in the space to the right of the headline. It is
@@ -66,7 +70,7 @@ export function Hero({
                 : 'pt-24 pb-12 sm:pt-32 sm:pb-16 lg:pt-40 lg:pb-24',
             )}
           >
-            <div className="flex max-w-2xl flex-col gap-4">
+            <div className="motion-safe:animate-fade-in flex max-w-2xl flex-col gap-4">
               {eyebrow ? (
                 <p className="text-brand-800 text-2xs font-semibold tracking-[0.24em] uppercase">
                   {eyebrow}

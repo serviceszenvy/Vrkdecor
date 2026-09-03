@@ -8,6 +8,7 @@ import {
   CardMeta,
   CardTitle,
   IconChip,
+  Reveal,
   Section,
   SectionHeading,
 } from '@/components/ui';
@@ -60,22 +61,24 @@ export default async function ServicesPage() {
           lead="These are the parts of your celebration we plan, build and set up ourselves."
         />
         <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {inHouse.map((service) => {
+          {inHouse.map((service, index) => {
             const ServiceIcon = serviceIcon(service.slug);
             return (
-              <Card key={service.slug} as="li" interactive>
-                <CardBody>
-                  <IconChip tone="brand" size="md">
-                    <ServiceIcon />
-                  </IconChip>
-                  <CardTitle as="h3" className="mt-1">
-                    {service.name}
-                  </CardTitle>
-                  {service.description ? (
-                    <CardMeta>{service.description}</CardMeta>
-                  ) : null}
-                </CardBody>
-              </Card>
+              <Reveal key={service.slug} as="li" delay={Math.min(index * 60, 240)}>
+                <Card interactive className="h-full">
+                  <CardBody>
+                    <IconChip tone="brand" size="md">
+                      <ServiceIcon />
+                    </IconChip>
+                    <CardTitle as="h3" className="mt-1">
+                      {service.name}
+                    </CardTitle>
+                    {service.description ? (
+                      <CardMeta>{service.description}</CardMeta>
+                    ) : null}
+                  </CardBody>
+                </Card>
+              </Reveal>
             );
           })}
         </ul>
@@ -89,25 +92,29 @@ export default async function ServicesPage() {
           lead="We arrange and coordinate these specialist services for you, so your celebration still has one point of contact."
         />
         <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {partner.map((service) => {
+          {partner.map((service, index) => {
             const ServiceIcon = serviceIcon(service.slug);
             return (
-              <Card key={service.slug} as="li" tone="tint">
-                <CardBody>
-                  <IconChip tone="tint" size="md">
-                    <ServiceIcon />
-                  </IconChip>
-                  <CardTitle as="h3" className="mt-1">
-                    {service.name}
-                  </CardTitle>
-                  {service.description ? (
-                    <CardMeta className="text-ink-soft">{service.description}</CardMeta>
-                  ) : null}
-                  <div>
-                    <Badge tone="glass">{PARTNER_VENDOR_LABEL}</Badge>
-                  </div>
-                </CardBody>
-              </Card>
+              <Reveal key={service.slug} as="li" delay={Math.min(index * 60, 240)}>
+                <Card tone="tint" className="h-full">
+                  <CardBody>
+                    <IconChip tone="tint" size="md">
+                      <ServiceIcon />
+                    </IconChip>
+                    <CardTitle as="h3" className="mt-1">
+                      {service.name}
+                    </CardTitle>
+                    {service.description ? (
+                      <CardMeta className="text-ink-soft">
+                        {service.description}
+                      </CardMeta>
+                    ) : null}
+                    <div>
+                      <Badge tone="glass">{PARTNER_VENDOR_LABEL}</Badge>
+                    </div>
+                  </CardBody>
+                </Card>
+              </Reveal>
             );
           })}
         </ul>

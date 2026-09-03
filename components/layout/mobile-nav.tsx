@@ -99,7 +99,7 @@ export function MobileNav() {
         aria-expanded={open}
         aria-controls={panelId}
         data-testid="mobile-nav-trigger"
-        className="glass-surface text-ink hover:text-brand-800 inline-flex size-11 items-center justify-center rounded-full transition-colors hover:bg-white lg:hidden"
+        className="glass-surface text-ink hover:text-brand-800 inline-flex size-11 items-center justify-center rounded-full transition-[background-color,color,transform] duration-200 hover:bg-white motion-safe:active:scale-90 lg:hidden"
       >
         {open ? <CloseIcon /> : <MenuIcon />}
         <span className="sr-only">{open ? 'Close menu' : 'Open menu'}</span>
@@ -114,7 +114,7 @@ export function MobileNav() {
         ? createPortal(
             <>
               <div
-                className="bg-brand-950/45 fixed inset-0 z-40 backdrop-blur-[2px] lg:hidden"
+                className="bg-brand-950/45 motion-safe:animate-fade-in fixed inset-0 z-40 backdrop-blur-[2px] lg:hidden"
                 onClick={() => setOpen(false)}
                 aria-hidden="true"
               />
@@ -129,6 +129,7 @@ export function MobileNav() {
                   'fixed inset-x-3 top-[4.75rem] z-40 sm:inset-x-4 sm:top-[5.5rem] lg:hidden',
                   'glass-surface-strong glass-edge rounded-3xl',
                   'flex max-h-[calc(100dvh-6.5rem)] flex-col overflow-y-auto p-3',
+                  'motion-safe:animate-sheet-in origin-top',
                 )}
               >
                 <nav aria-label="Mobile">
@@ -141,10 +142,10 @@ export function MobileNav() {
                             href={item.href}
                             aria-current={active ? 'page' : undefined}
                             className={cn(
-                              'flex min-h-12 items-center justify-between gap-3 rounded-2xl px-4 text-base transition-colors',
+                              'flex min-h-12 items-center justify-between gap-3 rounded-2xl px-4 text-base transition-colors duration-200',
                               active
                                 ? 'bg-brand-50 text-brand-800 font-semibold'
-                                : 'text-ink hover:bg-white/70',
+                                : 'text-ink hover:text-brand-800 hover:bg-white/70',
                             )}
                           >
                             {item.label}

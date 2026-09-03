@@ -27,13 +27,15 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
  */
 const variants: Record<ButtonVariant, string> = {
   primary:
-    'bg-brand-700 text-white hover:bg-brand-800 border border-transparent shadow-[0_10px_24px_-14px_rgb(36_44_28/0.85)]',
-  accent: 'bg-accent-500 text-ink hover:bg-accent-600 border border-transparent',
+    'bg-brand-700 text-white hover:bg-brand-800 border border-transparent shadow-[0_10px_24px_-14px_rgb(36_44_28/0.85)] motion-safe:hover:shadow-glow motion-safe:hover:-translate-y-0.5',
+  accent:
+    'bg-accent-500 text-ink hover:bg-accent-600 border border-transparent motion-safe:hover:shadow-glow motion-safe:hover:-translate-y-0.5',
   secondary: 'bg-sand-100 text-ink hover:bg-sand-200 border border-transparent',
-  outline: 'bg-transparent text-brand-700 border border-brand-700 hover:bg-brand-50',
+  outline:
+    'bg-transparent text-brand-700 border border-brand-700 hover:bg-brand-50 hover:border-brand-800',
   ghost: 'bg-transparent text-ink border border-transparent hover:bg-sand-100',
   inverse: 'bg-white text-ink hover:bg-sand-100 border border-transparent',
-  glass: 'glass-surface-strong text-ink hover:bg-white',
+  glass: 'glass-surface-strong text-ink hover:bg-white motion-safe:hover:shadow-raised',
 };
 
 /** `min-h` values keep every control at or above the 44px touch target. */
@@ -45,8 +47,8 @@ const sizes: Record<ButtonSize, string> = {
 
 const base = cn(
   'inline-flex items-center justify-center rounded-full font-medium',
-  'transition-[background-color,box-shadow,transform,color] duration-200',
-  'motion-safe:active:translate-y-px',
+  'transition-[background-color,box-shadow,transform,color] duration-200 ease-out',
+  'motion-safe:active:translate-y-px motion-safe:active:scale-[0.98]',
   'disabled:pointer-events-none disabled:opacity-50',
 );
 

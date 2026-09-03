@@ -100,7 +100,7 @@ export function QuoteForm({
           role="alert"
           tabIndex={-1}
           data-testid="quote-error-summary"
-          className="rounded-2xl border border-red-300 bg-red-50 p-4 text-sm text-red-900"
+          className="motion-safe:animate-fade-in rounded-2xl border border-red-300 bg-red-50 p-4 text-sm text-red-900"
         >
           <p className="font-medium">
             {state.message ?? 'Please check the highlighted fields and try again.'}
@@ -304,7 +304,7 @@ export function QuoteForm({
         <ul className="grid gap-2 sm:grid-cols-2">
           {services.map((service) => (
             <li key={service.slug}>
-              <label className="border-line-soft hover:border-brand-300 hover:bg-brand-50/60 flex min-h-11 cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors">
+              <label className="border-line-soft hover:border-brand-300 hover:bg-brand-50/60 has-[:checked]:border-brand-700 has-[:checked]:bg-brand-50 flex min-h-11 cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors duration-200">
                 <input
                   type="checkbox"
                   name="requiredServices"
@@ -370,8 +370,10 @@ export function QuoteForm({
         <label
           id="field-consent"
           className={cn(
-            'flex cursor-pointer items-start gap-3 rounded-2xl border p-4',
-            state.errors.consent ? 'border-red-400 bg-red-50' : 'border-line-soft',
+            'flex cursor-pointer items-start gap-3 rounded-2xl border p-4 transition-colors duration-200',
+            state.errors.consent
+              ? 'border-red-400 bg-red-50'
+              : 'border-line-soft has-[:checked]:border-brand-700 has-[:checked]:bg-brand-50/60',
           )}
         >
           <input
@@ -514,6 +516,8 @@ function Field({
         className: cn(
           'border-line-soft bg-surface w-full rounded-xl border px-3 py-2.5 text-base',
           'min-h-12 focus-visible:outline-2 focus-visible:outline-offset-2',
+          'transition-[border-color,box-shadow] duration-200 hover:border-brand-300',
+          'focus:border-brand-700 focus:shadow-[0_0_0_4px_rgb(97_118_75/0.12)]',
           error && 'border-red-400',
         ),
       })}

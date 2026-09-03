@@ -6,5 +6,6 @@ export { Container } from './container';
 export { GlassPanel, IconChip, LeafRule } from './glass';
 export { ImageFrame, ImageScrim } from './image-frame';
 export type { AspectRatio } from './image-frame';
+export { Reveal } from './reveal';
 export { Section, SectionHeading } from './section';
 export { SkipLink } from './skip-link';

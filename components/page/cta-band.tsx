@@ -1,4 +1,4 @@
-import { ButtonLink, Container } from '@/components/ui';
+import { ButtonLink, Container, Reveal } from '@/components/ui';
 import { closingCta } from '@/lib/content';
 import { routes, telHref, whatsAppHref } from '@/lib/navigation';
 import { ArrowRightIcon, PhoneIcon, WhatsAppIcon } from '@/components/layout/icons';
@@ -27,11 +27,21 @@ export function CtaBand({
   return (
     <section className="px-3 sm:px-5 lg:px-6" aria-labelledby="final-cta">
       <div className="from-brand-100 via-surface-tint to-accent-100/70 border-brand-200/60 relative isolate mx-auto w-full max-w-[86rem] overflow-hidden rounded-3xl border bg-gradient-to-r">
-        <LeafDecor className="text-brand-600/25 -top-8 -left-12 size-64" />
-        <LeafDecor className="text-brand-600/25 -right-12 -bottom-10 size-64" flip />
+        <LeafDecor className="text-brand-600/25 motion-safe:animate-drift-slow -top-8 -left-12 size-64" />
+        <LeafDecor
+          className="text-brand-600/25 motion-safe:animate-drift-slower -right-12 -bottom-10 size-64"
+          flip
+        />
+        <div
+          aria-hidden="true"
+          className="ambient-blob bg-accent-400/20 motion-safe:animate-drift-slow top-1/2 right-1/4 size-56 -translate-y-1/2"
+        />
 
         <Container width="wide">
-          <div className="grid gap-8 py-12 sm:py-16 lg:grid-cols-[1.35fr_1fr] lg:items-center lg:gap-12">
+          <Reveal
+            as="div"
+            className="grid gap-8 py-12 sm:py-16 lg:grid-cols-[1.35fr_1fr] lg:items-center lg:gap-12"
+          >
             <div className="flex flex-col gap-4">
               <p className="text-brand-800 text-2xs font-semibold tracking-[0.24em] uppercase">
                 {closingCta.eyebrow}
@@ -59,7 +69,7 @@ export function CtaBand({
                 </ButtonLink>
               </div>
             </div>
-          </div>
+          </Reveal>
         </Container>
       </div>
     </section>

@@ -154,7 +154,7 @@ export default async function DesignDetailPage({ params }: Params) {
             </div>
           </div>
 
-          <dl className="border-brand-200/60 from-brand-50 to-surface-tint flex flex-col gap-4 rounded-3xl border bg-gradient-to-br p-6 sm:p-7">
+          <dl className="border-brand-200/60 from-brand-50 to-surface-tint shadow-card flex flex-col gap-4 rounded-3xl border bg-gradient-to-br p-6 sm:p-7">
             {design.occasion ? (
               <div>
                 <dt className="text-ink-muted text-2xs tracking-[0.16em] uppercase">

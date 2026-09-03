@@ -113,6 +113,61 @@
     0 1px 1px rgb(255 255 255 / 0.4) inset, 0 12px 32px -14px rgb(36 44 28 / 0.28);
   --shadow-panel: 0 1px 2px rgb(36 44 28 / 0.04), 0 24px 60px -32px rgb(36 44 28 / 0.3);
   --shadow-float: 0 6px 16px -6px rgb(36 44 28 / 0.32), 0 2px 6px rgb(36 44 28 / 0.12);
+  /* A warm brand-tinted lift, used on hover for interactive cards and buttons. */
+  --shadow-glow:
+    0 20px 44px -22px rgb(97 118 75 / 0.55), 0 6px 16px -10px rgb(142 200 64 / 0.3);
+
+  /*
+   * Ambient motion. Slow and small-amplitude by design: these drive the
+   * decorative background blobs and gradient sweeps, never primary content,
+   * and are always applied with `motion-safe:` at the call site even though
+   * the global `prefers-reduced-motion` rule below already zeroes them.
+   */
+  --animate-drift-slow: drift 16s ease-in-out infinite;
+  --animate-drift-slower: drift 22s ease-in-out infinite reverse;
+  --animate-gradient-pan: gradient-pan 14s ease-in-out infinite alternate;
+  --animate-fade-in: fade-in 0.5s ease-out both;
+  /* Entrance for the mobile navigation sheet and other small popovers. */
+  --animate-sheet-in: sheet-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(3%, -4%, 0) scale(1.05);
+  }
+}
+
+@keyframes gradient-pan {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 @layer base {
@@ -130,6 +185,8 @@
     --glass-surface: rgb(255 255 255 / 0.62);
     --glass-surface-strong: rgb(255 255 255 / 0.86);
     --glass-surface-tint: rgb(236 242 230 / 0.74);
+    /* Warmer, more saturated glass for the small number of highlight moments. */
+    --glass-surface-vivid: rgb(221 240 196 / 0.8);
     --glass-surface-inverse: rgb(37 37 34 / 0.42);
     --glass-border: rgb(255 255 255 / 0.55);
     --glass-border-soft: rgb(97 118 75 / 0.16);
@@ -203,6 +260,18 @@
     box-shadow: var(--shadow-glass);
   }
 
+  /*
+   * A brand-forward glass, warmer than `.glass-surface-tint`, for a small
+   * number of moments that should read as a highlight rather than a neutral
+   * panel — a featured badge, the closing CTA's glass buttons. Same honest
+   * degradation as the three surfaces above: opaque-enough without blur.
+   */
+  .glass-surface-vivid {
+    background-color: rgb(221 240 196 / 0.95);
+    border: 1px solid var(--glass-border-soft);
+    box-shadow: var(--shadow-glass);
+  }
+
   @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
     .glass-surface {
       background-color: var(--glass-surface);
@@ -224,9 +293,19 @@
       -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
       backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
     }
+
+    .glass-surface-vivid {
+      background-color: var(--glass-surface-vivid);
+      border-color: var(--glass-border);
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
+      backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
+    }
   }
 
-  /* The thin top highlight that makes a glass edge read as glass. */
+  /*
+   * The thin top highlight and faint corner reflection that make a glass edge
+   * read as glass rather than a flat tinted panel.
+   */
   .glass-edge {
     position: relative;
   }
@@ -237,13 +316,10 @@
     inset: 0;
     border-radius: inherit;
     pointer-events: none;
-    background: linear-gradient(
-      to bottom,
-      var(--glass-highlight),
-      transparent 42%,
-      transparent
-    );
-    opacity: 0.5;
+    background:
+      radial-gradient(120% 60% at 12% 0%, rgb(255 255 255 / 0.4), transparent 60%),
+      linear-gradient(to bottom, var(--glass-highlight), transparent 42%, transparent);
+    opacity: 0.55;
   }
 }
 
@@ -281,22 +357,64 @@
   }
 
   /*
-   * The soft botanical wash behind the page. Two very wide, very low-opacity
-   * radial gradients — cheap to paint, fixed to the element, and invisible
-   * enough that photography still leads.
+   * The soft botanical wash behind the page. Three very wide, low-opacity
+   * radial gradients — cheap to paint, fixed to the element, and quiet enough
+   * that photography still leads. Opacity sits well inside the contrast
+   * contract's margin (body text on canvas is 14+:1 against a 4.5:1
+   * requirement), so this reads as ambient warmth, not a loss of legibility.
    */
   .canvas-wash {
     background-image:
       radial-gradient(
         58rem 32rem at 82% -6%,
-        rgb(142 200 64 / 0.1),
+        rgb(142 200 64 / 0.14),
         rgb(142 200 64 / 0) 62%
       ),
       radial-gradient(
         46rem 28rem at 4% 12%,
-        rgb(97 118 75 / 0.08),
+        rgb(97 118 75 / 0.11),
         rgb(97 118 75 / 0) 60%
+      ),
+      radial-gradient(
+        38rem 24rem at 50% 100%,
+        rgb(216 168 90 / 0.06),
+        rgb(216 168 90 / 0) 65%
       );
+  }
+
+  /*
+   * Decorative, ambient colour blobs. Always `aria-hidden`, always inside an
+   * `overflow-hidden` ancestor (every panel that uses one already sets that),
+   * so the slow drift transform can never introduce scroll.
+   */
+  .ambient-blob {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(60px);
+    pointer-events: none;
+  }
+
+  /*
+   * Scroll-reveal base state. Deliberately scoped to `scripting: enabled`, so
+   * a browser that cannot run the `Reveal` component's IntersectionObserver
+   * (scripting disabled, or unsupported) simply shows the content — never a
+   * section stuck invisible. `prefers-reduced-motion` is handled globally
+   * below: the transition still exists here, but its duration is zeroed, so
+   * `.is-visible` applies instantly instead of animating.
+   */
+  @media (scripting: enabled) {
+    .reveal {
+      opacity: 0;
+      transform: translateY(16px);
+      transition:
+        opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .reveal.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }
 
