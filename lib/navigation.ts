@@ -27,11 +27,17 @@ export type NavItem = {
   href: string;
 };
 
-/** Primary navigation, in the order given by the approved site structure. */
+/**
+ * Primary navigation, in the order given by the approved site structure.
+ *
+ * Occasions is deliberately absent: it is no longer a distinct destination —
+ * the Services page now leads with "styled for every occasion" content
+ * (`app/(site)/services/page.tsx`), and `/occasions` redirects there
+ * (`next.config.ts`) so no existing link ever 404s.
+ */
 export const primaryNav: readonly NavItem[] = [
   { label: 'Our Work', href: routes.work },
   { label: 'Services', href: routes.services },
-  { label: 'Occasions', href: routes.occasions },
   { label: 'Packages', href: routes.packages },
   { label: 'Gallery', href: routes.gallery },
   { label: 'About', href: routes.about },

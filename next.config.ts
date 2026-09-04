@@ -105,6 +105,24 @@ const nextConfig: NextConfig = {
     deviceSizes: [360, 480, 640, 828, 1080, 1280, 1600, 1920],
     imageSizes: [64, 96, 128, 200, 256, 384],
   },
+  /*
+    The standalone Occasions page (Requirements section 5) has been folded
+    into Services (`/services`), which now leads with the same occasion
+    content grouped by category. This keeps every previously-shared or
+    bookmarked `/occasions` link resolving to something, rather than a 404,
+    without keeping a page around that duplicates what `/services` now
+    covers. Not `permanent`: this is a content restructuring, not a change of
+    canonical URL that should be hard-cached by browsers/CDNs indefinitely.
+  */
+  async redirects() {
+    return [
+      {
+        source: '/occasions',
+        destination: '/services',
+        permanent: false,
+      },
+    ];
+  },
   async headers() {
     return [
       {

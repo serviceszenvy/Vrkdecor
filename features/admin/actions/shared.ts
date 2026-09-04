@@ -49,11 +49,16 @@ export function revalidatePublicPortfolio(slug?: string | null) {
   if (slug) revalidatePath(`/our-work/${slug}`);
 }
 
-/** Refreshes the public pages that render admin-managed page content. */
+/**
+ * Refreshes the public pages that render admin-managed page content.
+ *
+ * No `/occasions` entry: that page was retired in favour of occasion content
+ * on `/services` (`next.config.ts` redirects the old URL there), which is
+ * already covered below.
+ */
 export function revalidatePublicContent() {
   revalidatePath('/');
   revalidatePath('/services');
-  revalidatePath('/occasions');
   revalidatePath('/packages');
 }
 

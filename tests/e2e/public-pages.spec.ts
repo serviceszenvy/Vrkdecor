@@ -19,7 +19,6 @@ const PAGES = [
   { path: '/', heading: /Your celebration, exactly as you pictured it/i },
   { path: '/our-work', heading: /Celebrations we have designed and set up/i },
   { path: '/services', heading: /Complete celebration solutions/i },
-  { path: '/occasions', heading: /Perfect for every occasion/i },
   { path: '/packages', heading: /Celebration packages/i },
   { path: '/gallery', heading: /Photographs from our celebrations/i },
   { path: '/about', heading: /Premium Event Design/i },
@@ -136,18 +135,21 @@ test.describe('approved content', () => {
     }
   });
 
-  test('occasions page lists all fourteen approved occasions with Tamil terms', async ({
+  test('the retired occasions page redirects to services', async ({ page }) => {
+    const response = await page.goto('/occasions');
+    expect(response?.status()).toBe(200);
+    expect(page.url()).toMatch(/\/services$/);
+  });
+
+  test('services page folds in occasion content with Tamil terms', async ({
     page,
   }) => {
-    await page.goto('/occasions');
+    await page.goto('/services');
 
-    const items = page.locator('ul > li');
-    await expect(
-      page.getByRole('heading', { name: 'Wedding', exact: true }),
-    ).toBeVisible();
-    await expect(page.getByText('Nichayathartham')).toBeVisible();
-    await expect(page.getByText('Valaikappu')).toBeVisible();
-    await expect(items).not.toHaveCount(0);
+    const occasions = page.getByRole('region', { name: /every occasion/i });
+    await expect(occasions.getByText('Wedding', { exact: true })).toBeVisible();
+    await expect(occasions.getByText('Nichayathartham')).toBeVisible();
+    await expect(occasions.getByText('Valaikappu')).toBeVisible();
   });
 
   test('contact page exposes the approved phone, WhatsApp and email', async ({

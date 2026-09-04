@@ -164,7 +164,7 @@ export default async function HomePage() {
           <OccasionGrid occasions={featuredOccasions} />
         </div>
         <div className="mt-8 flex justify-center">
-          <ButtonLink href={routes.occasions} variant="outline" size="md">
+          <ButtonLink href={routes.services} variant="outline" size="md">
             See all occasions
           </ButtonLink>
         </div>

@@ -87,7 +87,11 @@ export function IconChip({
   className?: string;
 }) {
   const tones = {
-    brand: 'bg-brand-800/60 text-accent-300 ring-1 ring-brand-600/40',
+    // `brand-700`, not `800`: `800` sits within a few percent of the
+    // `#37432b` canvas it's drawn on, so at low opacity the chip nearly
+    // disappeared against it. `700` plus a defined ring and a soft glow
+    // keeps every service/occasion icon legible as its own shape.
+    brand: 'bg-brand-700/85 text-accent-200 ring-1 ring-accent-400/35 shadow-glow-sm',
     tint: 'bg-white/10 text-accent-300 ring-1 ring-white/15',
     glass: 'glass-surface text-ink',
     solid: 'bg-brand-700 text-white',
@@ -105,7 +109,7 @@ export function IconChip({
       className={cn(
         'inline-flex shrink-0 items-center justify-center rounded-full',
         'transition-[transform,background-color,box-shadow] duration-300 ease-out',
-        'motion-safe:group-hover:-translate-y-0.5 motion-safe:group-hover:scale-105',
+        'motion-safe:group-hover:-translate-y-0.5 motion-safe:group-hover:scale-105 motion-safe:group-hover:shadow-glow',
         tones[tone],
         sizes[size],
         className,
