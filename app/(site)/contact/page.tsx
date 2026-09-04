@@ -1,16 +1,25 @@
 import type { Metadata } from 'next';
-import { CtaBand, Hero } from '@/components/page';
+import { Hero } from '@/components/page';
 import {
   ButtonLink,
+  Card,
+  CardBody,
+  CardTitle,
   Container,
   IconChip,
   Reveal,
   Section,
   SectionHeading,
 } from '@/components/ui';
-import { MailIcon, PhoneIcon, PinIcon, WhatsAppIcon } from '@/components/layout/icons';
+import {
+  CalendarIcon,
+  MailIcon,
+  PhoneIcon,
+  PinIcon,
+  WhatsAppIcon,
+} from '@/components/layout/icons';
 import { coverage } from '@/lib/content';
-import { mailHref, telHref, whatsAppHref } from '@/lib/navigation';
+import { mailHref, routes, telHref, whatsAppHref } from '@/lib/navigation';
 import { pageMetadata } from '@/lib/seo';
 import { siteConfig } from '@/lib/site-config';
 
@@ -150,19 +159,64 @@ export default function ContactPage() {
       <Section tone="panel" width="wide" aria-labelledby="request-quote">
         <SectionHeading
           id="request-quote"
+          align="center"
+          rule
           eyebrow="Quotations"
-          title="Ready to"
-          accent="ask for a quote?"
-          lead="Send us your date, your venue, your city and the services you need. If you add an email address you will get a confirmation straight away, and we will follow up on the phone or on WhatsApp."
+          title="Ready to plan"
+          accent="your celebration?"
+          lead="However you would rather start, we get the same information either way: your date, your venue and what you have in mind."
         />
-        <div className="mt-8">
-          <ButtonLink href="/quote" variant="primary" size="lg">
-            Get a Quote
-          </ButtonLink>
-        </div>
-      </Section>
 
-      <CtaBand />
+        <ul className="mt-10 grid gap-4 sm:grid-cols-3">
+          {[
+            {
+              icon: <WhatsAppIcon />,
+              title: 'WhatsApp',
+              body: 'Message us your date and what you are planning — the fastest way to reach the team.',
+              action: (
+                <ButtonLink href={whatsAppHref} variant="primary" size="md" fullWidth>
+                  WhatsApp us
+                </ButtonLink>
+              ),
+            },
+            {
+              icon: <PhoneIcon />,
+              title: 'Call',
+              body: `Speak to us directly on ${displayPhone} — opens your phone's dialer.`,
+              action: (
+                <ButtonLink href={telHref} variant="primary" size="md" fullWidth>
+                  Call {displayPhone}
+                </ButtonLink>
+              ),
+            },
+            {
+              icon: <CalendarIcon />,
+              title: 'Send a quote request',
+              body: 'Fill in a short form with your date, venue and services, and we will prepare a quotation.',
+              action: (
+                <ButtonLink href={routes.quote} variant="primary" size="md" fullWidth>
+                  Get a Quote
+                </ButtonLink>
+              ),
+            },
+          ].map((method, index) => (
+            <Reveal key={method.title} as="li" delay={Math.min(index * 70, 240)}>
+              <Card tone="glass" className="h-full">
+                <CardBody className="items-center text-center">
+                  <IconChip tone="brand" size="lg">
+                    {method.icon}
+                  </IconChip>
+                  <CardTitle as="h3" className="mt-1">
+                    {method.title}
+                  </CardTitle>
+                  <p className="text-ink-muted text-sm leading-relaxed">{method.body}</p>
+                  <div className="mt-2 w-full">{method.action}</div>
+                </CardBody>
+              </Card>
+            </Reveal>
+          ))}
+        </ul>
+      </Section>
     </div>
   );
 }
