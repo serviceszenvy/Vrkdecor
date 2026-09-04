@@ -1,4 +1,5 @@
 export {
+  getAdjacentDesigns,
   getDesignBySlug,
   isShowingSampleContent,
   listDesignSlugs,

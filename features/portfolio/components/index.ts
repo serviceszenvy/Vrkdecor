@@ -1,3 +1,4 @@
+export { AdjacentDesignNav } from './adjacent-design-nav';
 export { DesignCard } from './design-card';
 export { DesignGrid } from './design-grid';
 export { DesignRail } from './design-rail';

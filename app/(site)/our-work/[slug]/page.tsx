@@ -3,14 +3,16 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { CtaBand } from '@/components/page';
-import { Badge, ButtonLink, ImageFrame, Section } from '@/components/ui';
+import { Badge, ButtonLink, ImageFrame, Reveal, Section } from '@/components/ui';
 import {
+  AdjacentDesignNav,
   PhotoGallery,
   SampleContentNotice,
   VideoEmbed,
 } from '@/features/portfolio/components';
 import {
   designQuoteHref,
+  getAdjacentDesigns,
   getDesignBySlug,
   isShowingSampleContent,
   listDesignSlugs,
@@ -67,7 +69,10 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
  */
 export default async function DesignDetailPage({ params }: Params) {
   const { slug } = await params;
-  const design = await getDesignBySlug(slug);
+  const [design, adjacent] = await Promise.all([
+    getDesignBySlug(slug),
+    getAdjacentDesigns(slug),
+  ]);
 
   if (!design) notFound();
 
@@ -244,6 +249,12 @@ export default async function DesignDetailPage({ params }: Params) {
           </div>
         </Section>
       ) : null}
+
+      <div className="px-3 sm:px-5 lg:px-6">
+        <Reveal as="div" className="mx-auto w-full max-w-[86rem]">
+          <AdjacentDesignNav previous={adjacent.previous} next={adjacent.next} />
+        </Reveal>
+      </div>
 
       <CtaBand
         title={`Interested in ${design.name}?`}

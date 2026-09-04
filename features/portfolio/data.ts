@@ -241,6 +241,30 @@ export async function listDesignSlugs(): Promise<string[]> {
 }
 
 /**
+ * The Design immediately before and after `slug`, in the same order the
+ * portfolio listing shows them (featured first, then most recently
+ * published) — so "Next" from a detail page matches what browsing the grid
+ * would have shown next. Wraps at both ends: a detail page is a closed loop,
+ * not a dead end, so the customer can keep going either direction.
+ *
+ * Both are null when the Design cannot be found or the portfolio has fewer
+ * than two published Designs.
+ */
+export async function getAdjacentDesigns(slug: string): Promise<{
+  previous: PortfolioDesign | null;
+  next: PortfolioDesign | null;
+}> {
+  const designs = await loadPublishedDesigns();
+  const index = designs.findIndex((design) => design.slug === slug);
+  if (index === -1 || designs.length < 2) return { previous: null, next: null };
+
+  return {
+    previous: designs[(index - 1 + designs.length) % designs.length] ?? null,
+    next: designs[(index + 1) % designs.length] ?? null,
+  };
+}
+
+/**
  * Filter options, restricted to values that actually match a published Design,
  * so the UI never offers a filter that returns nothing.
  */
