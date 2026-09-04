@@ -40,7 +40,21 @@ export default async function GalleryPage() {
         }
       />
 
-      <Section tone="panel" width="wide" aria-labelledby="photos">
+      <Section
+        tone="panel"
+        width="wide"
+        aria-labelledby="photos"
+        panelClassName="relative isolate"
+      >
+        <div
+          aria-hidden="true"
+          className="ambient-blob bg-accent-400/20 motion-safe:animate-drift-slow -top-20 -right-24 size-80"
+        />
+        <div
+          aria-hidden="true"
+          className="ambient-blob bg-brand-400/15 motion-safe:animate-drift-slower -bottom-24 -left-20 size-72"
+        />
+
         <h2 id="photos" className="sr-only">
           Photographs
         </h2>
@@ -55,9 +69,10 @@ export default async function GalleryPage() {
           <>
             <p className="text-ink-muted mb-6 text-sm">
               {photos.length} photographs from {designs.length}{' '}
-              {designs.length === 1 ? 'design' : 'designs'}.
+              {designs.length === 1 ? 'design' : 'designs'}. Open any one for a closer
+              look and a quote.
             </p>
-            <PhotoGallery photos={photos} columns={4} showDesignName />
+            <PhotoGallery photos={photos} masonry />
           </>
         ) : (
           <EmptyState
