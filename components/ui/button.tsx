@@ -48,10 +48,16 @@ const sizes: Record<ButtonSize, string> = {
 };
 
 const base = cn(
-  'inline-flex items-center justify-center rounded-full font-medium',
+  'group inline-flex items-center justify-center rounded-full font-medium',
   'transition-[background-color,box-shadow,transform,color] duration-200 ease-out',
   'motion-safe:active:translate-y-px motion-safe:active:scale-[0.98]',
   'disabled:pointer-events-none disabled:opacity-50',
+  // A trailing icon (an arrow, almost always the last child) nudges forward
+  // on hover — the icon micro-interaction docs/ui-audit.md finding MO5 asked
+  // for, applied once here rather than at each of the ~15 call sites that
+  // pass one.
+  '[&>svg:last-child]:transition-transform [&>svg:last-child]:duration-200',
+  'motion-safe:group-hover:[&>svg:last-child]:translate-x-0.5',
 );
 
 function classesFor(

@@ -160,6 +160,8 @@
   --animate-drift-slower: drift 22s var(--ease-ambient) infinite reverse;
   --animate-gradient-pan: gradient-pan 14s var(--ease-ambient) infinite alternate;
   --animate-fade-in: fade-in 0.5s var(--ease-standard) both;
+  /* A cinematic entrance for the home hero's copy — see `fade-in-up`. */
+  --animate-fade-in-up: fade-in-up 0.6s var(--ease-premium) both;
   /* Entrance for the mobile navigation sheet and other small popovers. */
   --animate-sheet-in: sheet-in var(--duration-sheet) var(--ease-premium) both;
 }
@@ -189,6 +191,17 @@
   }
   to {
     opacity: 1;
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -464,6 +477,50 @@
       opacity: 1;
       transform: translateY(0);
     }
+
+    /*
+     * A distinct reveal for photography (docs/ui-audit.md finding MO4): the
+     * image itself settles from a slight zoom rather than rising and fading
+     * like its containing card. Layered independently of `.reveal` — they
+     * sit on different elements (the card and the image inside it), so both
+     * can run at once without competing for the same `transform`.
+     */
+    .image-reveal {
+      transform: scale(1.06);
+      transition: transform var(--duration-entrance) var(--ease-premium);
+    }
+
+    .image-reveal.is-visible {
+      transform: scale(1);
+    }
+  }
+}
+
+/*
+ * A minimal, CSS-only parallax on the home hero's photograph
+ * (docs/ui-audit.md finding MO1). Deliberately narrow: `@supports` gates it
+ * to browsers with scroll-driven animations, `prefers-reduced-motion` is
+ * checked explicitly rather than relied on via the generic duration-zeroing
+ * rule above (a scroll-linked animation's progress is driven by scroll
+ * position, not a wall-clock duration, so that rule cannot be trusted to
+ * neutralise it), and it's `sm` and up only, matching the mobile motion
+ * budget elsewhere in this file. Amplitude is small (6%) and GPU-composited
+ * (`transform` only), so it costs nothing beyond what the browser already
+ * pays to composite a fixed background image.
+ */
+@media (min-width: 640px) and (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: scroll()) {
+    .hero-parallax {
+      animation: hero-parallax linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 70vh;
+    }
+  }
+}
+
+@keyframes hero-parallax {
+  to {
+    transform: translateY(6%);
   }
 }
 
@@ -479,5 +536,32 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/*
+ * Mobile motion budget (docs/ui-audit.md findings M1/M2/Mob1). Two things
+ * repaint on every scroll or animation frame regardless of viewport, at real
+ * cost on a low-end phone, with no reason to run at full intensity below
+ * `sm`: the ambient drift/gradient-pan animations, and the header/mobile-nav/
+ * sticky-CTA's 24px backdrop blur (the most expensive of the three blur
+ * radii in the system). `!important`, matching the pattern the
+ * `prefers-reduced-motion` rule above already uses for the same reason.
+ * `.glass-surface-strong`'s un-blurred fallback is already a finished,
+ * near-opaque panel (the same one a browser without `backdrop-filter`
+ * support gets), so this is a genuine graceful degradation, not a visual
+ * regression.
+ */
+@media (max-width: 639.98px) {
+  .motion-safe\:animate-drift-slow,
+  .motion-safe\:animate-drift-slower,
+  .motion-safe\:animate-gradient-pan {
+    animation: none !important;
+  }
+
+  .glass-surface-strong {
+    background-color: rgb(255 255 255 / 0.95) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
 }

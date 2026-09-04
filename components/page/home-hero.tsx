@@ -43,7 +43,7 @@ export function HomeHero({ actions }: { actions: ReactNode }) {
             height={heroImage.height}
             priority
             sizes="100vw"
-            className="absolute inset-0 -z-10 h-full w-full object-cover"
+            className="hero-parallax absolute inset-0 -z-10 h-full w-full object-cover"
           />
         ) : null}
 
@@ -79,24 +79,42 @@ export function HomeHero({ actions }: { actions: ReactNode }) {
 
         <Container width="wide">
           <div className="grid gap-8 pt-24 pb-14 sm:grid-cols-[minmax(0,1fr)_20rem] sm:items-center sm:pt-28 sm:pb-16 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-10 lg:pt-40 lg:pb-28">
-            <div className="motion-safe:animate-fade-in flex max-w-2xl flex-col gap-5">
-              <p className="text-accent-300 text-2xs font-semibold tracking-[0.24em] uppercase">
+            {/*
+              A choreographed entrance, not one fade: eyebrow, headline, lead
+              and actions arrive in sequence (docs/ui-audit.md finding MO3).
+              Each element sets its own `animation-delay` inline — a class-only
+              approach would need a bespoke Tailwind utility per delay value.
+            */}
+            <div className="flex max-w-2xl flex-col gap-5">
+              <p
+                className="text-accent-300 motion-safe:animate-fade-in-up text-2xs font-semibold tracking-[0.24em] uppercase"
+                style={{ animationDelay: '0ms' }}
+              >
                 {heroCopy.eyebrow}
               </p>
 
               <h1
                 id="hero-title"
-                className="text-4xl leading-[1.08] font-semibold text-white sm:text-5xl"
+                className="motion-safe:animate-fade-in-up text-4xl leading-[1.08] font-semibold text-white sm:text-5xl"
+                style={{ animationDelay: '90ms' }}
               >
                 {heroCopy.title}{' '}
                 <span className="text-accent-300 block">{heroCopy.titleAccent}</span>
               </h1>
 
-              <p className="text-sand-200 max-w-xl text-base leading-relaxed sm:text-lg">
+              <p
+                className="text-sand-200 motion-safe:animate-fade-in-up max-w-xl text-base leading-relaxed sm:text-lg"
+                style={{ animationDelay: '180ms' }}
+              >
                 {heroCopy.lead}
               </p>
 
-              <div className="mt-2 flex flex-wrap gap-3">{actions}</div>
+              <div
+                className="motion-safe:animate-fade-in-up mt-2 flex flex-wrap gap-3"
+                style={{ animationDelay: '270ms' }}
+              >
+                {actions}
+              </div>
             </div>
 
             <GlassPanel
