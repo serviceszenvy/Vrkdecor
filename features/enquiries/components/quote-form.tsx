@@ -148,7 +148,7 @@ export function QuoteForm({
         </div>
       ) : null}
 
-      <Fieldset legend="Your details">
+      <Fieldset legend="Your details" columns>
         <Field
           field="name"
           label="Your name"
@@ -192,6 +192,7 @@ export function QuoteForm({
           label="Email address"
           error={state.errors.email}
           hint="Optional. Add it and we will email you a confirmation of this request straight away."
+          className="sm:col-span-2"
         >
           {(props) => (
             <input
@@ -205,7 +206,7 @@ export function QuoteForm({
         </Field>
       </Fieldset>
 
-      <Fieldset legend="About your event">
+      <Fieldset legend="About your event" columns>
         <Field
           field="eventType"
           label="Type of event"
@@ -245,7 +246,9 @@ export function QuoteForm({
             />
           )}
         </Field>
+      </Fieldset>
 
+      <Fieldset legend="Location" columns>
         <Field
           field="venue"
           label="Venue"
@@ -280,6 +283,7 @@ export function QuoteForm({
           label="Approximate number of guests"
           error={state.errors.guestCount}
           hint="Optional."
+          className="sm:col-span-2"
         >
           {(props) => (
             <input
@@ -434,16 +438,32 @@ function SubmitButton() {
       data-testid="quote-submit"
       className="sm:self-start"
     >
-      {pending ? 'Sending…' : 'Send quote request'}
+      {pending ? 'Sending…' : 'Send Enquiry'}
     </Button>
   );
 }
 
-function Fieldset({ legend, children }: { legend: string; children: React.ReactNode }) {
+/**
+ * `columns` lays paired fields (name+phone, event type+date, venue+city) side
+ * by side from `sm` up, so the form reads as a handful of short rows on a
+ * wide screen instead of one long single-column scroll — the same fields,
+ * grouped for how quickly they read, not fewer of them.
+ */
+function Fieldset({
+  legend,
+  columns = false,
+  children,
+}: {
+  legend: string;
+  columns?: boolean;
+  children: React.ReactNode;
+}) {
   return (
     <fieldset className="flex flex-col gap-5">
       <legend className="font-display text-xl font-medium">{legend}</legend>
-      {children}
+      <div className={columns ? 'grid gap-5 sm:grid-cols-2' : 'flex flex-col gap-5'}>
+        {children}
+      </div>
     </fieldset>
   );
 }
@@ -479,6 +499,7 @@ function Field({
   hint,
   error,
   required = false,
+  className,
   children,
 }: {
   field: EnquiryField;
@@ -486,6 +507,8 @@ function Field({
   hint?: string;
   error?: string | undefined;
   required?: boolean;
+  /** Extra classes on the field's own wrapper, e.g. `sm:col-span-2` inside a `columns` Fieldset. */
+  className?: string;
   children: (props: ControlProps) => React.ReactNode;
 }) {
   const hintId = hint ? `hint-${field}` : undefined;
@@ -493,7 +516,7 @@ function Field({
   const describedBy = [errorId, hintId].filter(Boolean).join(' ') || undefined;
 
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className={cn('flex flex-col gap-1.5', className)}>
       <label htmlFor={`field-${field}`} className="text-sm font-medium">
         {label}
         {required ? (

@@ -93,11 +93,11 @@ export default async function QuotePage({
       />
 
       <Section tone="panel" width="default" aria-labelledby="quote-form-heading">
-        <h2 id="quote-form-heading" className="sr-only">
-          Quote request form
+        <h2 id="quote-form-heading" className="font-display text-2xl font-medium sm:text-3xl">
+          Tell us about your celebration
         </h2>
 
-        <div className="flex flex-col gap-6">
+        <div className="mt-8 flex flex-col gap-6">
           {isUsingLocalEnquiryStore() ? <LocalStoreNotice /> : null}
           {context.requestedDesignUnavailable ? <UnavailableDesignNotice /> : null}
           {context.design ? (
