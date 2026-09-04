@@ -3,18 +3,18 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { CtaBand } from '@/components/page';
-import { Badge, ButtonLink, ImageFrame, Reveal, Section } from '@/components/ui';
+import { Badge, ButtonLink, ImageFrame, Section } from '@/components/ui';
 import {
-  AdjacentDesignNav,
   PhotoGallery,
+  PrevNextWork,
   SampleContentNotice,
   VideoEmbed,
 } from '@/features/portfolio/components';
 import {
   designQuoteHref,
-  getAdjacentDesigns,
   getDesignBySlug,
   isShowingSampleContent,
+  listDesigns,
   listDesignSlugs,
   toPhotos,
 } from '@/features/portfolio';
@@ -69,13 +69,11 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
  */
 export default async function DesignDetailPage({ params }: Params) {
   const { slug } = await params;
-  const [design, adjacent] = await Promise.all([
-    getDesignBySlug(slug),
-    getAdjacentDesigns(slug),
-  ]);
+  const design = await getDesignBySlug(slug);
 
   if (!design) notFound();
 
+  const allDesigns = await listDesigns();
   const photos = toPhotos([design]);
   const [cover, ...related] = photos;
 
@@ -135,7 +133,7 @@ export default async function DesignDetailPage({ params }: Params) {
               ))}
             </div>
 
-            <h1 id="design-title" className="text-4xl font-semibold sm:text-5xl">
+            <h1 id="design-title" className="text-4xl font-medium sm:text-5xl">
               {design.name}
             </h1>
 
@@ -159,7 +157,7 @@ export default async function DesignDetailPage({ params }: Params) {
             </div>
           </div>
 
-          <dl className="border-accent-300/15 from-brand-800 to-surface-tint shadow-card flex flex-col gap-4 rounded-3xl border bg-gradient-to-br p-6 sm:p-7">
+          <dl className="border-accent-400/25 from-surface-tint to-canvas-deep flex flex-col gap-4 rounded-3xl border bg-gradient-to-br p-6 sm:p-7">
             {design.occasion ? (
               <div>
                 <dt className="text-ink-muted text-2xs tracking-[0.16em] uppercase">
@@ -235,6 +233,10 @@ export default async function DesignDetailPage({ params }: Params) {
             design and share its occasion, style, services and location.
           </p>
         ) : null}
+
+        <div className="mt-10">
+          <PrevNextWork designs={allDesigns} currentSlug={design.slug} />
+        </div>
       </Section>
 
       {design.videos.length > 0 ? (
@@ -249,17 +251,6 @@ export default async function DesignDetailPage({ params }: Params) {
           </div>
         </Section>
       ) : null}
-
-      <div className="px-3 sm:px-5 lg:px-6">
-        <Reveal as="div" className="mx-auto w-full max-w-[86rem]">
-          <AdjacentDesignNav
-            previous={adjacent.previous}
-            next={adjacent.next}
-            position={adjacent.position}
-            total={adjacent.total}
-          />
-        </Reveal>
-      </div>
 
       <CtaBand
         title={`Interested in ${design.name}?`}

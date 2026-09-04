@@ -12,7 +12,7 @@ export function LocalStoreNotice() {
   return (
     <div
       data-local-enquiry-notice
-      className="border-accent-400/70 bg-accent-50 text-accent-900 rounded-2xl border p-4 text-sm"
+      className="border-accent-400/40 bg-accent-500/10 text-accent-200 rounded-2xl border p-4 text-sm"
     >
       <p>
         <strong>Demonstration mode.</strong> No enquiry database is connected, so

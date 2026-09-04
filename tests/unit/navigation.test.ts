@@ -11,10 +11,11 @@ import { siteConfig } from '@/lib/site-config';
 
 describe('navigation', () => {
   it('matches the approved site structure in the order specified', () => {
+    // Redesign brief section 6: the standalone Occasions page was removed
+    // and folded into Services (which now redirects /occasions -> /services).
     expect(primaryNav.map((item) => item.label)).toEqual([
       'Our Work',
       'Services',
-      'Occasions',
       'Packages',
       'Gallery',
       'About',

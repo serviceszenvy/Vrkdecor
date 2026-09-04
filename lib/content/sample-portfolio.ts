@@ -199,7 +199,7 @@ export const sampleDesigns: readonly SampleDesign[] = [
     location: 'Tuticorin',
     description:
       'A bright birthday setup with a balloon arch, a dessert table and coloured lighting.',
-    featured: false,
+    featured: true,
     images: images('birthday-colourful', [
       'Balloon arch above a dessert table',
       'Dessert table detail',

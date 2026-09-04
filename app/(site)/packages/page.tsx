@@ -6,7 +6,6 @@ import {
   CardBody,
   CardMeta,
   CardTitle,
-  Reveal,
   Section,
 } from '@/components/ui';
 import { pricingNote } from '@/lib/content';
@@ -61,25 +60,23 @@ export default async function PackagesPage() {
         </h2>
         {packages.length > 0 ? (
           <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {packages.map((pkg, index) => (
-              <Reveal key={pkg.id} as="li" delay={Math.min(index * 60, 240)}>
-                <Card interactive className="h-full">
-                  <CardBody>
-                    <CardTitle as="h3">{pkg.name}</CardTitle>
-                    {pkg.description ? <CardMeta>{pkg.description}</CardMeta> : null}
-                    <p className="text-brand-300 font-medium">
-                      {pkg.pricingMode === 'starting_from' && pkg.startingPrice !== null
-                        ? `Starting from ${formatStartingPrice(pkg.startingPrice)}`
-                        : 'Custom quote'}
-                    </p>
-                    <div className="mt-2">
-                      <ButtonLink href={routes.quote} variant="outline" size="sm">
-                        Enquire
-                      </ButtonLink>
-                    </div>
-                  </CardBody>
-                </Card>
-              </Reveal>
+            {packages.map((pkg) => (
+              <Card key={pkg.id} as="li" interactive>
+                <CardBody>
+                  <CardTitle as="h3">{pkg.name}</CardTitle>
+                  {pkg.description ? <CardMeta>{pkg.description}</CardMeta> : null}
+                  <p className="text-accent-300 font-medium">
+                    {pkg.pricingMode === 'starting_from' && pkg.startingPrice !== null
+                      ? `Starting from ${formatStartingPrice(pkg.startingPrice)}`
+                      : 'Custom quote'}
+                  </p>
+                  <div className="mt-2">
+                    <ButtonLink href={routes.quote} variant="outline" size="sm">
+                      Enquire
+                    </ButtonLink>
+                  </div>
+                </CardBody>
+              </Card>
             ))}
           </ul>
         ) : (

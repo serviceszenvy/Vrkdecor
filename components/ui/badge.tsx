@@ -4,14 +4,13 @@ import { cn } from '@/lib/cn';
 type BadgeTone = 'brand' | 'accent' | 'neutral' | 'inverse' | 'glass';
 
 const tones: Record<BadgeTone, string> = {
-  brand: 'bg-brand-800/70 text-accent-300 border-brand-600/50',
-  accent: 'bg-accent-900/60 text-accent-300 border-accent-700/60',
-  neutral: 'bg-white/8 text-ink-muted border-white/12',
+  brand: 'bg-accent-500/15 text-accent-300 border-accent-400/30',
+  accent: 'bg-accent-500 text-ink-inverse border-transparent',
+  neutral: 'bg-surface-muted text-ink-muted border-line-soft',
   inverse: 'bg-white/10 text-white border-white/25',
   /*
-    The chip the reference design places on top of a photograph. It falls back
-    to a near-opaque dark pill where `backdrop-filter` is unsupported, so the
-    label never ends up as low-contrast text floating on a busy image.
+    The chip the reference design places on top of a photograph. Dark glass so
+    the label never ends up as dark text lost against a dark image.
   */
   glass: 'glass-surface-strong text-ink border-transparent',
 };
@@ -30,7 +29,6 @@ export function Badge({
     <span
       className={cn(
         'inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium',
-        'transition-colors duration-200',
         tones[tone],
         className,
       )}

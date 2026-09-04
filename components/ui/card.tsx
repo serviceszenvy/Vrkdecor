@@ -6,19 +6,8 @@ type CardTone = 'surface' | 'glass' | 'tint' | 'plain';
 const tones: Record<CardTone, string> = {
   surface: 'bg-surface border border-line-soft',
   glass: 'glass-surface glass-edge',
-  tint: 'bg-surface-tint border border-accent-300/20',
+  tint: 'bg-surface-tint border border-accent-400/30',
   plain: 'border border-transparent',
-};
-
-/**
- * A subtle accent-coloured glow on hover, not a flat border-colour swap — it
- * reads as a glass reflection catching the light, per the dark-theme brief.
- */
-const interactiveBorders: Record<CardTone, string> = {
-  surface: 'hover:border-accent-300/50 focus-within:border-accent-300/50',
-  glass: '',
-  tint: 'hover:border-accent-300/60 focus-within:border-accent-300/60',
-  plain: '',
 };
 
 /**
@@ -48,15 +37,8 @@ export function Card({
         tones[tone],
         interactive &&
           cn(
-            'group transition-[box-shadow,transform,border-color] duration-300 ease-out',
-            // `.glass-surface` already sets its own box-shadow in a CSS layer
-            // that a `hover:shadow-*` Tailwind utility would silently
-            // override rather than blend with — see the comment on
-            // `.glass-hover-glow` in app/globals.css (finding M3/C1).
-            tone === 'glass'
-              ? 'glass-hover-glow'
-              : 'shadow-card hover:shadow-glow focus-within:shadow-glow',
-            interactiveBorders[tone],
+            'shadow-card hover:shadow-raised focus-within:shadow-raised',
+            'transition-[box-shadow,transform] duration-300',
             'motion-safe:focus-within:-translate-y-1 motion-safe:hover:-translate-y-1',
           ),
         className,

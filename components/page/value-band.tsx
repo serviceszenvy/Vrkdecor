@@ -1,4 +1,4 @@
-import { Container, IconChip, Reveal } from '@/components/ui';
+import { Container, IconChip } from '@/components/ui';
 import { FlowerIcon, LeafIcon, SparkIcon, TeamIcon } from '@/components/layout/icons';
 import { LeafRule } from '@/components/ui';
 import { whyChooseUs } from '@/lib/content';
@@ -19,18 +19,15 @@ const VALUE_ICONS = [FlowerIcon, TeamIcon, LeafIcon, SparkIcon] as const;
 export function ValueBand() {
   return (
     <section className="px-3 sm:px-5 lg:px-6" aria-labelledby="why-vrk">
-      <div className="from-brand-800 via-surface-tint to-brand-950 border-accent-300/15 relative isolate mx-auto w-full max-w-[86rem] overflow-hidden rounded-3xl border bg-gradient-to-br">
-        <LeafDecor className="text-accent-400/22 motion-safe:animate-drift-slow -top-6 -left-10 size-56" />
-        <LeafDecor
-          className="text-accent-400/22 motion-safe:animate-drift-slower -right-10 -bottom-8 size-56"
-          flip
-        />
+      <div className="from-surface-tint via-canvas to-accent-500/10 border-accent-400/20 relative isolate mx-auto w-full max-w-[86rem] overflow-hidden rounded-3xl border bg-gradient-to-br">
+        <LeafDecor className="text-accent-400/20 -top-6 -left-10 size-56" />
+        <LeafDecor className="text-accent-400/20 -right-10 -bottom-8 size-56" flip />
 
         <Container width="wide">
           <div className="py-12 sm:py-16">
             <div className="mx-auto flex max-w-2xl flex-col items-center gap-3 text-center">
               <h2 id="why-vrk" className="text-3xl font-medium sm:text-4xl">
-                Why choose <span className="text-brand-300">VRK Decor</span>
+                Why choose <span className="text-accent-300">VRK Decor</span>
               </h2>
               <LeafRule />
             </div>
@@ -39,11 +36,9 @@ export function ValueBand() {
               {whyChooseUs.map((reason, index) => {
                 const ValueIcon = VALUE_ICONS[index] ?? FlowerIcon;
                 return (
-                  <Reveal
+                  <li
                     key={reason.title}
-                    as="li"
-                    delay={Math.min(index * 80, 240)}
-                    className="bg-surface/70 border-accent-300/15 lg:not-first:border-l-accent-300/20 group flex h-full flex-col items-center gap-2.5 rounded-2xl border px-3 py-6 text-center lg:rounded-none lg:border-transparent lg:bg-transparent lg:px-6 lg:py-2"
+                    className="bg-surface/70 border-line-soft lg:not-first:border-l-line-soft motion-safe:hover:-translate-y-1 flex h-full flex-col items-center gap-2.5 rounded-2xl border px-3 py-6 text-center transition-transform duration-300 lg:rounded-none lg:border-transparent lg:bg-transparent lg:px-6 lg:py-2"
                   >
                     <IconChip tone="tint" size="lg">
                       <ValueIcon className="size-6" />
@@ -54,7 +49,7 @@ export function ValueBand() {
                     <p className="text-ink-soft text-xs leading-relaxed text-pretty sm:text-sm">
                       {reason.body}
                     </p>
-                  </Reveal>
+                  </li>
                 );
               })}
             </ul>

@@ -1,28 +1,8 @@
 import Link from 'next/link';
-import { ChevronRightIcon } from '@/components/layout/icons';
-import { occasions as approvedOccasions } from '@/lib/content';
 import { cn } from '@/lib/cn';
 import { routes } from '@/lib/navigation';
+import { OccasionFilterAccordion } from './occasion-filter-accordion';
 import type { PortfolioFilters, PortfolioTag } from '../types';
-
-/** Occasion chips shown before "More occasions" — the rest are one tap away. */
-const VISIBLE_OCCASION_COUNT = 6;
-
-/**
- * `listFilterOptions()` sorts occasions alphabetically, which is right for
- * the full "More occasions" list but wrong for choosing which ones lead —
- * alphabetical order buries "Wedding" (the approved occasion catalogue's own
- * first entry, `lib/content/catalog.ts`) near the end. Reorders to the
- * catalogue's own order first, so the front row is the occasions this
- * business actually leads with, not an accident of spelling.
- */
-const OCCASION_RANK = new Map(approvedOccasions.map((o, index) => [o.slug, index]));
-
-function byApprovedOrder(tags: readonly PortfolioTag[]): PortfolioTag[] {
-  return [...tags].sort(
-    (a, b) => (OCCASION_RANK.get(a.slug) ?? 99) - (OCCASION_RANK.get(b.slug) ?? 99),
-  );
-}
 
 /**
  * Portfolio filters — Requirements section 8 (occasion, style and service).
@@ -50,49 +30,22 @@ function FilterRow({
   paramKey,
   options,
   filters,
-  /** When set, options beyond this count collapse into a "More" accordion. */
-  visibleCount,
 }: {
   label: string;
   paramKey: keyof PortfolioFilters;
   options: readonly PortfolioTag[];
   filters: PortfolioFilters;
-  visibleCount?: number;
 }) {
   if (options.length === 0) return null;
   const active = filters[paramKey];
 
   const chip = (isActive: boolean) =>
     cn(
-      'inline-flex min-h-10 items-center rounded-full border px-4 text-sm',
-      'transition-[background-color,border-color,box-shadow,transform] duration-200',
-      'motion-safe:active:scale-95',
+      'inline-flex min-h-10 items-center rounded-full border px-4 text-sm transition-colors',
       isActive
-        ? 'border-brand-700 bg-brand-700 text-white shadow-glow-sm'
-        : 'border-line-soft bg-surface text-ink hover:border-accent-300/60 hover:bg-white/5 hover:shadow-card',
+        ? 'border-accent-500 bg-accent-500 text-ink-inverse font-medium'
+        : 'border-line-soft bg-surface text-ink hover:border-accent-400/50 hover:bg-accent-500/10',
     );
-
-  const renderChip = (option: PortfolioTag) => {
-    const isActive = active === option.slug;
-    return (
-      <li key={option.slug} className="rail-item shrink-0">
-        <Link
-          href={buildHref(filters, paramKey, isActive ? undefined : option.slug)}
-          aria-current={isActive ? 'true' : undefined}
-          className={chip(isActive)}
-        >
-          {option.name}
-        </Link>
-      </li>
-    );
-  };
-
-  const visible =
-    visibleCount === undefined ? options : options.slice(0, visibleCount);
-  const hidden = visibleCount === undefined ? [] : options.slice(visibleCount);
-  // A direct link (or a previous selection) can point at a collapsed option —
-  // the accordion must default open then, or the active chip is invisible.
-  const activeIsHidden = hidden.some((option) => option.slug === active);
 
   return (
     <div className="flex flex-col gap-2.5">
@@ -114,35 +67,21 @@ function FilterRow({
             All
           </Link>
         </li>
-        {visible.map(renderChip)}
+        {options.map((option) => {
+          const isActive = active === option.slug;
+          return (
+            <li key={option.slug} className="rail-item shrink-0">
+              <Link
+                href={buildHref(filters, paramKey, isActive ? undefined : option.slug)}
+                aria-current={isActive ? 'true' : undefined}
+                className={chip(isActive)}
+              >
+                {option.name}
+              </Link>
+            </li>
+          );
+        })}
       </ul>
-
-      {hidden.length > 0 ? (
-        <details className="group" open={activeIsHidden || undefined}>
-          {/*
-            A native disclosure, not client state: filtering already works
-            without JavaScript (it's plain links setting query parameters),
-            and `<details>` keeps "More occasions" working the same way —
-            no JS required to open it, a real toggle for keyboard and screen
-            reader users, and CSS alone drives the open/close motion below.
-          */}
-          <summary
-            className={cn(
-              'border-line-soft bg-surface text-ink-muted hover:text-ink hover:border-accent-300/50',
-              'inline-flex min-h-9 w-fit cursor-pointer list-none items-center gap-1.5 rounded-full border px-3.5 text-sm',
-              'transition-colors duration-200 select-none [&::-webkit-details-marker]:hidden',
-            )}
-          >
-            <span className="group-open:hidden">More {label.toLowerCase()}s</span>
-            <span className="hidden group-open:inline">Fewer {label.toLowerCase()}s</span>
-            <ChevronRightIcon className="size-3.5 rotate-90 transition-transform duration-200 group-open:-rotate-90" />
-          </summary>
-
-          <ul className="motion-safe:animate-fade-in-up mt-2.5 flex flex-wrap gap-2">
-            {hidden.map(renderChip)}
-          </ul>
-        </details>
-      ) : null}
     </div>
   );
 }
@@ -165,19 +104,13 @@ export function FilterBar({
   return (
     <section
       aria-labelledby="filters"
-      className="border-line-soft bg-surface/70 shadow-card flex flex-col gap-5 rounded-3xl border p-5 sm:p-6"
+      className="border-line-soft bg-surface/70 flex flex-col gap-5 rounded-3xl border p-5 sm:p-6"
     >
       <h2 id="filters" className="sr-only">
         Filter designs
       </h2>
 
-      <FilterRow
-        label="Occasion"
-        paramKey="occasion"
-        options={byApprovedOrder(options.occasions)}
-        filters={filters}
-        visibleCount={VISIBLE_OCCASION_COUNT}
-      />
+      <OccasionFilterAccordion options={options.occasions} filters={filters} />
       <FilterRow
         label="Style"
         paramKey="style"

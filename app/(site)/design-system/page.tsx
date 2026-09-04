@@ -74,7 +74,7 @@ export default function DesignSystemPage() {
           title="Proposed digital design system"
           lead="Derived by analysing the supplied VRK Decor logo. Pending client review."
         />
-        <div className="border-brand-300 bg-brand-50 mt-6 max-w-3xl rounded-2xl border p-5">
+        <div className="border-accent-400/30 bg-accent-500/10 mt-6 max-w-3xl rounded-2xl border p-5">
           <p className="text-brand-900 text-sm">
             <strong>This is not an official VRK Decor brand guideline.</strong> No
             official brand guide was supplied, so this system was derived by measuring
@@ -142,7 +142,7 @@ export default function DesignSystemPage() {
           title="Glass surfaces"
           lead="Translucency is used to let photography stay visible through the interface, not as a finish on every box. Each surface falls back to a near-opaque panel where backdrop-filter is unsupported."
         />
-        <div className="from-brand-700 to-brand-900 mt-8 grid gap-4 rounded-3xl bg-gradient-to-br p-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="from-brand-700 to-brand-900 mt-8 grid gap-4 rounded-3xl bg-gradient-to-br p-6 sm:grid-cols-3">
           <GlassPanel tone="default" radius="2xl" className="p-5">
             <p className="text-ink font-semibold">Default</p>
             <p className="text-ink-soft text-sm">
@@ -161,12 +161,6 @@ export default function DesignSystemPage() {
               Green-tinted glass for brand moments such as the closing action.
             </p>
           </GlassPanel>
-          <GlassPanel tone="vivid" radius="2xl" className="p-5">
-            <p className="text-ink font-semibold">Vivid</p>
-            <p className="text-ink-soft text-sm">
-              Warmer highlight glass for a small number of featured moments.
-            </p>
-          </GlassPanel>
         </div>
         <dl className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {Object.entries(glass).map(([name, value]) => (
@@ -183,7 +177,7 @@ export default function DesignSystemPage() {
           {Object.entries(radii).map(([name, value]) => (
             <div key={name} className="flex flex-col items-center gap-2">
               <div
-                className="border-brand-300 bg-brand-50 h-16 w-full border"
+                className="border-accent-400/30 bg-accent-500/10 h-16 w-full border"
                 style={{ borderRadius: value === '9999px' ? '9999px' : value }}
               />
               <p className="text-2xs text-ink-muted font-mono">

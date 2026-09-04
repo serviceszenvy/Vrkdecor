@@ -29,7 +29,7 @@ export function StatList({
           <dd
             className={cn(
               'font-display text-3xl font-medium sm:text-4xl',
-              tone === 'inverse' ? 'text-accent-300' : 'text-brand-300',
+              tone === 'inverse' ? 'text-accent-300' : 'text-accent-300',
             )}
           >
             {stat.value}

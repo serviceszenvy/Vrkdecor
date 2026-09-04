@@ -5,6 +5,7 @@ import {
   EmptyState,
   HomeHero,
   OccasionGrid,
+  SignatureWorkGrid,
   StatBar,
   ValueBand,
   serviceIcon,
@@ -18,7 +19,6 @@ import {
   CardMeta,
   CardTitle,
   IconChip,
-  Reveal,
   Section,
   SectionHeading,
 } from '@/components/ui';
@@ -39,7 +39,7 @@ import {
   styles,
 } from '@/lib/content';
 import { isShowingSampleContent, listFeaturedDesigns } from '@/features/portfolio';
-import { DesignRail, SampleContentNotice } from '@/features/portfolio/components';
+import { SampleContentNotice } from '@/features/portfolio/components';
 import { getOccasions, getServices, getTestimonials } from '@/lib/db/public-content';
 import { routes } from '@/lib/navigation';
 import { pageMetadata } from '@/lib/seo';
@@ -71,7 +71,7 @@ export default async function HomePage() {
   const [occasions, services, designs, testimonials] = await Promise.all([
     getOccasions(),
     getServices(),
-    listFeaturedDesigns(8),
+    listFeaturedDesigns(4),
     getTestimonials(),
   ]);
 
@@ -133,7 +133,7 @@ export default async function HomePage() {
                   <SampleContentNotice />
                 </div>
               ) : null}
-              <DesignRail designs={designs} />
+              <SignatureWorkGrid designs={designs} />
             </>
           ) : (
             <EmptyState
@@ -164,7 +164,7 @@ export default async function HomePage() {
           <OccasionGrid occasions={featuredOccasions} />
         </div>
         <div className="mt-8 flex justify-center">
-          <ButtonLink href={routes.services} variant="outline" size="md">
+          <ButtonLink href={`${routes.services}#occasions`} variant="outline" size="md">
             See all occasions
           </ButtonLink>
         </div>
@@ -186,29 +186,27 @@ export default async function HomePage() {
         </div>
 
         <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {featuredServices.map((service, index) => {
+          {featuredServices.map((service) => {
             const ServiceIcon = serviceIcon(service.slug);
             return (
-              <Reveal key={service.slug} as="li" delay={Math.min(index * 60, 240)}>
-                <Card tone="surface" interactive className="h-full">
-                  <CardBody>
-                    <IconChip tone="brand" size="sm">
-                      <ServiceIcon className="size-4" />
-                    </IconChip>
-                    <CardTitle as="h3" className="mt-1">
-                      {service.name}
-                    </CardTitle>
-                    {service.description ? (
-                      <CardMeta>{service.description}</CardMeta>
-                    ) : null}
-                    {service.deliveryModel === 'partner_vendor' ? (
-                      <div>
-                        <Badge tone="neutral">{PARTNER_VENDOR_LABEL}</Badge>
-                      </div>
-                    ) : null}
-                  </CardBody>
-                </Card>
-              </Reveal>
+              <Card key={service.slug} as="li" tone="surface" interactive>
+                <CardBody>
+                  <IconChip tone="brand" size="sm">
+                    <ServiceIcon className="size-4" />
+                  </IconChip>
+                  <CardTitle as="h3" className="mt-1">
+                    {service.name}
+                  </CardTitle>
+                  {service.description ? (
+                    <CardMeta>{service.description}</CardMeta>
+                  ) : null}
+                  {service.deliveryModel === 'partner_vendor' ? (
+                    <div>
+                      <Badge tone="neutral">{PARTNER_VENDOR_LABEL}</Badge>
+                    </div>
+                  ) : null}
+                </CardBody>
+              </Card>
             );
           })}
         </ul>
@@ -225,15 +223,16 @@ export default async function HomePage() {
         />
         <ol className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {howItWorks.map((step, index) => (
-            <Reveal key={step.title} as="li" delay={Math.min(index * 70, 240)}>
-              <div className="border-line-soft bg-canvas/60 hover:border-accent-300/50 hover:shadow-card flex h-full flex-col gap-2 rounded-2xl border p-5 transition-[border-color,box-shadow] duration-300">
-                <span className="bg-brand-700 flex size-9 items-center justify-center rounded-full text-sm font-semibold text-white">
-                  {index + 1}
-                </span>
-                <h3 className="font-display mt-1 text-lg font-medium">{step.title}</h3>
-                <p className="text-ink-muted text-sm leading-relaxed">{step.body}</p>
-              </div>
-            </Reveal>
+            <li
+              key={step.title}
+              className="border-line-soft bg-surface/60 motion-safe:hover:-translate-y-1 flex flex-col gap-2 rounded-2xl border p-5 transition-transform duration-300"
+            >
+              <span className="bg-accent-500 text-ink-inverse flex size-9 items-center justify-center rounded-full text-sm font-semibold">
+                {index + 1}
+              </span>
+              <h3 className="font-display mt-1 text-lg font-medium">{step.title}</h3>
+              <p className="text-ink-muted text-sm leading-relaxed">{step.body}</p>
+            </li>
           ))}
         </ol>
       </Section>
@@ -252,7 +251,7 @@ export default async function HomePage() {
               <li key={style.slug}>
                 <Link
                   href={`${routes.work}?style=${encodeURIComponent(style.slug)}`}
-                  className="border-line-soft bg-surface text-ink hover:border-accent-300/60 hover:bg-white/5 inline-flex min-h-10 items-center rounded-full border px-4 text-sm transition-colors"
+                  className="border-line-soft bg-surface text-ink hover:border-accent-400/50 hover:bg-accent-500/10 inline-flex min-h-10 items-center rounded-full border px-4 text-sm transition-colors"
                 >
                   {style.name}
                 </Link>
@@ -262,27 +261,7 @@ export default async function HomePage() {
         </div>
       </Section>
 
-      <Section
-        tone="panel"
-        width="wide"
-        aria-labelledby="testimonials"
-        panelClassName="from-accent-950/50 via-surface-tint to-brand-900 relative isolate bg-gradient-to-br"
-      >
-        {/*
-          A colourful accent-tinted dark panel, not a plain repeat of `canvas`
-          — this section's job in the page rhythm is to break up the run of
-          same-toned panels (docs/ui-audit.md finding H1) while staying on
-          theme now that the whole site is dark, not just three "bookend"
-          sections.
-        */}
-        <div
-          aria-hidden="true"
-          className="ambient-blob bg-accent-300/25 motion-safe:animate-drift-slow -top-10 -left-16 size-72"
-        />
-        <div
-          aria-hidden="true"
-          className="ambient-blob bg-brand-300/20 motion-safe:animate-drift-slower -right-16 -bottom-14 size-80"
-        />
+      <Section tone="panel" width="wide" aria-labelledby="testimonials">
         <SectionHeading
           id="testimonials"
           align="center"
@@ -294,23 +273,21 @@ export default async function HomePage() {
         <div className="mt-10">
           {testimonials.length > 0 ? (
             <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {testimonials.map((testimonial, index) => (
-                <Reveal key={testimonial.id} as="li" delay={Math.min(index * 70, 240)}>
-                  <Card tone="surface" className="h-full">
-                    <CardBody>
-                      <IconChip tone="tint" size="sm">
-                        <StarIcon className="size-4" />
-                      </IconChip>
-                      <blockquote className="text-ink mt-1 leading-relaxed">
-                        {testimonial.body}
-                      </blockquote>
-                      <CardMeta className="text-ink-soft">
-                        {testimonial.name}
-                        {testimonial.eventType ? ` · ${testimonial.eventType}` : ''}
-                      </CardMeta>
-                    </CardBody>
-                  </Card>
-                </Reveal>
+              {testimonials.map((testimonial) => (
+                <Card key={testimonial.id} as="li" tone="tint">
+                  <CardBody>
+                    <IconChip tone="tint" size="sm">
+                      <StarIcon className="size-4" />
+                    </IconChip>
+                    <blockquote className="text-ink mt-1 leading-relaxed">
+                      {testimonial.body}
+                    </blockquote>
+                    <CardMeta className="text-ink-soft">
+                      {testimonial.name}
+                      {testimonial.eventType ? ` · ${testimonial.eventType}` : ''}
+                    </CardMeta>
+                  </CardBody>
+                </Card>
               ))}
             </ul>
           ) : (
@@ -324,21 +301,6 @@ export default async function HomePage() {
 
       <CtaBand />
 
-      <Section tone="canvas" spacing="compact" width="wide" aria-labelledby="coverage">
-        <h2 id="coverage" className="sr-only">
-          Areas we serve
-        </h2>
-        <p className="text-ink-muted text-sm">
-          We work across {coverage.primaryAreas.join(', ')} and anywhere in Tamil Nadu
-          depending on what your event needs.{' '}
-          <Link
-            className="text-accent-300 underline underline-offset-4"
-            href={routes.about}
-          >
-            About VRK Decor
-          </Link>
-        </p>
-      </Section>
     </div>
   );
 }

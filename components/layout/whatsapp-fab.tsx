@@ -22,7 +22,7 @@ export function WhatsAppFab() {
       rel="noopener noreferrer"
       data-testid="whatsapp-fab"
       aria-label={`Message ${siteConfig.name} on WhatsApp`}
-      className="motion-safe:animate-sheet-in fixed right-4 bottom-[calc(var(--mobile-cta-height)+0.75rem)] z-30 inline-flex size-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-[0_10px_24px_-8px_rgb(37_211_102/0.7)] transition-transform duration-200 motion-safe:hover:scale-110 motion-safe:active:scale-95 sm:right-6 lg:bottom-6"
+      className="fixed right-4 bottom-[calc(var(--mobile-cta-height)+0.75rem)] z-30 inline-flex size-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-[0_10px_24px_-8px_rgb(37_211_102/0.7)] transition-transform motion-safe:hover:scale-105 sm:right-6 lg:bottom-6"
       style={{
         marginBottom: 'env(safe-area-inset-bottom)',
       }}

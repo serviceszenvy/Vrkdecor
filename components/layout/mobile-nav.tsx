@@ -99,10 +99,7 @@ export function MobileNav() {
         aria-expanded={open}
         aria-controls={panelId}
         data-testid="mobile-nav-trigger"
-        // A light-context control: it lives inside the header's bright
-        // `glass-surface-inverse`, not the site's dark theme (see the note
-        // on the header phone link in site-header.tsx).
-        className="border-brand-200 text-brand-700 hover:text-brand-800 inline-flex size-11 items-center justify-center rounded-full border bg-white/70 transition-[background-color,color,transform] duration-200 hover:bg-white motion-safe:active:scale-90 lg:hidden"
+        className="glass-surface text-ink hover:text-accent-300 inline-flex size-11 items-center justify-center rounded-full transition-colors hover:border-accent-300/40 lg:hidden"
       >
         {open ? <CloseIcon /> : <MenuIcon />}
         <span className="sr-only">{open ? 'Close menu' : 'Open menu'}</span>
@@ -117,7 +114,7 @@ export function MobileNav() {
         ? createPortal(
             <>
               <div
-                className="bg-brand-950/45 motion-safe:animate-fade-in fixed inset-0 z-40 backdrop-blur-[2px] lg:hidden"
+                className="bg-black/60 fixed inset-0 z-40 backdrop-blur-[2px] lg:hidden"
                 onClick={() => setOpen(false)}
                 aria-hidden="true"
               />
@@ -132,7 +129,6 @@ export function MobileNav() {
                   'fixed inset-x-3 top-[4.75rem] z-40 sm:inset-x-4 sm:top-[5.5rem] lg:hidden',
                   'glass-surface-strong glass-edge rounded-3xl',
                   'flex max-h-[calc(100dvh-6.5rem)] flex-col overflow-y-auto p-3',
-                  'motion-safe:animate-sheet-in origin-top',
                 )}
               >
                 <nav aria-label="Mobile">
@@ -145,10 +141,10 @@ export function MobileNav() {
                             href={item.href}
                             aria-current={active ? 'page' : undefined}
                             className={cn(
-                              'flex min-h-12 items-center justify-between gap-3 rounded-2xl px-4 text-base transition-colors duration-200',
+                              'flex min-h-12 items-center justify-between gap-3 rounded-2xl px-4 text-base transition-colors',
                               active
-                                ? 'bg-white/10 text-accent-300 font-semibold'
-                                : 'text-ink hover:text-accent-300 hover:bg-white/10',
+                                ? 'bg-accent-500/15 text-accent-300 font-semibold'
+                                : 'text-ink hover:bg-white/5',
                             )}
                           >
                             {item.label}

@@ -13,13 +13,11 @@ describe('button variants', () => {
     const primary = buttonClassNames('primary', 'md', false);
     const outline = buttonClassNames('outline', 'md', false);
 
-    // `brand-700` is the sage measured in the logo. White on it is 5.00:1, and
-    // the pairing is asserted in tests/unit/design-tokens.test.ts. `outline`
-    // uses `accent-300` instead of `brand-700` for its border/text since the
-    // dark-theme transformation: `brand-700` measures under 3:1 against the
-    // dark grounds this theme uses everywhere now.
-    expect(primary).toContain('bg-brand-700');
-    expect(outline).toContain('border-accent-300');
+    // DARK THEME: `primary` is now the logo's lime (`accent-500`), used as the
+    // vivid CTA colour against the dark `#37432B` ground — dark text on it is
+    // 8.22:1, asserted in tests/unit/design-tokens.test.ts.
+    expect(primary).toContain('bg-accent-500');
+    expect(outline).toContain('border-accent-400');
     expect(primary).not.toBe(outline);
   });
 

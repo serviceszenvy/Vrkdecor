@@ -101,6 +101,14 @@ export function ArrowLeftIcon(props: IconProps) {
   );
 }
 
+export function SendIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M4.5 4.5l15 7.5-15 7.5 3-7.5-3-7.5Z" strokeLinejoin="round" />
+    </Icon>
+  );
+}
+
 export function ChevronRightIcon(props: IconProps) {
   return (
     <Icon {...props}>

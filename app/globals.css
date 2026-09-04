@@ -51,27 +51,24 @@
   --color-sand-950: #252522;
 
   /*
-   * Semantic roles — components use these, not raw palette steps. Redefined
-   * dark for the full dark-theme transformation: `canvas` is exactly the
-   * brief's `#37432B`; every other ground is a lighter/darker step of the
-   * same family, or the distinct `sand` neutral for an alternating zone —
-   * never the same flat colour repeated. `ink`/`inkMuted`/`inkSoft` flip to
-   * light; `surfaceInverse`/`inkInverse` flip roles (the one bright
-   * exception now, not the one dark exception).
+   * Semantic roles — components use these, not raw palette steps.
+   * DARK THEME: --color-canvas is the exact #37432B requested for the
+   * redesign; every other ground is a variation around it. Mirrors
+   * `semanticColors` in lib/design-tokens.ts exactly.
    */
-  --color-surface: #475637;
+  --color-surface: #404c33;
   --color-canvas: #37432b;
-  --color-canvas-deep: #242c1c;
-  --color-surface-tint: #393a34;
-  --color-surface-subtle: #252522;
-  --color-surface-muted: #484a43;
-  --color-surface-inverse: #f5f7f1;
-  --color-ink: #f5f7f1;
-  --color-ink-muted: #c5c6be;
-  --color-ink-soft: #dcddd7;
-  --color-ink-inverse: #242c1c;
-  --color-line: #6d8455;
-  --color-line-soft: #61764b;
+  --color-canvas-deep: #2b3522;
+  --color-surface-tint: #48573a;
+  --color-surface-subtle: #333e28;
+  --color-surface-muted: #3d4930;
+  --color-surface-inverse: #1b2115;
+  --color-ink: #f5f7f0;
+  --color-ink-muted: #b9c0aa;
+  --color-ink-soft: #d3d9c6;
+  --color-ink-inverse: #1b2115;
+  --color-line: #556247;
+  --color-line-soft: #4a573c;
 
   /*
    * Typography.
@@ -113,115 +110,16 @@
   --radius-2xl: 1.75rem;
   --radius-3xl: 2.25rem;
 
-  /*
-   * Elevation — restrained, so photography stays the focus. Every hover/focus
-   * shadow in the system uses one of these; none is written inline as an
-   * arbitrary value at the call site (tests/unit/design-tokens.test.ts does
-   * not check this, but docs/ui-audit.md finding C2 does, by inspection).
-   */
-  --shadow-card: 0 1px 2px rgb(37 37 34 / 0.04), 0 8px 24px -12px rgb(37 37 34 / 0.18);
-  /* The primary button's resting lift. */
-  --shadow-lift: 0 10px 24px -14px rgb(36 44 28 / 0.85);
+  /* Elevation — deeper and darker so panels lift off the dark ground */
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.18), 0 10px 28px -12px rgb(0 0 0 / 0.5);
+  --shadow-raised: 0 2px 4px rgb(0 0 0 / 0.22), 0 22px 48px -18px rgb(0 0 0 / 0.55);
   --shadow-glass:
-    0 1px 1px rgb(255 255 255 / 0.4) inset, 0 12px 32px -14px rgb(36 44 28 / 0.28);
-  --shadow-panel: 0 1px 2px rgb(36 44 28 / 0.04), 0 24px 60px -32px rgb(36 44 28 / 0.3);
-  /* Floating fixed actions — the WhatsApp FAB, the sticky mobile CTA. */
-  --shadow-float: 0 6px 16px -6px rgb(36 44 28 / 0.32), 0 2px 6px rgb(36 44 28 / 0.12);
-  /* A warm brand-tinted lift, used on hover for interactive cards and buttons. */
-  --shadow-glow:
-    0 20px 44px -22px rgb(97 118 75 / 0.55), 0 6px 16px -10px rgb(142 200 64 / 0.3);
-  /* The same glow, scaled down for small elements — chips, pills. */
-  --shadow-glow-sm: 0 8px 18px -10px rgb(97 118 75 / 0.7);
-  /* A focus-visible ring glow, layered behind the browser's own outline. */
-  --shadow-focus-glow: 0 0 0 4px rgb(97 118 75 / 0.12);
-
-  /*
-   * Motion — a named scale, so a developer picks from these rather than
-   * writing a new duration or curve at the call site.
-   *
-   * Durations: micro-interactions (hover, press, focus) use Tailwind's
-   * existing `duration-150`/`duration-200`/`duration-300` utilities — no new
-   * tokens needed there. Section-entrance motion (`.reveal`, the mobile nav
-   * sheet) is deliberately longer than a micro-interaction and is named
-   * below as `--duration-entrance`.
-   *
-   * Easings: three named curves, used everywhere a curve is needed rather
-   * than each component inventing its own cubic-bezier.
-   */
-  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
-  /* A soft decelerate — entrances, reveals, anything arriving on screen. */
-  --ease-premium: cubic-bezier(0.16, 1, 0.3, 1);
-  /* A slow, symmetric in-out — ambient background drift only. */
-  --ease-ambient: cubic-bezier(0.45, 0, 0.55, 1);
-  /* Scroll-triggered section entrance (`.reveal`) only — not UI chrome. */
-  --duration-entrance: 0.6s;
-  /* A popover/sheet opening — quick, so the interaction still feels instant. */
-  --duration-sheet: 0.22s;
-
-  /*
-   * Ambient motion. Slow and small-amplitude by design: these drive the
-   * decorative background blobs and gradient sweeps, never primary content,
-   * and are always applied with `motion-safe:` at the call site even though
-   * the global `prefers-reduced-motion` rule below already zeroes them.
-   */
-  --animate-drift-slow: drift 16s var(--ease-ambient) infinite;
-  --animate-drift-slower: drift 22s var(--ease-ambient) infinite reverse;
-  --animate-gradient-pan: gradient-pan 14s var(--ease-ambient) infinite alternate;
-  --animate-fade-in: fade-in 0.5s var(--ease-standard) both;
-  /* A cinematic entrance for the home hero's copy — see `fade-in-up`. */
-  --animate-fade-in-up: fade-in-up 0.6s var(--ease-premium) both;
-  /* Entrance for the mobile navigation sheet and other small popovers. */
-  --animate-sheet-in: sheet-in var(--duration-sheet) var(--ease-premium) both;
-}
-
-@keyframes drift {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  50% {
-    transform: translate3d(3%, -4%, 0) scale(1.05);
-  }
-}
-
-@keyframes gradient-pan {
-  0% {
-    background-position: 0% 50%;
-  }
-  100% {
-    background-position: 100% 50%;
-  }
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes sheet-in {
-  from {
-    opacity: 0;
-    transform: translateY(-8px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+    0 1px 1px rgb(245 247 240 / 0.12) inset, 0 16px 40px -14px rgb(0 0 0 / 0.55);
+  --shadow-panel: 0 1px 2px rgb(0 0 0 / 0.2), 0 28px 70px -32px rgb(0 0 0 / 0.6);
+  --shadow-float: 0 10px 24px -6px rgb(0 0 0 / 0.5), 0 2px 8px rgb(0 0 0 / 0.3);
+  /* Ambient brand glows — colourful accents against the dark ground */
+  --glow-lime: rgb(142 200 64 / 0.35);
+  --glow-sage: rgb(164 187 139 / 0.28);
 }
 
 @layer base {
@@ -231,24 +129,22 @@
     --mobile-cta-height: 4.25rem;
 
     /*
-     * Glassmorphism tokens. Mirrors `glass` in lib/design-tokens.ts. Dark,
-     * translucent and brand-tinted for the full dark-theme transformation —
-     * see the comment on `glass` there for the four-level rationale.
+     * Glassmorphism tokens. Mirrors `glass` in lib/design-tokens.ts.
      * `--glass-blur` is capped deliberately: backdrop-filter repaints on every
      * scroll frame, and a large radius is the most expensive thing a glass
      * design can ask of a mid-range phone.
+     *
+     * DARK THEME: glass is now a translucent slice of the dark ground with a
+     * faint light edge, rather than a white panel — so photography and the
+     * ambient brand glows stay visible through every card, chip and nav bar.
      */
-    --glass-surface: rgb(55 67 43 / 0.55);
-    --glass-surface-strong: rgb(36 44 28 / 0.82);
-    --glass-surface-tint: rgb(71 86 55 / 0.62);
-    /* Accent-tinted glass for the small number of highlight moments. */
-    --glass-surface-vivid: rgb(75 109 32 / 0.65);
-    /* The one bright glass exception (light, not dark). */
-    --glass-surface-inverse: rgb(245 247 241 / 0.82);
-    /* A subtle accent-coloured glow, not a plain white edge. */
-    --glass-border: rgb(199 231 157 / 0.35);
-    --glass-border-soft: rgb(142 200 64 / 0.18);
-    --glass-highlight: rgb(199 231 157 / 0.4);
+    --glass-surface: rgb(64 76 51 / 0.55);
+    --glass-surface-strong: rgb(43 53 34 / 0.82);
+    --glass-surface-tint: rgb(142 200 64 / 0.16);
+    --glass-surface-inverse: rgb(245 247 240 / 0.14);
+    --glass-border: rgb(245 247 240 / 0.14);
+    --glass-border-soft: rgb(199 231 157 / 0.18);
+    --glass-highlight: rgb(245 247 240 / 0.16);
     --glass-blur: 16px;
     --glass-blur-strong: 24px;
   }
@@ -275,14 +171,14 @@
     text-wrap: pretty;
   }
 
-  /*
-   * Visible, high-contrast focus for every interactive element. `brand-700`
-   * measures under 3:1 against the dark grounds this theme uses everywhere
-   * now, so the ring is `accent-300` — verified 5.7:1+ against every
-   * surface/canvas variant in `contrastContract`.
-   */
+  /* Visible, high-contrast focus for every interactive element. */
   :focus-visible {
     @apply outline-accent-300 rounded-sm outline-2 outline-offset-2;
+  }
+
+  ::selection {
+    background-color: rgb(142 200 64 / 0.35);
+    color: var(--color-ink);
   }
 
   /* Images never overflow their container. */
@@ -306,45 +202,19 @@
    * to be applied.
    */
   .glass-surface {
-    background-color: rgb(55 67 43 / 0.92);
+    background-color: rgb(43 53 34 / 0.92);
     border: 1px solid var(--glass-border-soft);
     box-shadow: var(--shadow-glass);
   }
 
   .glass-surface-strong {
-    background-color: rgb(36 44 28 / 0.95);
+    background-color: rgb(38 47 30 / 0.96);
     border: 1px solid var(--glass-border-soft);
     box-shadow: var(--shadow-glass);
   }
 
   .glass-surface-tint {
-    background-color: rgb(71 86 55 / 0.94);
-    border: 1px solid var(--glass-border-soft);
-    box-shadow: var(--shadow-glass);
-  }
-
-  /*
-   * A brand-forward glass, warmer than `.glass-surface-tint`, for a small
-   * number of moments that should read as a highlight rather than a neutral
-   * panel — a featured badge, the closing CTA's glass buttons. Same honest
-   * degradation as the three surfaces above: opaque-enough without blur.
-   */
-  .glass-surface-vivid {
-    background-color: rgb(75 109 32 / 0.95);
-    border: 1px solid var(--glass-border-soft);
-    box-shadow: var(--shadow-glass);
-  }
-
-  /*
-   * The one bright glass exception — light, not dark. Used where the site
-   * needs a moment of real brightness for hierarchy or legibility (the
-   * header, which carries the supplied logo — drawn for light backgrounds
-   * only, with no reversed variant supplied, see docs/DESIGN-SYSTEM.md §1).
-   * Everything inside it pairs with dark text (`brand-950`/`brand-700`),
-   * the opposite of every other glass surface in this file.
-   */
-  .glass-surface-inverse {
-    background-color: rgb(245 247 241 / 0.95);
+    background-color: rgb(56 68 43 / 0.94);
     border: 1px solid var(--glass-border-soft);
     box-shadow: var(--shadow-glass);
   }
@@ -370,26 +240,9 @@
       -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
       backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
     }
-
-    .glass-surface-vivid {
-      background-color: var(--glass-surface-vivid);
-      border-color: var(--glass-border);
-      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
-      backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
-    }
-
-    .glass-surface-inverse {
-      background-color: var(--glass-surface-inverse);
-      border-color: var(--glass-border);
-      -webkit-backdrop-filter: blur(var(--glass-blur-strong)) saturate(1.3);
-      backdrop-filter: blur(var(--glass-blur-strong)) saturate(1.3);
-    }
   }
 
-  /*
-   * The thin top highlight and faint corner reflection that make a glass edge
-   * read as glass rather than a flat tinted panel.
-   */
+  /* The thin top highlight that makes a glass edge read as glass. */
   .glass-edge {
     position: relative;
   }
@@ -400,26 +253,13 @@
     inset: 0;
     border-radius: inherit;
     pointer-events: none;
-    background:
-      radial-gradient(120% 60% at 12% 0%, rgb(255 255 255 / 0.4), transparent 60%),
-      linear-gradient(to bottom, var(--glass-highlight), transparent 42%, transparent);
-    opacity: 0.55;
-  }
-
-  /*
-   * A glow shadow on hover for an interactive glass surface (the `glass`
-   * button variant). Deliberately a plain CSS rule in this same layer rather
-   * than a `hover:shadow-*` Tailwind utility: Tailwind's utilities layer
-   * always outranks `components` per the CSS Cascade Layers spec regardless
-   * of specificity or source order, so a utility on the same element would
-   * silently replace `.glass-surface-strong`'s own box-shadow instead of
-   * enhancing it on hover (docs/ui-audit.md finding M3). Written here, the
-   * higher-specificity `:hover` selector wins predictably within one layer.
-   * Also covers `:focus-within`, for a glass `Card` reached by keyboard.
-   */
-  .glass-hover-glow:hover,
-  .glass-hover-glow:focus-within {
-    box-shadow: var(--shadow-glow);
+    background: linear-gradient(
+      to bottom,
+      var(--glass-highlight),
+      transparent 42%,
+      transparent
+    );
+    opacity: 0.5;
   }
 }
 
@@ -457,109 +297,108 @@
   }
 
   /*
-   * The ambient wash behind the page — three wide, glowing radial gradients,
-   * cheap to paint, fixed to the element. Brighter than a light theme could
-   * ever use (a glow reads as light emitted from a dark ground, not a loss
-   * of contrast), but still restrained enough that text stays the focus —
-   * every pairing in `contrastContract` clears its floor by a wide margin
-   * regardless (body text on canvas is 9.7:1 against a 4.5:1 requirement).
+   * Occasion filter accordion (redesign brief section 3). The row's collapsed
+   * state is the inline `style="grid-template-rows: 0fr"` set in the
+   * component; this rule — which needs `!important` only because it is
+   * overriding that inline style, not because of any specificity fight with
+   * another class — flips it to 1fr once the native `<details>` is open, which
+   * is what the `transition-[grid-template-rows]` on the same element
+   * animates between.
+   */
+  details[open] > .accordion-rows {
+    grid-template-rows: 1fr !important;
+  }
+
+  /*
+   * The soft botanical wash behind the page. Two very wide, very low-opacity
+   * radial gradients — cheap to paint, fixed to the element, and invisible
+   * enough that photography still leads.
    */
   .canvas-wash {
     background-image:
       radial-gradient(
-        60rem 34rem at 85% -8%,
-        rgb(142 200 64 / 0.22),
+        58rem 32rem at 82% -6%,
+        rgb(142 200 64 / 0.18),
         rgb(142 200 64 / 0) 62%
       ),
       radial-gradient(
-        48rem 30rem at 2% 10%,
-        rgb(142 200 64 / 0.14),
-        rgb(142 200 64 / 0) 60%
-      ),
-      radial-gradient(
-        40rem 26rem at 50% 100%,
-        rgb(216 168 90 / 0.1),
-        rgb(216 168 90 / 0) 65%
+        46rem 28rem at 4% 12%,
+        rgb(164 187 139 / 0.14),
+        rgb(164 187 139 / 0) 60%
       );
   }
 
-  /*
-   * Decorative, ambient colour blobs. Always `aria-hidden`, always inside an
-   * `overflow-hidden` ancestor (every panel that uses one already sets that),
-   * so the slow drift transform can never introduce scroll.
-   */
-  .ambient-blob {
-    position: absolute;
-    border-radius: 9999px;
-    filter: blur(60px);
-    pointer-events: none;
+  /* A brighter, slow-drifting ambient blob pair for hero/feature bands. */
+  .ambient-glow {
+    background-image:
+      radial-gradient(38rem 26rem at 12% 8%, var(--glow-lime), transparent 60%),
+      radial-gradient(34rem 30rem at 92% 88%, var(--glow-sage), transparent 62%);
+    animation: ambient-drift 22s ease-in-out infinite alternate;
   }
 
-  /*
-   * Scroll-reveal base state. Deliberately scoped to `scripting: enabled`, so
-   * a browser that cannot run the `Reveal` component's IntersectionObserver
-   * (scripting disabled, or unsupported) simply shows the content — never a
-   * section stuck invisible. `prefers-reduced-motion` is handled globally
-   * below: the transition still exists here, but its duration is zeroed, so
-   * `.is-visible` applies instantly instead of animating.
-   */
-  @media (scripting: enabled) {
-    .reveal {
-      opacity: 0;
-      transform: translateY(16px);
-      transition:
-        opacity var(--duration-entrance) var(--ease-premium),
-        transform var(--duration-entrance) var(--ease-premium);
-    }
+  .animate-fade-up {
+    animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
 
-    .reveal.is-visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  .animate-fade-in {
+    animation: fade-in 0.6s ease-out both;
+  }
 
-    /*
-     * A distinct reveal for photography (docs/ui-audit.md finding MO4): the
-     * image itself settles from a slight zoom rather than rising and fading
-     * like its containing card. Layered independently of `.reveal` — they
-     * sit on different elements (the card and the image inside it), so both
-     * can run at once without competing for the same `transform`.
-     */
-    .image-reveal {
-      transform: scale(1.06);
-      transition: transform var(--duration-entrance) var(--ease-premium);
-    }
+  .animate-scale-in {
+    animation: scale-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
 
-    .image-reveal.is-visible {
-      transform: scale(1);
-    }
+  .stagger-1 {
+    animation-delay: 0.08s;
+  }
+  .stagger-2 {
+    animation-delay: 0.16s;
+  }
+  .stagger-3 {
+    animation-delay: 0.24s;
+  }
+  .stagger-4 {
+    animation-delay: 0.32s;
   }
 }
 
-/*
- * A minimal, CSS-only parallax on the home hero's photograph
- * (docs/ui-audit.md finding MO1). Deliberately narrow: `@supports` gates it
- * to browsers with scroll-driven animations, `prefers-reduced-motion` is
- * checked explicitly rather than relied on via the generic duration-zeroing
- * rule above (a scroll-linked animation's progress is driven by scroll
- * position, not a wall-clock duration, so that rule cannot be trusted to
- * neutralise it), and it's `sm` and up only, matching the mobile motion
- * budget elsewhere in this file. Amplitude is small (6%) and GPU-composited
- * (`transform` only), so it costs nothing beyond what the browser already
- * pays to composite a fixed background image.
- */
-@media (min-width: 640px) and (prefers-reduced-motion: no-preference) {
-  @supports (animation-timeline: scroll()) {
-    .hero-parallax {
-      animation: hero-parallax linear both;
-      animation-timeline: scroll(root block);
-      animation-range: 0 70vh;
-    }
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
   }
-}
-
-@keyframes hero-parallax {
   to {
-    transform: translateY(6%);
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes ambient-drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(-2%, 3%, 0) scale(1.06);
   }
 }
 
@@ -575,38 +414,5 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
-  }
-}
-
-/*
- * Mobile motion budget (docs/ui-audit.md findings M1/M2/Mob1). Two things
- * repaint on every scroll or animation frame regardless of viewport, at real
- * cost on a low-end phone, with no reason to run at full intensity below
- * `sm`: the ambient drift/gradient-pan animations, and the header/mobile-nav/
- * sticky-CTA's 24px backdrop blur (the most expensive of the three blur
- * radii in the system). `!important`, matching the pattern the
- * `prefers-reduced-motion` rule above already uses for the same reason.
- * `.glass-surface-strong`'s un-blurred fallback is already a finished,
- * near-opaque panel (the same one a browser without `backdrop-filter`
- * support gets), so this is a genuine graceful degradation, not a visual
- * regression.
- */
-@media (max-width: 639.98px) {
-  .motion-safe\:animate-drift-slow,
-  .motion-safe\:animate-drift-slower,
-  .motion-safe\:animate-gradient-pan {
-    animation: none !important;
-  }
-
-  .glass-surface-strong {
-    background-color: rgb(36 44 28 / 0.95) !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
-
-  .glass-surface-inverse {
-    background-color: rgb(245 247 241 / 0.95) !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
   }
 }

@@ -110,7 +110,7 @@ export function Lightbox({
       aria-labelledby={titleId}
       data-testid="lightbox"
       ref={dialogRef}
-      className="bg-brand-950/96 motion-safe:animate-fade-in fixed inset-0 z-50 flex flex-col backdrop-blur-sm"
+      className="bg-brand-950/96 fixed inset-0 z-50 flex flex-col backdrop-blur-sm"
       onTouchStart={(event) => {
         const touch = event.changedTouches[0];
         if (touch) touchStart.current = { x: touch.clientX, y: touch.clientY };
@@ -136,7 +136,7 @@ export function Lightbox({
           type="button"
           onClick={onClose}
           data-testid="lightbox-close"
-          className="inline-flex size-11 items-center justify-center rounded-full border border-white/20 transition-[background-color,transform] duration-200 hover:bg-white/15 motion-safe:active:scale-90"
+          className="inline-flex size-11 items-center justify-center rounded-full border border-white/20 transition-colors hover:bg-white/15"
         >
           <CloseIcon />
           <span className="sr-only">Close gallery</span>
@@ -148,7 +148,7 @@ export function Lightbox({
           type="button"
           onClick={() => goTo(-1)}
           data-testid="lightbox-previous"
-          className="absolute left-2 z-10 inline-flex size-11 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition-[background-color,transform] duration-200 hover:bg-white/25 motion-safe:hover:scale-105 motion-safe:active:scale-90"
+          className="absolute left-2 z-10 inline-flex size-11 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition-colors hover:bg-white/25"
         >
           <span aria-hidden="true">&#8249;</span>
           <span className="sr-only">Previous photograph</span>
@@ -169,7 +169,7 @@ export function Lightbox({
           type="button"
           onClick={() => goTo(1)}
           data-testid="lightbox-next"
-          className="absolute right-2 z-10 inline-flex size-11 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition-[background-color,transform] duration-200 hover:bg-white/25 motion-safe:hover:scale-105 motion-safe:active:scale-90"
+          className="absolute right-2 z-10 inline-flex size-11 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition-colors hover:bg-white/25"
         >
           <span aria-hidden="true">&#8250;</span>
           <span className="sr-only">Next photograph</span>

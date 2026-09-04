@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/cn';
 import { ArrowLeftIcon, ArrowRightIcon } from '@/components/layout/icons';
-import { Reveal } from '@/components/ui';
 import { DesignCard } from './design-card';
 import type { PortfolioDesign } from '../types';
 
@@ -68,10 +67,8 @@ export function DesignRail({ designs }: { designs: readonly PortfolioDesign[] })
         className="rail -mx-4 flex gap-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0"
       >
         {designs.map((design, index) => (
-          <Reveal
+          <li
             key={design.id}
-            as="li"
-            delay={Math.min(index * 70, 280)}
             className="rail-item w-[72vw] max-w-[19rem] shrink-0 sm:w-[46vw] lg:w-[calc((100%-3rem)/4)] lg:max-w-none"
           >
             <DesignCard
@@ -80,7 +77,7 @@ export function DesignRail({ designs }: { designs: readonly PortfolioDesign[] })
               showFeatured={false}
               sizes="(min-width: 1024px) 24vw, (min-width: 640px) 46vw, 72vw"
             />
-          </Reveal>
+          </li>
         ))}
       </ul>
 
@@ -119,7 +116,7 @@ function RailButton({
       data-testid={`design-rail-${direction}`}
       className={cn(
         'glass-surface-strong text-ink absolute top-1/2 hidden size-11 -translate-y-1/2 items-center justify-center rounded-full transition-opacity sm:inline-flex',
-        disabled ? 'pointer-events-none opacity-0' : 'opacity-100 hover:bg-white/10',
+        disabled ? 'pointer-events-none opacity-0' : 'opacity-100 hover:border-accent-300/40',
         className,
       )}
     >

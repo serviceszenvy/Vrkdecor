@@ -2,24 +2,9 @@
 
 import { useCallback, useRef, useState } from 'react';
 import Image from 'next/image';
-import { ImageFrame, Reveal, type AspectRatio } from '@/components/ui';
+import { ImageFrame } from '@/components/ui';
 import { Lightbox } from './lightbox';
 import type { PortfolioPhoto } from '../types';
-
-/**
- * A short, repeating rhythm of aspect ratios rather than one uniform shape —
- * enough variety to read as a considered, image-led layout instead of a flat
- * grid, without the layout cost of a true JS-measured masonry (every frame
- * stays a fixed ratio, so nothing shifts as images load).
- */
-const MASONRY_RATIOS: readonly AspectRatio[] = [
-  'portrait',
-  'square',
-  'tall',
-  'landscape',
-  'square',
-  'portrait',
-];
 
 /**
  * Photo grid that opens the lightbox.
@@ -34,17 +19,20 @@ export function PhotoGallery({
   photos,
   columns = 3,
   showDesignName = false,
-  masonry = false,
+  variant = 'grid',
 }: {
   photos: readonly PortfolioPhoto[];
   columns?: 2 | 3 | 4;
   showDesignName?: boolean;
   /**
-   * A varied-ratio CSS-columns layout instead of a uniform grid — the
-   * image-led treatment the standalone Gallery page uses so photography
-   * carries the page rather than a title under every frame.
+   * `masonry` — redesign brief section 7's "primarily a visual experience":
+   * CSS columns with each image at its own natural aspect ratio, so the
+   * gallery reads as a varied, premium portfolio wall rather than a uniform
+   * grid of identically cropped tiles. Used on the Gallery page; the
+   * uniform `grid` stays the default for design-detail and other listings
+   * that benefit from an even, predictable layout.
    */
-  masonry?: boolean;
+  variant?: 'grid' | 'masonry';
 }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const triggers = useRef<(HTMLButtonElement | null)[]>([]);
@@ -55,24 +43,26 @@ export function PhotoGallery({
     if (index !== null) triggers.current[index]?.focus();
   }, [openIndex]);
 
-  const gridClass = masonry
-    ? 'columns-2 sm:columns-3 lg:columns-4 gap-3 [column-fill:balance]'
-    : columns === 4
+  const gridClass =
+    columns === 4
       ? 'grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4'
       : columns === 2
         ? 'grid gap-4 grid-cols-1 sm:grid-cols-2'
         : 'grid gap-4 grid-cols-2 lg:grid-cols-3';
 
+  const masonryClass =
+    'columns-2 gap-3 sm:columns-3 sm:gap-4 lg:columns-4 [column-fill:balance]';
+
   return (
     <>
-      <ul className={gridClass} data-testid="photo-gallery">
+      <ul
+        className={variant === 'masonry' ? masonryClass : gridClass}
+        data-testid="photo-gallery"
+      >
         {photos.map((photo, index) => (
-          <Reveal
+          <li
             key={photo.image.id}
-            as="li"
-            variant={masonry ? 'image' : 'rise'}
-            delay={Math.min((index % 6) * 60, 240)}
-            className={masonry ? 'mb-3 break-inside-avoid' : undefined}
+            className={variant === 'masonry' ? 'mb-3 break-inside-avoid sm:mb-4' : ''}
           >
             <button
               type="button"
@@ -81,21 +71,31 @@ export function PhotoGallery({
               }}
               onClick={() => setOpenIndex(index)}
               data-testid="gallery-thumb"
-              className="group hover:shadow-glow block w-full cursor-zoom-in rounded-2xl text-left transition-shadow duration-300"
+              className="group animate-fade-in block w-full cursor-zoom-in rounded-2xl text-left"
             >
-              <ImageFrame
-                ratio={masonry ? (MASONRY_RATIOS[index % MASONRY_RATIOS.length] ?? 'square') : 'landscape'}
-                radius="xl"
-                zoomOnHover
-              >
-                <Image
-                  src={photo.image.url}
-                  alt={photo.image.alt}
-                  fill
-                  sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
-                  className="object-cover"
-                />
-              </ImageFrame>
+              {variant === 'masonry' ? (
+                <div className="bg-surface-muted relative isolate overflow-hidden rounded-2xl">
+                  <Image
+                    src={photo.image.url}
+                    alt={photo.image.alt}
+                    width={photo.image.width ?? 1200}
+                    height={photo.image.height ?? 900}
+                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
+                    className="h-auto w-full object-cover transition-transform duration-700 motion-safe:group-hover:scale-[1.04]"
+                  />
+                  <div className="from-canvas-deep/50 pointer-events-none absolute inset-0 bg-gradient-to-t via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                </div>
+              ) : (
+                <ImageFrame ratio="landscape" radius="xl" zoomOnHover>
+                  <Image
+                    src={photo.image.url}
+                    alt={photo.image.alt}
+                    fill
+                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
+                    className="object-cover"
+                  />
+                </ImageFrame>
+              )}
               {showDesignName ? (
                 <span className="text-ink-muted group-hover:text-accent-300 mt-2 block text-sm transition-colors">
                   {photo.design.name}
@@ -105,7 +105,7 @@ export function PhotoGallery({
                 Open {photo.image.alt} from {photo.design.name}
               </span>
             </button>
-          </Reveal>
+          </li>
         ))}
       </ul>
 

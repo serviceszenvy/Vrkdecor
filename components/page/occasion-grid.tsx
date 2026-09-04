@@ -1,6 +1,6 @@
 import type { ComponentType, SVGProps } from 'react';
 import Link from 'next/link';
-import { IconChip, Reveal } from '@/components/ui';
+import { IconChip } from '@/components/ui';
 import {
   BuildingIcon,
   CakeIcon,
@@ -62,18 +62,18 @@ export type OccasionTile = {
 export function OccasionGrid({ occasions }: { occasions: readonly OccasionTile[] }) {
   return (
     <ul className="grid grid-cols-3 gap-3 sm:gap-4 lg:grid-cols-6">
-      {occasions.map((occasion, index) => {
+      {occasions.map((occasion) => {
         const OccasionIcon = OCCASION_ICONS[occasion.slug] ?? CalendarIcon;
         return (
-          <Reveal key={occasion.slug} as="li" delay={Math.min(index * 40, 240)}>
+          <li key={occasion.slug}>
             <Link
               href={`${routes.work}?occasion=${encodeURIComponent(occasion.slug)}`}
-              className="border-line-soft bg-surface hover:border-accent-300/60 hover:bg-white/5 hover:shadow-card group flex h-full min-h-[7.5rem] flex-col items-center justify-center gap-2 overflow-hidden rounded-2xl border px-1.5 py-5 text-center transition-[background-color,border-color,box-shadow] duration-300 sm:px-3"
+              className="border-line-soft bg-surface hover:border-accent-400/50 hover:bg-surface-tint group motion-safe:hover:-translate-y-1 flex h-full min-h-[7.5rem] flex-col items-center justify-center gap-2 overflow-hidden rounded-2xl border px-1.5 py-5 text-center transition-all duration-300 sm:px-3"
             >
               <IconChip
                 tone="brand"
                 size="md"
-                className="group-hover:bg-brand-700/70 transition-colors"
+                className="motion-safe:group-hover:scale-110 transition-transform duration-300"
               >
                 <OccasionIcon className="size-6" />
               </IconChip>
@@ -86,7 +86,7 @@ export function OccasionGrid({ occasions }: { occasions: readonly OccasionTile[]
                 </span>
               ) : null}
             </Link>
-          </Reveal>
+          </li>
         );
       })}
     </ul>

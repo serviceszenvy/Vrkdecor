@@ -21,14 +21,13 @@ import { cn } from '@/lib/cn';
  *     repaints on every scroll frame
  */
 
-type GlassTone = 'default' | 'strong' | 'tint' | 'vivid';
+type GlassTone = 'default' | 'strong' | 'tint';
 type GlassRadius = 'lg' | 'xl' | '2xl' | '3xl' | 'pill';
 
 const tones: Record<GlassTone, string> = {
   default: 'glass-surface',
   strong: 'glass-surface-strong',
   tint: 'glass-surface-tint',
-  vivid: 'glass-surface-vivid',
 };
 
 const radii: Record<GlassRadius, string> = {
@@ -87,14 +86,10 @@ export function IconChip({
   className?: string;
 }) {
   const tones = {
-    // `brand-700`, not `800`: `800` sits within a few percent of the
-    // `#37432b` canvas it's drawn on, so at low opacity the chip nearly
-    // disappeared against it. `700` plus a defined ring and a soft glow
-    // keeps every service/occasion icon legible as its own shape.
-    brand: 'bg-brand-700/85 text-accent-200 ring-1 ring-accent-400/35 shadow-glow-sm',
-    tint: 'bg-white/10 text-accent-300 ring-1 ring-white/15',
+    brand: 'bg-accent-500/15 text-accent-300 ring-1 ring-accent-400/30',
+    tint: 'glass-surface-tint text-accent-300 ring-1 ring-accent-300/25',
     glass: 'glass-surface text-ink',
-    solid: 'bg-brand-700 text-white',
+    solid: 'bg-accent-500 text-ink-inverse',
   } as const;
 
   const sizes = {
@@ -108,8 +103,6 @@ export function IconChip({
       aria-hidden="true"
       className={cn(
         'inline-flex shrink-0 items-center justify-center rounded-full',
-        'transition-[transform,background-color,box-shadow] duration-300 ease-out',
-        'motion-safe:group-hover:-translate-y-0.5 motion-safe:group-hover:scale-105 motion-safe:group-hover:shadow-glow',
         tones[tone],
         sizes[size],
         className,

@@ -16,31 +16,23 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
  * Every variant meets WCAG 2.1 AA for its label colour against its background;
  * the pairings are asserted in `tests/unit/design-tokens.test.ts`.
  *
- * `primary` uses `brand-700`, which is the sage measured in the logo itself.
- * White on it is 5.00:1, and it is the mid-olive the approved reference design
- * uses for its primary actions. `accent`/`inverse` pair with an explicit dark
- * ink (`brand-950`), never the semantic `ink` token — both sit on a light
- * fill (the lime accent, or solid white) regardless of the site's own dark
- * theme, so they need dark text unconditionally.
- *
- * `glass` is a dark, translucent surface — it falls back to a near-opaque
- * dark panel where `backdrop-filter` is unsupported, so its label is never
- * left unreadable over busy photography.
+ * DARK THEME — `primary` is the logo's lime (`accent-500`), the most vivid
+ * colour available, used as the CTA colour against the dark `#37432B` ground.
+ * Dark text on it is 8.22:1. `accent` is a softer sage pill for secondary
+ * emphasis. `glass` is now dark translucent glass rather than a white pill,
+ * so it reads correctly floating on the dark ground and on photography.
  */
 const variants: Record<ButtonVariant, string> = {
   primary:
-    'bg-brand-700 text-white hover:bg-brand-800 border border-transparent shadow-lift motion-safe:hover:shadow-glow motion-safe:hover:-translate-y-0.5',
+    'bg-accent-500 text-ink-inverse hover:bg-accent-600 border border-transparent shadow-[0_10px_28px_-12px_rgb(142_200_64/0.55)]',
   accent:
-    'bg-accent-500 text-brand-950 hover:bg-accent-600 border border-transparent motion-safe:hover:shadow-glow motion-safe:hover:-translate-y-0.5',
-  secondary:
-    'bg-white/8 text-ink border border-white/10 hover:bg-white/14 hover:border-white/20',
+    'bg-brand-400 text-ink-inverse hover:bg-brand-500 border border-transparent',
+  secondary: 'bg-surface-muted text-ink hover:bg-surface border border-line-soft',
   outline:
-    'bg-transparent text-accent-300 border border-accent-300/50 hover:bg-white/5 hover:border-accent-300',
-  ghost: 'bg-transparent text-ink border border-transparent hover:bg-white/10',
-  inverse: 'bg-white text-brand-950 hover:bg-sand-100 border border-transparent',
-  // `.glass-hover-glow` is a plain CSS rule, not a `hover:shadow-*` utility —
-  // see the comment on it in app/globals.css (docs/ui-audit.md finding M3).
-  glass: 'glass-surface-strong glass-hover-glow text-ink hover:bg-white/10',
+    'bg-transparent text-accent-300 border border-accent-400/50 hover:bg-accent-500/10 hover:border-accent-300',
+  ghost: 'bg-transparent text-ink border border-transparent hover:bg-surface-muted',
+  inverse: 'bg-ink text-canvas hover:bg-white border border-transparent',
+  glass: 'glass-surface-strong text-ink hover:border-accent-300/40',
 };
 
 /** `min-h` values keep every control at or above the 44px touch target. */
@@ -51,16 +43,10 @@ const sizes: Record<ButtonSize, string> = {
 };
 
 const base = cn(
-  'group inline-flex items-center justify-center rounded-full font-medium',
-  'transition-[background-color,box-shadow,transform,color] duration-200 ease-out',
-  'motion-safe:active:translate-y-px motion-safe:active:scale-[0.98]',
+  'inline-flex items-center justify-center rounded-full font-medium',
+  'transition-[background-color,box-shadow,transform,color] duration-200',
+  'motion-safe:active:translate-y-px',
   'disabled:pointer-events-none disabled:opacity-50',
-  // A trailing icon (an arrow, almost always the last child) nudges forward
-  // on hover — the icon micro-interaction docs/ui-audit.md finding MO5 asked
-  // for, applied once here rather than at each of the ~15 call sites that
-  // pass one.
-  '[&>svg:last-child]:transition-transform [&>svg:last-child]:duration-200',
-  'motion-safe:group-hover:[&>svg:last-child]:translate-x-0.5',
 );
 
 function classesFor(

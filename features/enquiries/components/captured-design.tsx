@@ -28,7 +28,7 @@ export function CapturedDesign({
     <div
       data-testid="captured-design"
       data-design-slug={design.slug}
-      className="border-accent-300/20 from-brand-800 to-surface-tint rounded-3xl border bg-gradient-to-br p-4 sm:p-5"
+      className="border-accent-400/25 from-surface-tint to-canvas-deep rounded-3xl border bg-gradient-to-br p-4 sm:p-5"
     >
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
         {design.image ? (

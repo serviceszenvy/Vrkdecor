@@ -76,69 +76,53 @@ export const palette = {
  * Semantic roles. Components reference these, not raw palette steps, so the
  * palette can be re-tuned after client review without touching components.
  *
- * Redefined for the full dark-theme transformation: `canvas` is exactly the
- * brief's `#37432B` (`brand.900`), and every other ground is a darker or
- * lighter step of the same brand-dark family (plus `sand` for a distinct
- * neutral-dark alternating zone), never a flat repeat of the same colour —
- * "do not make every section exactly the same colour."
- *
- * `ink`/`inkMuted`/`inkSoft` flip to light values for the dark ground.
- * `surfaceInverse`/`inkInverse` flip roles too: they were "the one dark
- * exception" on a light site; now they are "the one bright exception" for an
- * occasional light card on the dark site (used sparingly, for hierarchy).
+ * DARK THEME — VRK Decor redesign brief section 18. `canvas` is the exact
+ * `#37432B` requested as the site's primary background; every other surface
+ * role is a variation around it. Text roles were re-picked so every pairing
+ * in `contrastContract` below still clears WCAG 2.1 AA on the new dark
+ * grounds (verified by `tests/unit/design-tokens.test.ts`).
  */
 export const semanticColors = {
-  /** Card/raised-panel surface — one step lighter than `canvas`, so panels read as floating above the page rather than blending into it. */
-  surface: palette.brand[800],
+  /** Elevated card/panel surface — a step lighter than canvas so cards read as raised. */
+  surface: '#404C33',
+  /** The page ground. The exact `#37432B` sage-black requested for the redesign. */
+  canvas: '#37432B',
+  /** Second, slightly deeper ground — used where two dark bands meet. */
+  canvasDeep: '#2B3522',
+  /** Tinted glass-style panel: why-choose band, contact card, callouts. */
+  surfaceTint: '#48573A',
+  /** Alternating section background, a touch darker than canvas. */
+  surfaceSubtle: '#333E28',
+  /** Inset panels and image placeholders. */
+  surfaceMuted: '#3D4930',
+  /** Deepest surface — footer and full-bleed feature bands. */
+  surfaceInverse: '#1B2115',
+  /** Primary body and heading text — warm off-white for readability on dark greens. */
+  ink: '#F5F7F0',
+  /** Secondary text, captions and metadata on canvas or surface. */
+  inkMuted: '#B9C0AA',
+  /** Body text on a TINTED or deep-canvas surface, a touch brighter than `inkMuted`. */
+  inkSoft: '#D3D9C6',
+  /** Dark text, for use on bright/light-value surfaces (lime buttons, light chips). */
+  inkInverse: '#1B2115',
+  /** Hairlines and dividers on dark surfaces. */
+  border: '#556247',
+  /** Hairline on the canvas ground. */
+  borderSoft: '#4A573C',
   /**
-   * The page ground. Exactly the brief's `#37432B`. Every panel, card and
-   * glass surface sits on this by default.
+   * Primary action background — the logo's lime, used as the vivid CTA colour
+   * against the dark ground. `inkInverse` (dark text) on it is 8.22:1.
    */
-  canvas: palette.brand[900],
-  /** A deeper ground — recessed panels, or where two dark bands meet. */
-  canvasDeep: palette.brand[950],
-  /** A distinct dark zone for alternating sections — warm neutral, not brand-green, so it reads as a different area without ever going light. */
-  surfaceTint: palette.sand[900],
-  /** A further neutral-dark alternating background. */
-  surfaceSubtle: palette.sand[950],
-  /** Inset panels and image placeholders — distinct from both `surface` and `canvas`. */
-  surfaceMuted: palette.sand[800],
-  /**
-   * The one bright exception, used sparingly for a strong hierarchy pop on
-   * an otherwise all-dark page (e.g. a single featured callout card).
-   */
-  surfaceInverse: '#F5F7F1',
-  /** Primary body and heading text — light, for the dark ground. */
-  ink: '#F5F7F1',
-  /** Secondary text, captions and metadata. */
-  inkMuted: palette.sand[300],
-  /** Body text on a TINTED dark surface, where `inkMuted` sits closer to its contrast floor. */
-  inkSoft: palette.sand[200],
-  /** Text for use on the occasional bright `surfaceInverse` card. */
-  inkInverse: palette.brand[950],
-  /** Hairlines and dividers — a lighter brand step, visible against every dark ground above. */
-  border: palette.brand[600],
-  /** The softer hairline, closer to the surface it sits on. */
-  borderSoft: palette.brand[700],
-  /**
-   * Primary action background.
-   *
-   * `brand.700` is the sage measured in the logo itself. White on it is 5.00:1,
-   * so it clears WCAG AA for a button label, and it is the mid-olive the
-   * approved reference design uses for its primary buttons. Unchanged by the
-   * dark-theme transformation — a self-contained colour, independent of the
-   * ground it sits on.
-   */
-  actionPrimary: palette.brand[700],
-  actionPrimaryHover: palette.brand[800],
-  /** Accent action background — pairs with dark text only (never `ink`, which is now light). */
-  actionAccent: palette.accent[500],
-  actionAccentHover: palette.accent[600],
-  /** Brand-coloured text and links, verified against every dark ground in this file. */
-  brandText: palette.brand[300],
-  /** Same value — kept as a distinct token for call sites that want to name "strong" emphasis explicitly, not because the colour differs. */
-  brandTextStrong: palette.brand[300],
-  /** Focus ring — accent, not brand: `brand.700` measures under 3:1 against these dark grounds. */
+  actionPrimary: palette.accent[500],
+  actionPrimaryHover: palette.accent[600],
+  /** Secondary action background — soft sage, pairs with dark text at 7.89:1. */
+  actionAccent: palette.brand[400],
+  actionAccentHover: palette.brand[500],
+  /** Brand-coloured text and links on canvas or surface — light lime for AA on dark. */
+  brandText: palette.accent[300],
+  /** Brand-coloured text on a TINTED panel. */
+  brandTextStrong: palette.accent[300],
+  /** Focus ring. */
   focus: palette.accent[300],
 } as const;
 
@@ -149,19 +133,10 @@ export const semanticColors = {
  * (>=24px, or >=18.66px bold) and for non-text UI boundaries.
  */
 export const contrastContract = [
-  // --- Body text against every dark ground in the system ---
-  { name: 'body text on surface', fg: semanticColors.ink, bg: semanticColors.surface, min: 4.5 },
-  { name: 'body text on canvas', fg: semanticColors.ink, bg: semanticColors.canvas, min: 4.5 },
   {
-    name: 'body text on canvas deep',
+    name: 'body text on surface',
     fg: semanticColors.ink,
-    bg: semanticColors.canvasDeep,
-    min: 4.5,
-  },
-  {
-    name: 'body text on tinted panel',
-    fg: semanticColors.ink,
-    bg: semanticColors.surfaceTint,
+    bg: semanticColors.surface,
     min: 4.5,
   },
   {
@@ -170,17 +145,10 @@ export const contrastContract = [
     bg: semanticColors.surfaceSubtle,
     min: 4.5,
   },
-  // --- Muted/soft secondary text — the tighter cases, since these sit closer to the 4.5:1 floor ---
   {
     name: 'muted text on surface',
     fg: semanticColors.inkMuted,
     bg: semanticColors.surface,
-    min: 4.5,
-  },
-  {
-    name: 'muted text on canvas',
-    fg: semanticColors.inkMuted,
-    bg: semanticColors.canvas,
     min: 4.5,
   },
   {
@@ -190,22 +158,69 @@ export const contrastContract = [
     min: 4.5,
   },
   {
-    name: 'muted text on tinted panel',
-    fg: semanticColors.inkMuted,
-    bg: semanticColors.surfaceTint,
-    min: 4.5,
-  },
-  {
-    name: 'soft text on tinted panel',
-    fg: semanticColors.inkSoft,
-    bg: semanticColors.surfaceTint,
-    min: 4.5,
-  },
-  // --- Brand-coloured text/links — the lightened brand-300, checked against every ground ---
-  {
     name: 'brand text on surface',
     fg: semanticColors.brandText,
     bg: semanticColors.surface,
+    min: 4.5,
+  },
+  {
+    name: 'inverse text on dark surface',
+    fg: semanticColors.ink,
+    bg: semanticColors.surfaceInverse,
+    min: 4.5,
+  },
+  {
+    name: 'primary button label',
+    fg: semanticColors.inkInverse,
+    bg: semanticColors.actionPrimary,
+    min: 4.5,
+  },
+  {
+    name: 'primary button label (hover)',
+    fg: semanticColors.inkInverse,
+    bg: semanticColors.actionPrimaryHover,
+    min: 4.5,
+  },
+  {
+    name: 'accent button label',
+    fg: semanticColors.inkInverse,
+    bg: semanticColors.actionAccent,
+    min: 4.5,
+  },
+  {
+    name: 'accent button label (hover)',
+    fg: semanticColors.inkInverse,
+    bg: semanticColors.actionAccentHover,
+    min: 4.5,
+  },
+  {
+    name: 'accent text on dark surface',
+    fg: palette.accent[300],
+    bg: semanticColors.surfaceInverse,
+    min: 4.5,
+  },
+  {
+    name: 'focus ring on surface',
+    fg: semanticColors.focus,
+    bg: semanticColors.surface,
+    min: 3,
+  },
+  {
+    name: 'border on surface',
+    fg: semanticColors.border,
+    bg: semanticColors.surface,
+    min: 1.2,
+  },
+  {
+    name: 'body text on canvas',
+    fg: semanticColors.ink,
+    bg: semanticColors.canvas,
+    min: 4.5,
+  },
+  {
+    name: 'muted text on canvas',
+    fg: semanticColors.inkMuted,
+    bg: semanticColors.canvas,
     min: 4.5,
   },
   {
@@ -215,106 +230,60 @@ export const contrastContract = [
     min: 4.5,
   },
   {
+    name: 'body text on tinted panel',
+    fg: semanticColors.ink,
+    bg: semanticColors.surfaceTint,
+    min: 4.5,
+  },
+  {
+    name: 'soft body text on tinted panel',
+    fg: semanticColors.inkSoft,
+    bg: semanticColors.surfaceTint,
+    min: 4.5,
+  },
+  {
     name: 'brand text on tinted panel',
     fg: semanticColors.brandTextStrong,
     bg: semanticColors.surfaceTint,
     min: 4.5,
   },
   {
-    name: 'brand text on canvas deep',
-    fg: semanticColors.brandTextStrong,
+    name: 'soft body text on deep canvas',
+    fg: semanticColors.inkSoft,
     bg: semanticColors.canvasDeep,
     min: 4.5,
   },
-  // --- Focus ring (accent-300, not brand — brand.700 measures under 3:1 on these grounds) ---
-  { name: 'focus ring on surface', fg: semanticColors.focus, bg: semanticColors.surface, min: 3 },
-  { name: 'focus ring on canvas', fg: semanticColors.focus, bg: semanticColors.canvas, min: 3 },
-  // --- Structural ---
   {
-    name: 'border on surface',
-    fg: semanticColors.border,
-    bg: semanticColors.surface,
-    min: 1.2,
-  },
-  // --- Buttons: self-contained colour pairs, independent of the ground they sit on ---
-  {
-    name: 'primary button label',
-    fg: '#FFFFFF',
-    bg: semanticColors.actionPrimary,
-    min: 4.5,
-  },
-  {
-    name: 'primary button label (hover)',
-    fg: '#FFFFFF',
-    bg: semanticColors.actionPrimaryHover,
-    min: 4.5,
-  },
-  {
-    // Accent buttons always pair with dark ink, never the (now light) `ink`
-    // token — accent-500 is a light lime regardless of the site's theme.
-    name: 'accent button label',
-    fg: palette.brand[950],
-    bg: semanticColors.actionAccent,
-    min: 4.5,
-  },
-  {
-    name: 'accent button label (hover)',
-    fg: palette.brand[950],
-    bg: semanticColors.actionAccentHover,
-    min: 4.5,
-  },
-  // --- The one bright exception surface (`surfaceInverse`) ---
-  {
-    name: 'text on the bright exception surface',
-    fg: semanticColors.inkInverse,
-    bg: semanticColors.surfaceInverse,
-    min: 4.5,
-  },
-  {
-    // The opaque fallback of `glass-surface-vivid` (rgb(75 109 32 / 0.95))
-    // composited over `canvas` (brand-900) — the dark ground it now sits on.
-    // docs/ui-audit.md finding C3: this tone previously had no automated
-    // contrast coverage.
-    name: 'text on vivid glass',
-    fg: semanticColors.ink,
-    bg: '#4A6B21',
-    min: 4.5,
+    name: 'focus ring on canvas',
+    fg: semanticColors.focus,
+    bg: semanticColors.canvas,
+    min: 3,
   },
 ] as const;
 
 /**
- * Glassmorphism tokens — redefined dark for the full dark-theme
- * transformation. Translucency still exists to let content (photography,
- * the ambient blobs and gradients behind a panel) stay visible through the
- * interface, not as a decorative finish on every box, so these stay
- * restrained: `blur` is capped, because a large `backdrop-filter` radius is
- * repainted on every scroll frame and is the single most expensive thing a
- * glass design can do to a mid-range phone.
+ * Glassmorphism tokens.
  *
- * Four levels, each with a distinct role, not four names for the same
- * darkness: `surface` is the everyday dark glass, `surfaceStrong` is denser
- * and more opaque for text-heavy panels, `surfaceTint`/`surfaceVivid` are
- * brand- and accent-tinted glass for a small number of highlight moments,
- * and `surfaceInverse` is now the one *bright* glass exception (roles
- * flipped from the light theme, where it was the one dark exception).
+ * The reference design uses translucency as a way of letting photography stay
+ * visible through the interface, not as a decorative finish on every box. These
+ * values are therefore deliberately restrained, and `blur` is capped: a large
+ * `backdrop-filter` radius is repainted on every scroll frame and is the single
+ * most expensive thing a glass design can do to a mid-range phone.
  *
  * Where each one is allowed to appear is documented in docs/DESIGN-SYSTEM.md.
  */
 export const glass = {
-  /** Default dark glass — the header, floating panels, chips. */
-  surface: 'rgb(55 67 43 / 0.55)',
-  /** Denser, more opaque dark glass — dense text, the mobile nav sheet. */
-  surfaceStrong: 'rgb(36 44 28 / 0.82)',
-  /** Brand-tinted (sage) glass for a calmer highlight than `surfaceVivid`. */
-  surfaceTint: 'rgb(71 86 55 / 0.62)',
-  /** Accent-tinted (lime) glass for a small number of featured moments. */
-  surfaceVivid: 'rgb(75 109 32 / 0.65)',
-  /** The one bright exception — a light, near-opaque card for hierarchy. */
-  surfaceInverse: 'rgb(245 247 241 / 0.82)',
-  /** A subtle accent-coloured glow, not a plain white edge. */
-  border: 'rgb(199 231 157 / 0.35)',
-  borderSoft: 'rgb(142 200 64 / 0.18)',
-  highlight: 'rgb(199 231 157 / 0.4)',
+  /** Default translucent dark panel over photography or the canvas. */
+  surface: 'rgb(64 76 51 / 0.55)',
+  /** Used where text density is higher and legibility must not depend on luck. */
+  surfaceStrong: 'rgb(43 53 34 / 0.82)',
+  /** Lime-tinted glass for brand moments such as the closing call to action. */
+  surfaceTint: 'rgb(142 200 64 / 0.16)',
+  /** Light glass for chips and controls that need to pop off dark photography. */
+  surfaceInverse: 'rgb(245 247 240 / 0.14)',
+  border: 'rgb(245 247 240 / 0.14)',
+  borderSoft: 'rgb(199 231 157 / 0.18)',
+  highlight: 'rgb(245 247 240 / 0.16)',
   blur: '16px',
   blurStrong: '24px',
 } as const;

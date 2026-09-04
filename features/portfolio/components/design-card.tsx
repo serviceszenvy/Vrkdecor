@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Badge, ImageFrame, ImageScrim, Reveal } from '@/components/ui';
+import { Badge, ImageFrame, ImageScrim } from '@/components/ui';
 import { cn } from '@/lib/cn';
 import { designHref } from '../quote-link';
 import { coverImage, type PortfolioDesign } from '../types';
@@ -43,34 +43,26 @@ export function DesignCard({
     */
     <article
       className={cn(
-        'group shadow-card hover:shadow-glow relative overflow-hidden rounded-3xl',
-        'transition-[box-shadow,transform] duration-300 ease-out',
+        'group shadow-card hover:shadow-raised relative overflow-hidden rounded-3xl',
+        'transition-[box-shadow,transform] duration-300',
         'motion-safe:focus-within:-translate-y-1 motion-safe:hover:-translate-y-1',
         className,
       )}
     >
-      <Reveal variant="image" className="block">
-        <ImageFrame ratio="card" radius="none" zoomOnHover>
-          {cover ? (
-            <Image
-              src={cover.url}
-              alt={cover.alt}
-              fill
-              sizes={sizes}
-              className="object-cover"
-              priority={priority}
-            />
-          ) : (
-            <div className="from-brand-700 to-accent-800 h-full w-full bg-gradient-to-br" />
-          )}
-        </ImageFrame>
-      </Reveal>
-
-      {/* A faint brand-tinted wash on hover, under the scrim, purely decorative. */}
-      <div
-        aria-hidden="true"
-        className="from-brand-900/25 pointer-events-none absolute inset-0 bg-gradient-to-t via-transparent to-transparent opacity-0 transition-opacity duration-300 motion-safe:group-hover:opacity-100"
-      />
+      <ImageFrame ratio="card" radius="none" zoomOnHover>
+        {cover ? (
+          <Image
+            src={cover.url}
+            alt={cover.alt}
+            fill
+            sizes={sizes}
+            className="object-cover"
+            priority={priority}
+          />
+        ) : (
+          <div className="from-surface-muted to-canvas-deep h-full w-full bg-gradient-to-br" />
+        )}
+      </ImageFrame>
 
       <ImageScrim strength="strong" />
 

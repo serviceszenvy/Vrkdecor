@@ -4,7 +4,6 @@ import { useActionState, useId } from 'react';
 import { useFormStatus } from 'react-dom';
 import Link from 'next/link';
 import { Button, ButtonLink } from '@/components/ui';
-import { designHref } from '@/features/portfolio/quote-link';
 import { PARTNER_VENDOR_LABEL, occasions, services } from '@/lib/content';
 import { cn } from '@/lib/cn';
 import {
@@ -13,7 +12,6 @@ import {
   telHref,
   whatsAppHrefWithMessage,
 } from '@/lib/navigation';
-import { siteConfig } from '@/lib/site-config';
 import {
   BUDGET_MAX,
   CITY_MAX,
@@ -83,10 +81,11 @@ export function QuoteForm({
 
   return (
     <form
+      id="quote-form"
       action={formAction}
       noValidate
       encType="multipart/form-data"
-      className="flex flex-col gap-8"
+      className="flex flex-col gap-8 scroll-mt-24"
     >
       {/*
         The parent Design. Hidden, because the customer does not choose it — and
@@ -102,7 +101,7 @@ export function QuoteForm({
           role="alert"
           tabIndex={-1}
           data-testid="quote-error-summary"
-          className="motion-safe:animate-fade-in rounded-2xl border border-red-300 bg-red-50 p-4 text-sm text-red-900"
+          className="rounded-2xl border border-red-500/40 bg-red-950/40 p-4 text-sm text-red-200"
         >
           <p className="font-medium">
             {state.message ?? 'Please check the highlighted fields and try again.'}
@@ -129,12 +128,7 @@ export function QuoteForm({
               data-testid="quote-error-continuation"
             >
               <ButtonLink
-                href={whatsAppHrefWithMessage(
-                  designEnquiryMessage(
-                    design?.name,
-                    design ? `${siteConfig.url}${designHref(design.slug)}` : null,
-                  ),
-                )}
+                href={whatsAppHrefWithMessage(designEnquiryMessage(design?.name, design?.slug))}
                 variant="primary"
                 size="md"
               >
@@ -148,7 +142,7 @@ export function QuoteForm({
         </div>
       ) : null}
 
-      <Fieldset legend="Your details" columns>
+      <Fieldset legend="Your details">
         <Field
           field="name"
           label="Your name"
@@ -192,7 +186,6 @@ export function QuoteForm({
           label="Email address"
           error={state.errors.email}
           hint="Optional. Add it and we will email you a confirmation of this request straight away."
-          className="sm:col-span-2"
         >
           {(props) => (
             <input
@@ -206,7 +199,7 @@ export function QuoteForm({
         </Field>
       </Fieldset>
 
-      <Fieldset legend="About your event" columns>
+      <Fieldset legend="About your event">
         <Field
           field="eventType"
           label="Type of event"
@@ -246,9 +239,7 @@ export function QuoteForm({
             />
           )}
         </Field>
-      </Fieldset>
 
-      <Fieldset legend="Location" columns>
         <Field
           field="venue"
           label="Venue"
@@ -277,25 +268,6 @@ export function QuoteForm({
             />
           )}
         </Field>
-
-        <Field
-          field="guestCount"
-          label="Approximate number of guests"
-          error={state.errors.guestCount}
-          hint="Optional."
-          className="sm:col-span-2"
-        >
-          {(props) => (
-            <input
-              {...props}
-              type="number"
-              inputMode="numeric"
-              min={1}
-              max={100000}
-              defaultValue={value('guestCount')}
-            />
-          )}
-        </Field>
       </Fieldset>
 
       <fieldset className="flex flex-col gap-3">
@@ -315,7 +287,7 @@ export function QuoteForm({
         <ul className="grid gap-2 sm:grid-cols-2">
           {services.map((service) => (
             <li key={service.slug}>
-              <label className="border-line-soft hover:border-accent-300/50 hover:bg-white/5 has-[:checked]:border-accent-300 has-[:checked]:bg-accent-900/40 flex min-h-11 cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors duration-200">
+              <label className="border-line-soft hover:border-accent-400/50 hover:bg-accent-500/10 flex min-h-11 cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors">
                 <input
                   type="checkbox"
                   name="requiredServices"
@@ -325,7 +297,7 @@ export function QuoteForm({
                   aria-describedby={
                     state.errors.requiredServices ? 'error-requiredServices' : undefined
                   }
-                  className="accent-brand-700 mt-0.5 size-5 shrink-0"
+                  className="accent-accent-500 mt-0.5 size-5 shrink-0"
                 />
                 <span className="text-sm">
                   {service.name}
@@ -341,50 +313,94 @@ export function QuoteForm({
         </ul>
       </fieldset>
 
-      <Fieldset legend="Anything else?">
-        <Field
-          field="budget"
-          label="Budget in mind"
-          error={state.errors.budget}
-          hint="Optional. Tell us in your own words. We do not publish price ranges."
-        >
-          {(props) => (
-            <input
-              {...props}
-              type="text"
-              maxLength={BUDGET_MAX}
-              defaultValue={value('budget')}
-            />
+      <details className="group border-line-soft rounded-2xl border">
+        <summary
+          className={cn(
+            'flex min-h-14 cursor-pointer list-none items-center justify-between gap-2 rounded-2xl px-4 text-left',
+            '[&::-webkit-details-marker]:hidden',
           )}
-        </Field>
-
-        <Field
-          field="notes"
-          label="Notes"
-          error={state.errors.notes}
-          hint="Optional. Colours, themes, timings, anything you would like us to know."
         >
-          {(props) => (
-            <textarea
-              {...props}
-              rows={5}
-              maxLength={NOTES_MAX}
-              defaultValue={value('notes')}
+          <span className="font-display text-lg font-medium">
+            Add more details{' '}
+            <span className="text-ink-muted text-sm font-normal">(optional)</span>
+          </span>
+          <svg
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+            className="text-ink-muted size-5 shrink-0 transition-transform duration-300 group-open:rotate-180"
+          >
+            <path
+              fillRule="evenodd"
+              d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.168l3.71-3.938a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z"
+              clipRule="evenodd"
             />
-          )}
-        </Field>
+          </svg>
+        </summary>
+        <div className="accordion-rows grid transition-[grid-template-rows] duration-300 ease-out" style={{ gridTemplateRows: '0fr' }}>
+          <div className="flex flex-col gap-5 overflow-hidden px-4 pb-5">
+            <div className="grid gap-5 sm:grid-cols-2">
+              <Field
+                field="guestCount"
+                label="Approximate number of guests"
+                error={state.errors.guestCount}
+              >
+                {(props) => (
+                  <input
+                    {...props}
+                    type="number"
+                    inputMode="numeric"
+                    min={1}
+                    max={100000}
+                    defaultValue={value('guestCount')}
+                  />
+                )}
+              </Field>
 
-        <ReferenceImageField />
-      </Fieldset>
+              <Field
+                field="budget"
+                label="Budget in mind"
+                error={state.errors.budget}
+                hint="We do not publish price ranges."
+              >
+                {(props) => (
+                  <input
+                    {...props}
+                    type="text"
+                    maxLength={BUDGET_MAX}
+                    defaultValue={value('budget')}
+                  />
+                )}
+              </Field>
+            </div>
+
+            <Field
+              field="notes"
+              label="Tell us what you have in mind"
+              error={state.errors.notes}
+              hint="Colours, themes, timings, anything you would like us to know."
+            >
+              {(props) => (
+                <textarea
+                  {...props}
+                  rows={4}
+                  maxLength={NOTES_MAX}
+                  defaultValue={value('notes')}
+                />
+              )}
+            </Field>
+
+            <ReferenceImageField />
+          </div>
+        </div>
+      </details>
 
       <div className="flex flex-col gap-3">
         <label
           id="field-consent"
           className={cn(
-            'flex cursor-pointer items-start gap-3 rounded-2xl border p-4 transition-colors duration-200',
-            state.errors.consent
-              ? 'border-red-400 bg-red-50'
-              : 'border-line-soft has-[:checked]:border-accent-300 has-[:checked]:bg-accent-900/40',
+            'flex cursor-pointer items-start gap-3 rounded-2xl border p-4',
+            state.errors.consent ? 'border-red-500/50 bg-red-950/30' : 'border-line-soft',
           )}
         >
           <input
@@ -394,7 +410,7 @@ export function QuoteForm({
             defaultChecked={value('consent') === 'on'}
             aria-invalid={state.errors.consent ? true : undefined}
             aria-describedby={state.errors.consent ? 'error-consent' : undefined}
-            className="accent-brand-700 mt-0.5 size-5 shrink-0"
+            className="accent-accent-500 mt-0.5 size-5 shrink-0"
           />
           <span className="text-sm">
             I agree that VRK Decor may contact me by phone, WhatsApp or email about this
@@ -443,27 +459,12 @@ function SubmitButton() {
   );
 }
 
-/**
- * `columns` lays paired fields (name+phone, event type+date, venue+city) side
- * by side from `sm` up, so the form reads as a handful of short rows on a
- * wide screen instead of one long single-column scroll — the same fields,
- * grouped for how quickly they read, not fewer of them.
- */
-function Fieldset({
-  legend,
-  columns = false,
-  children,
-}: {
-  legend: string;
-  columns?: boolean;
-  children: React.ReactNode;
-}) {
+function Fieldset({ legend, children }: { legend: string; children: React.ReactNode }) {
   return (
     <fieldset className="flex flex-col gap-5">
       <legend className="font-display text-xl font-medium">{legend}</legend>
-      <div className={columns ? 'grid gap-5 sm:grid-cols-2' : 'flex flex-col gap-5'}>
-        {children}
-      </div>
+      {/* Two columns from `sm` — brief section 10's "clean two-column layout on desktop". */}
+      <div className="grid gap-5 sm:grid-cols-2">{children}</div>
     </fieldset>
   );
 }
@@ -499,7 +500,6 @@ function Field({
   hint,
   error,
   required = false,
-  className,
   children,
 }: {
   field: EnquiryField;
@@ -507,8 +507,6 @@ function Field({
   hint?: string;
   error?: string | undefined;
   required?: boolean;
-  /** Extra classes on the field's own wrapper, e.g. `sm:col-span-2` inside a `columns` Fieldset. */
-  className?: string;
   children: (props: ControlProps) => React.ReactNode;
 }) {
   const hintId = hint ? `hint-${field}` : undefined;
@@ -516,7 +514,7 @@ function Field({
   const describedBy = [errorId, hintId].filter(Boolean).join(' ') || undefined;
 
   return (
-    <div className={cn('flex flex-col gap-1.5', className)}>
+    <div className="flex flex-col gap-1.5">
       <label htmlFor={`field-${field}`} className="text-sm font-medium">
         {label}
         {required ? (
@@ -544,10 +542,8 @@ function Field({
         'aria-invalid': error ? true : undefined,
         'aria-describedby': describedBy,
         className: cn(
-          'border-line-soft bg-surface text-ink w-full rounded-xl border px-3 py-2.5 text-base',
+          'border-line-soft bg-surface w-full rounded-xl border px-3 py-2.5 text-base',
           'min-h-12 focus-visible:outline-2 focus-visible:outline-offset-2',
-          'transition-[border-color,box-shadow] duration-200 hover:border-accent-300/50',
-          'focus:border-accent-300 focus:shadow-focus-glow',
           error && 'border-red-400',
         ),
       })}

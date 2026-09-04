@@ -235,7 +235,6 @@ because nothing is behind anything.
 | `glass-surface`        | `rgb(255 255 255 / 0.62)` | Floating chips and small panels over photography                |
 | `glass-surface-strong` | `rgb(255 255 255 / 0.86)` | Header, hero panel, statistics bar, mobile sheet, admin sidebar |
 | `glass-surface-tint`   | `rgb(236 242 230 / 0.74)` | Brand moments such as the closing call to action                |
-| `glass-surface-vivid`  | `rgb(221 240 196 / 0.8)`  | A small number of warmer highlight moments (`GlassPanel tone="vivid"`) |
 | `glass-border`         | `rgb(255 255 255 / 0.55)` | Edge of a glass surface                                         |
 | `glass-highlight`      | `rgb(255 255 255 / 0.65)` | The thin top highlight (`.glass-edge`)                          |
 | `glass-blur`           | `16px`                    | Default backdrop blur                                           |
@@ -253,25 +252,6 @@ Three rules, each enforced by a test in `tests/unit/design-tokens.test.ts`:
 3. **Never behind data.** Tables, enquiry rows and form fields in the Admin Panel
    are opaque white. Nobody should read a customer's phone number through a
    blurred photograph.
-
-### Motion
-
-Ambient background motion (`--animate-drift-slow`, `--animate-drift-slower`,
-`--animate-gradient-pan` in `app/globals.css`) drives slow, small-amplitude
-blob and gradient movement on hero-like panels only — the home and inner-page
-hero, the closing call to action, the value band — never on ordinary cards or
-generic `Section` panels, so colour stays an accent rather than a constant
-background distraction. `--animate-sheet-in` and `--animate-fade-in` give the
-mobile navigation sheet, floating actions and modal-like surfaces (the
-lightbox, the quote form's error summary) an entrance instead of appearing
-instantly.
-
-Scroll-reveal content (`components/ui/reveal.tsx`, `Reveal`) fades and rises
-into place once as a section enters the viewport, staggered by up to ~240ms
-across a grid. It never hides content from a visitor without JavaScript — the
-`.reveal` base styles apply only inside `@media (scripting: enabled)` — and
-respects `prefers-reduced-motion` through the same global rule that governs
-every other transition in this system.
 
 ---
 

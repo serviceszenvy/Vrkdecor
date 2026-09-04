@@ -19,7 +19,7 @@ const tones: Record<Tone, string> = {
   subtle: 'bg-surface-subtle text-ink',
   muted: 'bg-surface-muted text-ink',
   tint: 'bg-surface-tint text-ink',
-  inverse: 'bg-surface-inverse text-ink-inverse',
+  inverse: 'bg-surface-inverse text-ink',
   panel: 'text-ink',
 };
 
@@ -125,21 +125,6 @@ export function SectionHeading({
     3: 'text-2xl',
   } as const;
 
-  /**
-   * Weight now carries part of the hierarchy too, not size alone
-   * (docs/ui-audit.md §7): a page's one `h1` reads heavier than the `h2`s and
-   * `h3`s under it, even at a glance before the size difference registers.
-   */
-  const weights = {
-    1: 'font-semibold',
-    2: 'font-medium',
-    3: 'font-medium',
-  } as const;
-
-  // `brand-700`/`brand-800` measure under 3:1 against the dark theme's
-  // grounds — every tone now uses accent-300 (verified 5.7:1+ against every
-  // surface/canvas variant), the same value the old `inverse` tone already
-  // used before the whole site went dark.
   const eyebrowTone = {
     default: 'text-accent-300',
     inverse: 'text-accent-300',
@@ -148,14 +133,14 @@ export function SectionHeading({
 
   const leadTone = {
     default: 'text-ink-muted',
-    inverse: 'text-sand-200',
+    inverse: 'text-ink-muted',
     tint: 'text-ink-soft',
   } as const;
 
   const accentTone = {
-    default: 'text-brand-300',
+    default: 'text-accent-300',
     inverse: 'text-accent-300',
-    tint: 'text-brand-300',
+    tint: 'text-accent-300',
   } as const;
 
   return (
@@ -176,7 +161,7 @@ export function SectionHeading({
         </p>
       ) : null}
 
-      <Heading id={id} className={cn(sizes[level], weights[level])}>
+      <Heading id={id} className={cn(sizes[level], 'font-medium')}>
         {title}
         {accent ? <span className={accentTone[tone]}> {accent}</span> : null}
         {tail ? <span> {tail}</span> : null}

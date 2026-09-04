@@ -8,7 +8,6 @@ import {
   CardMeta,
   CardTitle,
   IconChip,
-  Reveal,
   Section,
   SectionHeading,
 } from '@/components/ui';
@@ -16,45 +15,25 @@ import { PARTNER_VENDOR_LABEL, positioning } from '@/lib/content';
 import { getOccasions, getServices } from '@/lib/db/public-content';
 import { routes } from '@/lib/navigation';
 import { pageMetadata } from '@/lib/seo';
+import type { OccasionListItem } from '@/lib/db/public-content';
 
 export const metadata: Metadata = pageMetadata({
-  title: 'Event Decoration Services',
+  title: 'Services & Occasions',
   description:
-    'Stage and mandap decoration, florals, entrance, furniture, LED and complete event management from VRK Decor, styled for weddings, family ceremonies, birthdays and corporate events, with trusted partner vendors for specialist services.',
+    'Stage and mandap decoration, florals, entrance, furniture, LED and complete event management from VRK Decor — for weddings, personal celebrations and corporate events across Tamil Nadu.',
   path: '/services',
 });
 
 /**
- * Groups the approved occasions (Requirements section 5) into the kind of
- * occasion-led categories a visitor thinks in, so the page reads as "what we
- * decorate for" rather than a flat alphabetised list. Every slug here is an
- * approved occasion already seeded in the database — this only changes how
- * they're grouped, not what exists.
- */
-const OCCASION_CATEGORIES: readonly { title: string; slugs: readonly string[] }[] = [
-  {
-    title: 'Weddings & engagements',
-    slugs: ['wedding', 'reception', 'engagement', 'seer-varisai'],
-  },
-  {
-    title: 'Family ceremonies',
-    slugs: ['puberty-ceremony', 'ear-piercing', 'holy-communion', 'baby-shower', 'housewarming'],
-  },
-  {
-    title: 'Birthdays & anniversaries',
-    slugs: ['birthday', 'anniversary'],
-  },
-  {
-    title: 'Corporate & community',
-    slugs: ['corporate-events', 'college-events', 'other-celebrations'],
-  },
-];
-
-/**
- * Services — Requirements section 6, with occasion content folded in
- * (Requirements section 5) now that a standalone Occasions page has been
- * retired in favour of one page that answers both "what do you do" and
- * "what is it for".
+ * Services — Requirements section 6, plus redesign brief sections 5 and 6.
+ *
+ * The brief asks for the separate Occasions page to be removed because it
+ * overlapped heavily with Services, and for this page to become the primary
+ * page for both. The occasion catalogue itself is unchanged (still the
+ * approved list seeded into the database, `tests/unit/catalog-parity.test.ts`
+ * still holds) — only its page moved, into a dedicated section here with its
+ * own `#occasions` anchor, and the standalone route now redirects here
+ * (`next.config.ts`).
  *
  * Partner-vendor delivery is displayed rather than hidden, because Requirements
  * section 3 requires it to be represented accurately.
@@ -67,19 +46,13 @@ export default async function ServicesPage() {
     (service) => service.deliveryModel === 'partner_vendor',
   );
 
-  const occasionsBySlug = new Map(occasions.map((occasion) => [occasion.slug, occasion]));
-  const categorisedOccasions = OCCASION_CATEGORIES.map((category) => ({
-    title: category.title,
-    occasions: category.slugs
-      .map((slug) => occasionsBySlug.get(slug))
-      .filter((occasion): occasion is NonNullable<typeof occasion> => Boolean(occasion)),
-  })).filter((category) => category.occasions.length > 0);
+  const occasionGroups = groupOccasions(occasions);
 
   return (
     <div className="flex flex-col gap-4 pb-4 sm:gap-6 sm:pb-6">
       <Hero
         compact
-        eyebrow="Services"
+        eyebrow="Services & Occasions"
         title="Complete celebration"
         accent="solutions"
         lead={positioning.brandRole}
@@ -93,6 +66,7 @@ export default async function ServicesPage() {
       <Section tone="panel" width="wide" aria-labelledby="in-house">
         <SectionHeading
           id="in-house"
+          eyebrow="Design & production"
           title="Designed and delivered"
           accent="by our own team"
           lead="These are the parts of your celebration we plan, build and set up ourselves."
@@ -101,21 +75,24 @@ export default async function ServicesPage() {
           {inHouse.map((service, index) => {
             const ServiceIcon = serviceIcon(service.slug);
             return (
-              <Reveal key={service.slug} as="li" delay={Math.min(index * 60, 240)}>
-                <Card interactive tone="glass" className="h-full">
-                  <CardBody>
-                    <IconChip tone="brand" size="md">
-                      <ServiceIcon />
-                    </IconChip>
-                    <CardTitle as="h3" className="mt-1">
-                      {service.name}
-                    </CardTitle>
-                    {service.description ? (
-                      <CardMeta>{service.description}</CardMeta>
-                    ) : null}
-                  </CardBody>
-                </Card>
-              </Reveal>
+              <Card
+                key={service.slug}
+                as="li"
+                interactive
+                className={`animate-fade-up stagger-${Math.min((index % 4) + 1, 4)}`}
+              >
+                <CardBody>
+                  <IconChip tone="brand" size="md">
+                    <ServiceIcon />
+                  </IconChip>
+                  <CardTitle as="h3" className="mt-1">
+                    {service.name}
+                  </CardTitle>
+                  {service.description ? (
+                    <CardMeta>{service.description}</CardMeta>
+                  ) : null}
+                </CardBody>
+              </Card>
             );
           })}
         </ul>
@@ -124,6 +101,7 @@ export default async function ServicesPage() {
       <Section tone="panel" width="wide" aria-labelledby="partner">
         <SectionHeading
           id="partner"
+          eyebrow="Specialist partners"
           title="Delivered with"
           accent="trusted partner vendors"
           lead="We arrange and coordinate these specialist services for you, so your celebration still has one point of contact."
@@ -132,58 +110,106 @@ export default async function ServicesPage() {
           {partner.map((service, index) => {
             const ServiceIcon = serviceIcon(service.slug);
             return (
-              <Reveal key={service.slug} as="li" delay={Math.min(index * 60, 240)}>
-                <Card tone="tint" className="h-full">
-                  <CardBody>
-                    <IconChip tone="tint" size="md">
-                      <ServiceIcon />
-                    </IconChip>
-                    <CardTitle as="h3" className="mt-1">
-                      {service.name}
-                    </CardTitle>
-                    {service.description ? (
-                      <CardMeta className="text-ink-soft">
-                        {service.description}
-                      </CardMeta>
-                    ) : null}
-                    <div>
-                      <Badge tone="glass">{PARTNER_VENDOR_LABEL}</Badge>
-                    </div>
-                  </CardBody>
-                </Card>
-              </Reveal>
+              <Card
+                key={service.slug}
+                as="li"
+                tone="tint"
+                className={`animate-fade-up stagger-${Math.min((index % 4) + 1, 4)}`}
+              >
+                <CardBody>
+                  <IconChip tone="tint" size="md">
+                    <ServiceIcon />
+                  </IconChip>
+                  <CardTitle as="h3" className="mt-1">
+                    {service.name}
+                  </CardTitle>
+                  {service.description ? (
+                    <CardMeta className="text-ink-soft">{service.description}</CardMeta>
+                  ) : null}
+                  <div>
+                    <Badge tone="glass">{PARTNER_VENDOR_LABEL}</Badge>
+                  </div>
+                </CardBody>
+              </Card>
             );
           })}
         </ul>
       </Section>
 
-      {categorisedOccasions.length > 0 ? (
-        <Section tone="panel" width="wide" aria-labelledby="occasions">
-          <SectionHeading
-            id="occasions"
-            align="center"
-            rule
-            title="Styled for"
-            accent="every occasion"
-            lead="Some of these are known by more than one name, so both are listed and you can find yours quickly. Pick one to see the work we have done for it."
-          />
-          <div className="mt-10 flex flex-col gap-9">
-            {categorisedOccasions.map((category) => (
-              <div key={category.title} className="flex flex-col gap-4">
-                <h3 className="text-accent-300 text-2xs font-semibold tracking-[0.2em] uppercase">
-                  {category.title}
-                </h3>
-                <OccasionGrid occasions={category.occasions} />
-              </div>
-            ))}
-          </div>
-        </Section>
-      ) : null}
+      {/*
+        Occasions, folded in from the removed standalone page (brief section 6).
+        Grouped rather than dumped as one long list, per the brief's explicit
+        "do not simply dump all the old Occasions content" instruction.
+      */}
+      <Section tone="panel" width="wide" aria-labelledby="occasions-heading" id="occasions">
+        <SectionHeading
+          align="center"
+          rule
+          id="occasions-heading"
+          eyebrow="Occasions"
+          title="Every occasion"
+          accent="we decorate"
+          lead="Some of these are known by more than one name, so both are listed and you can find yours quickly. Pick one to see the work we have done for it."
+        />
+
+        <div className="mt-10 flex flex-col gap-10">
+          {occasionGroups.map((group) => (
+            <div key={group.title} className="flex flex-col gap-4">
+              <h3 className="text-ink text-lg font-semibold">{group.title}</h3>
+              <OccasionGrid occasions={group.items} />
+            </div>
+          ))}
+        </div>
+      </Section>
 
       <CtaBand
         title="Tell us what your celebration needs."
-        lead="Send us the services you are looking for along with your date and venue, and we will prepare a quotation."
+        lead="Send us the services and occasion you are looking for along with your date and venue, and we will prepare a quotation."
       />
     </div>
   );
+}
+
+type OccasionGroup = { title: string; items: OccasionListItem[] };
+
+/**
+ * Buckets the approved occasion catalogue into a handful of intelligible
+ * groups for this page. Unknown/future slugs fall into "Other Celebrations"
+ * rather than being dropped, so an occasion added later in the Admin Panel
+ * still appears somewhere.
+ */
+function groupOccasions(occasions: OccasionListItem[]): OccasionGroup[] {
+  const buckets: Record<string, string[]> = {
+    'Weddings & Traditional Ceremonies': [
+      'wedding',
+      'reception',
+      'engagement',
+      'seer-varisai',
+    ],
+    'Personal & Family Celebrations': [
+      'puberty-ceremony',
+      'ear-piercing',
+      'holy-communion',
+      'baby-shower',
+      'housewarming',
+      'birthday',
+      'anniversary',
+    ],
+    'Corporate & Institutional': ['corporate-events', 'college-events'],
+  };
+
+  const grouped: OccasionGroup[] = Object.entries(buckets)
+    .map(([title, slugs]) => ({
+      title,
+      items: occasions.filter((occasion) => slugs.includes(occasion.slug)),
+    }))
+    .filter((group) => group.items.length > 0);
+
+  const groupedSlugs = new Set(grouped.flatMap((group) => group.items.map((i) => i.slug)));
+  const remaining = occasions.filter((occasion) => !groupedSlugs.has(occasion.slug));
+  if (remaining.length > 0) {
+    grouped.push({ title: 'Other Celebrations', items: remaining });
+  }
+
+  return grouped;
 }

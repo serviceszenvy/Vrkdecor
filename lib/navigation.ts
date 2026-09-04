@@ -27,14 +27,7 @@ export type NavItem = {
   href: string;
 };
 
-/**
- * Primary navigation, in the order given by the approved site structure.
- *
- * Occasions is deliberately absent: it is no longer a distinct destination —
- * the Services page now leads with "styled for every occasion" content
- * (`app/(site)/services/page.tsx`), and `/occasions` redirects there
- * (`next.config.ts`) so no existing link ever 404s.
- */
+/** Primary navigation, in the order given by the approved site structure. */
 export const primaryNav: readonly NavItem[] = [
   { label: 'Our Work', href: routes.work },
   { label: 'Services', href: routes.services },
@@ -122,21 +115,26 @@ export function enquiryContinuationMessage(designName?: string | null): string {
 /**
  * The message a customer carries into WhatsApp INSTEAD of using the form.
  *
- * `designUrl` is the public design page — public content, like `designName` —
- * so a customer who reaches WhatsApp from a specific photograph (the lightbox,
- * or a design's "Get Quote" button) hands VRK Decor a link straight to what
- * they mean, not just its name in quotes.
+ * Redesign brief section 8 (image-specific "Get a Quote"): when a slug is
+ * available too, the message carries that design's own page URL — built from
+ * the same public slug the "View design" link and the lightbox both use,
+ * never a generic homepage link — so the team can see exactly which design
+ * the customer is asking about the moment the chat opens. The design's name
+ * is always named when known, slug or no slug, which is the pre-redesign
+ * behaviour this preserves for any caller that only has a name.
  */
 export function designEnquiryMessage(
   designName?: string | null,
-  designUrl?: string | null,
+  designSlug?: string | null,
 ): string {
-  if (!designName) {
-    return 'Hello VRK Decor, I would like a quotation for an upcoming celebration.';
+  if (designName && designSlug) {
+    const designUrl = `${siteConfig.url}${routes.work}/${designSlug}`;
+    return `Hello VRK Decor, I would like a quotation for an upcoming celebration.\n\nI'm interested in this design: "${designName}" — ${designUrl}\n\nThanks!`;
   }
-
-  const link = designUrl ? ` (${designUrl})` : '';
-  return `Hello VRK Decor, I would like a quotation for an upcoming celebration. I'm interested in this design: "${designName}"${link}. Thanks!`;
+  if (designName) {
+    return `Hello VRK Decor, I am interested in "${designName}" and would like a quotation.`;
+  }
+  return 'Hello VRK Decor, I would like a quotation for an upcoming celebration.';
 }
 
 export const mailHref = `mailto:${siteConfig.contact.email}`;

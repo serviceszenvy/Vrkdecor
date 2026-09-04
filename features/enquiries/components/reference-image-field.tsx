@@ -76,11 +76,11 @@ export function ReferenceImageField() {
         onChange={onChange}
         aria-describedby={hintId}
         data-testid="reference-image-input"
-        className="border-line-soft bg-surface text-ink file:bg-brand-700 hover:file:bg-brand-800 file:text-white w-full rounded-xl border px-3 py-2.5 text-base file:mr-3 file:min-h-9 file:cursor-pointer file:rounded-full file:border-0 file:px-4 file:py-2 file:text-sm"
+        className="border-line-soft bg-surface file:bg-accent-500/15 hover:file:bg-accent-500/25 file:text-accent-300 w-full rounded-xl border px-3 py-2.5 text-base file:mr-3 file:min-h-9 file:cursor-pointer file:rounded-full file:border-0 file:px-4 file:py-2 file:text-sm"
       />
 
       {warning ? (
-        <p className="text-sm text-red-400" role="status">
+        <p className="text-sm text-red-700" role="status">
           {warning}
         </p>
       ) : null}
