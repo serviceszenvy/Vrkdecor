@@ -4,6 +4,7 @@ import { useActionState, useId } from 'react';
 import { useFormStatus } from 'react-dom';
 import Link from 'next/link';
 import { Button, ButtonLink } from '@/components/ui';
+import { designHref } from '@/features/portfolio/quote-link';
 import { PARTNER_VENDOR_LABEL, occasions, services } from '@/lib/content';
 import { cn } from '@/lib/cn';
 import {
@@ -12,6 +13,7 @@ import {
   telHref,
   whatsAppHrefWithMessage,
 } from '@/lib/navigation';
+import { siteConfig } from '@/lib/site-config';
 import {
   BUDGET_MAX,
   CITY_MAX,
@@ -127,7 +129,12 @@ export function QuoteForm({
               data-testid="quote-error-continuation"
             >
               <ButtonLink
-                href={whatsAppHrefWithMessage(designEnquiryMessage(design?.name))}
+                href={whatsAppHrefWithMessage(
+                  designEnquiryMessage(
+                    design?.name,
+                    design ? `${siteConfig.url}${designHref(design.slug)}` : null,
+                  ),
+                )}
                 variant="primary"
                 size="md"
               >

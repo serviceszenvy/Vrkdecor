@@ -121,11 +121,22 @@ export function enquiryContinuationMessage(designName?: string | null): string {
 
 /**
  * The message a customer carries into WhatsApp INSTEAD of using the form.
+ *
+ * `designUrl` is the public design page — public content, like `designName` —
+ * so a customer who reaches WhatsApp from a specific photograph (the lightbox,
+ * or a design's "Get Quote" button) hands VRK Decor a link straight to what
+ * they mean, not just its name in quotes.
  */
-export function designEnquiryMessage(designName?: string | null): string {
-  return designName
-    ? `Hello VRK Decor, I am interested in "${designName}" and would like a quotation.`
-    : 'Hello VRK Decor, I would like a quotation for an upcoming celebration.';
+export function designEnquiryMessage(
+  designName?: string | null,
+  designUrl?: string | null,
+): string {
+  if (!designName) {
+    return 'Hello VRK Decor, I would like a quotation for an upcoming celebration.';
+  }
+
+  const link = designUrl ? ` (${designUrl})` : '';
+  return `Hello VRK Decor, I would like a quotation for an upcoming celebration. I'm interested in this design: "${designName}"${link}. Thanks!`;
 }
 
 export const mailHref = `mailto:${siteConfig.contact.email}`;

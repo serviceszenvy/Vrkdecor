@@ -7,6 +7,7 @@ import {
   QuoteForm,
   UnavailableDesignNotice,
 } from '@/features/enquiries/components';
+import { designHref } from '@/features/portfolio';
 import { isUsingLocalEnquiryStore, resolveQuoteContext } from '@/features/enquiries';
 import {
   designEnquiryMessage,
@@ -14,6 +15,7 @@ import {
   whatsAppHrefWithMessage,
 } from '@/lib/navigation';
 import { pageMetadata } from '@/lib/seo';
+import { siteConfig } from '@/lib/site-config';
 import {
   MAX_EVENT_YEARS_AHEAD,
   todayInBusinessTimezone,
@@ -71,7 +73,12 @@ export default async function QuotePage({
         actions={
           <>
             <ButtonLink
-              href={whatsAppHrefWithMessage(designEnquiryMessage(context.design?.name))}
+              href={whatsAppHrefWithMessage(
+                designEnquiryMessage(
+                  context.design?.name,
+                  context.design ? `${siteConfig.url}${designHref(context.design.slug)}` : null,
+                ),
+              )}
               variant="outline"
               size="md"
               data-testid="quote-whatsapp-continuation"
