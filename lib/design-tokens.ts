@@ -266,6 +266,22 @@ export const contrastContract = [
     bg: semanticColors.canvas,
     min: 3,
   },
+  {
+    // The opaque fallback of `glass-surface-vivid` (rgb(221 240 196 / 0.95))
+    // composited over white — the surface it always sits on in practice.
+    // docs/ui-audit.md finding C3: this tone previously had no automated
+    // contrast coverage, unlike every other surface in the system.
+    name: 'body text on vivid glass',
+    fg: semanticColors.ink,
+    bg: '#DFF1C7',
+    min: 4.5,
+  },
+  {
+    name: 'soft body text on vivid glass',
+    fg: semanticColors.inkSoft,
+    bg: '#DFF1C7',
+    min: 4.5,
+  },
 ] as const;
 
 /**

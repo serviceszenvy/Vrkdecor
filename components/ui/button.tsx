@@ -27,7 +27,7 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
  */
 const variants: Record<ButtonVariant, string> = {
   primary:
-    'bg-brand-700 text-white hover:bg-brand-800 border border-transparent shadow-[0_10px_24px_-14px_rgb(36_44_28/0.85)] motion-safe:hover:shadow-glow motion-safe:hover:-translate-y-0.5',
+    'bg-brand-700 text-white hover:bg-brand-800 border border-transparent shadow-lift motion-safe:hover:shadow-glow motion-safe:hover:-translate-y-0.5',
   accent:
     'bg-accent-500 text-ink hover:bg-accent-600 border border-transparent motion-safe:hover:shadow-glow motion-safe:hover:-translate-y-0.5',
   secondary: 'bg-sand-100 text-ink hover:bg-sand-200 border border-transparent',
@@ -35,7 +35,9 @@ const variants: Record<ButtonVariant, string> = {
     'bg-transparent text-brand-700 border border-brand-700 hover:bg-brand-50 hover:border-brand-800',
   ghost: 'bg-transparent text-ink border border-transparent hover:bg-sand-100',
   inverse: 'bg-white text-ink hover:bg-sand-100 border border-transparent',
-  glass: 'glass-surface-strong text-ink hover:bg-white motion-safe:hover:shadow-raised',
+  // `.glass-hover-glow` is a plain CSS rule, not a `hover:shadow-*` utility —
+  // see the comment on it in app/globals.css (docs/ui-audit.md finding M3).
+  glass: 'glass-surface-strong glass-hover-glow text-ink hover:bg-white',
 };
 
 /** `min-h` values keep every control at or above the 44px touch target. */

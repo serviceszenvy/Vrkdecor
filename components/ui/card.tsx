@@ -45,9 +45,15 @@ export function Card({
         tones[tone],
         interactive &&
           cn(
-            'group shadow-card hover:shadow-glow focus-within:shadow-glow',
+            'group transition-[box-shadow,transform,border-color] duration-300 ease-out',
+            // `.glass-surface` already sets its own box-shadow in a CSS layer
+            // that a `hover:shadow-*` Tailwind utility would silently
+            // override rather than blend with — see the comment on
+            // `.glass-hover-glow` in app/globals.css (finding M3/C1).
+            tone === 'glass'
+              ? 'glass-hover-glow'
+              : 'shadow-card hover:shadow-glow focus-within:shadow-glow',
             interactiveBorders[tone],
-            'transition-[box-shadow,transform,border-color] duration-300 ease-out',
             'motion-safe:focus-within:-translate-y-1 motion-safe:hover:-translate-y-1',
           ),
         className,

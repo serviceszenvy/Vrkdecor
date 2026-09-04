@@ -44,7 +44,7 @@ function FilterRow({
       'transition-[background-color,border-color,box-shadow,transform] duration-200',
       'motion-safe:active:scale-95',
       isActive
-        ? 'border-brand-700 bg-brand-700 text-white shadow-[0_8px_18px_-10px_rgb(97_118_75/0.7)]'
+        ? 'border-brand-700 bg-brand-700 text-white shadow-glow-sm'
         : 'border-line-soft bg-surface text-ink hover:border-brand-300 hover:bg-brand-50 hover:shadow-card',
     );
 

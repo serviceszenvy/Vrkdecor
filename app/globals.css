@@ -105,17 +105,50 @@
   --radius-2xl: 1.75rem;
   --radius-3xl: 2.25rem;
 
-  /* Elevation — restrained, so photography stays the focus */
+  /*
+   * Elevation — restrained, so photography stays the focus. Every hover/focus
+   * shadow in the system uses one of these; none is written inline as an
+   * arbitrary value at the call site (tests/unit/design-tokens.test.ts does
+   * not check this, but docs/ui-audit.md finding C2 does, by inspection).
+   */
   --shadow-card: 0 1px 2px rgb(37 37 34 / 0.04), 0 8px 24px -12px rgb(37 37 34 / 0.18);
-  --shadow-raised:
-    0 2px 4px rgb(37 37 34 / 0.06), 0 18px 40px -18px rgb(37 37 34 / 0.28);
+  /* The primary button's resting lift. */
+  --shadow-lift: 0 10px 24px -14px rgb(36 44 28 / 0.85);
   --shadow-glass:
     0 1px 1px rgb(255 255 255 / 0.4) inset, 0 12px 32px -14px rgb(36 44 28 / 0.28);
   --shadow-panel: 0 1px 2px rgb(36 44 28 / 0.04), 0 24px 60px -32px rgb(36 44 28 / 0.3);
+  /* Floating fixed actions — the WhatsApp FAB, the sticky mobile CTA. */
   --shadow-float: 0 6px 16px -6px rgb(36 44 28 / 0.32), 0 2px 6px rgb(36 44 28 / 0.12);
   /* A warm brand-tinted lift, used on hover for interactive cards and buttons. */
   --shadow-glow:
     0 20px 44px -22px rgb(97 118 75 / 0.55), 0 6px 16px -10px rgb(142 200 64 / 0.3);
+  /* The same glow, scaled down for small elements — chips, pills. */
+  --shadow-glow-sm: 0 8px 18px -10px rgb(97 118 75 / 0.7);
+  /* A focus-visible ring glow, layered behind the browser's own outline. */
+  --shadow-focus-glow: 0 0 0 4px rgb(97 118 75 / 0.12);
+
+  /*
+   * Motion — a named scale, so a developer picks from these rather than
+   * writing a new duration or curve at the call site.
+   *
+   * Durations: micro-interactions (hover, press, focus) use Tailwind's
+   * existing `duration-150`/`duration-200`/`duration-300` utilities — no new
+   * tokens needed there. Section-entrance motion (`.reveal`, the mobile nav
+   * sheet) is deliberately longer than a micro-interaction and is named
+   * below as `--duration-entrance`.
+   *
+   * Easings: three named curves, used everywhere a curve is needed rather
+   * than each component inventing its own cubic-bezier.
+   */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  /* A soft decelerate — entrances, reveals, anything arriving on screen. */
+  --ease-premium: cubic-bezier(0.16, 1, 0.3, 1);
+  /* A slow, symmetric in-out — ambient background drift only. */
+  --ease-ambient: cubic-bezier(0.45, 0, 0.55, 1);
+  /* Scroll-triggered section entrance (`.reveal`) only — not UI chrome. */
+  --duration-entrance: 0.6s;
+  /* A popover/sheet opening — quick, so the interaction still feels instant. */
+  --duration-sheet: 0.22s;
 
   /*
    * Ambient motion. Slow and small-amplitude by design: these drive the
@@ -123,12 +156,12 @@
    * and are always applied with `motion-safe:` at the call site even though
    * the global `prefers-reduced-motion` rule below already zeroes them.
    */
-  --animate-drift-slow: drift 16s ease-in-out infinite;
-  --animate-drift-slower: drift 22s ease-in-out infinite reverse;
-  --animate-gradient-pan: gradient-pan 14s ease-in-out infinite alternate;
-  --animate-fade-in: fade-in 0.5s ease-out both;
+  --animate-drift-slow: drift 16s var(--ease-ambient) infinite;
+  --animate-drift-slower: drift 22s var(--ease-ambient) infinite reverse;
+  --animate-gradient-pan: gradient-pan 14s var(--ease-ambient) infinite alternate;
+  --animate-fade-in: fade-in 0.5s var(--ease-standard) both;
   /* Entrance for the mobile navigation sheet and other small popovers. */
-  --animate-sheet-in: sheet-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-sheet-in: sheet-in var(--duration-sheet) var(--ease-premium) both;
 }
 
 @keyframes drift {
@@ -321,6 +354,22 @@
       linear-gradient(to bottom, var(--glass-highlight), transparent 42%, transparent);
     opacity: 0.55;
   }
+
+  /*
+   * A glow shadow on hover for an interactive glass surface (the `glass`
+   * button variant). Deliberately a plain CSS rule in this same layer rather
+   * than a `hover:shadow-*` Tailwind utility: Tailwind's utilities layer
+   * always outranks `components` per the CSS Cascade Layers spec regardless
+   * of specificity or source order, so a utility on the same element would
+   * silently replace `.glass-surface-strong`'s own box-shadow instead of
+   * enhancing it on hover (docs/ui-audit.md finding M3). Written here, the
+   * higher-specificity `:hover` selector wins predictably within one layer.
+   * Also covers `:focus-within`, for a glass `Card` reached by keyboard.
+   */
+  .glass-hover-glow:hover,
+  .glass-hover-glow:focus-within {
+    box-shadow: var(--shadow-glow);
+  }
 }
 
 @layer utilities {
@@ -407,8 +456,8 @@
       opacity: 0;
       transform: translateY(16px);
       transition:
-        opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
-        transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        opacity var(--duration-entrance) var(--ease-premium),
+        transform var(--duration-entrance) var(--ease-premium);
     }
 
     .reveal.is-visible {

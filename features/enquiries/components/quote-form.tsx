@@ -517,7 +517,7 @@ function Field({
           'border-line-soft bg-surface w-full rounded-xl border px-3 py-2.5 text-base',
           'min-h-12 focus-visible:outline-2 focus-visible:outline-offset-2',
           'transition-[border-color,box-shadow] duration-200 hover:border-brand-300',
-          'focus:border-brand-700 focus:shadow-[0_0_0_4px_rgb(97_118_75/0.12)]',
+          'focus:border-brand-700 focus:shadow-focus-glow',
           error && 'border-red-400',
         ),
       })}
