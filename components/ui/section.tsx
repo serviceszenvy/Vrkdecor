@@ -125,6 +125,17 @@ export function SectionHeading({
     3: 'text-2xl',
   } as const;
 
+  /**
+   * Weight now carries part of the hierarchy too, not size alone
+   * (docs/ui-audit.md §7): a page's one `h1` reads heavier than the `h2`s and
+   * `h3`s under it, even at a glance before the size difference registers.
+   */
+  const weights = {
+    1: 'font-semibold',
+    2: 'font-medium',
+    3: 'font-medium',
+  } as const;
+
   const eyebrowTone = {
     default: 'text-brand-700',
     inverse: 'text-accent-300',
@@ -161,7 +172,7 @@ export function SectionHeading({
         </p>
       ) : null}
 
-      <Heading id={id} className={cn(sizes[level], 'font-medium')}>
+      <Heading id={id} className={cn(sizes[level], weights[level])}>
         {title}
         {accent ? <span className={accentTone[tone]}> {accent}</span> : null}
         {tail ? <span> {tail}</span> : null}

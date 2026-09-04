@@ -10,6 +10,13 @@ import { LeafDecor } from './leaf-decor';
  * Requirements section 7 requires a final CTA on the Home page; the same band
  * closes the other public pages so the primary action is always reachable.
  *
+ * Deliberately dark — the second of the site's two dark "bookend" moments
+ * (the home hero is the first). Every other public page runs entirely light,
+ * so this is the one guaranteed strong, high-contrast note before the footer
+ * on every page it appears on. Every inverse colour used here is asserted in
+ * `contrastContract` (`lib/design-tokens.ts`, the "on the dark hero" pairings
+ * — both sit on the same `brand-950` worst case).
+ *
  * One primary action and two quiet alternatives, rather than three buttons of
  * equal weight. The quotation form is where a request is actually captured
  * with a date, a venue and a design attached, so it leads; phone and WhatsApp
@@ -26,15 +33,15 @@ export function CtaBand({
 }) {
   return (
     <section className="px-3 sm:px-5 lg:px-6" aria-labelledby="final-cta">
-      <div className="from-brand-100 via-surface-tint to-accent-100/70 border-brand-200/60 relative isolate mx-auto w-full max-w-[86rem] overflow-hidden rounded-3xl border bg-gradient-to-r">
-        <LeafDecor className="text-brand-600/25 motion-safe:animate-drift-slow -top-8 -left-12 size-64" />
+      <div className="from-brand-950 via-brand-900 to-sand-950 relative isolate mx-auto w-full max-w-[86rem] overflow-hidden rounded-3xl bg-gradient-to-r">
+        <LeafDecor className="text-accent-400/20 motion-safe:animate-drift-slow -top-8 -left-12 size-64" />
         <LeafDecor
-          className="text-brand-600/25 motion-safe:animate-drift-slower -right-12 -bottom-10 size-64"
+          className="text-brand-400/20 motion-safe:animate-drift-slower -right-12 -bottom-10 size-64"
           flip
         />
         <div
           aria-hidden="true"
-          className="ambient-blob bg-accent-400/20 motion-safe:animate-drift-slow top-1/2 right-1/4 size-56 -translate-y-1/2"
+          className="ambient-blob bg-accent-400/25 motion-safe:animate-drift-slow top-1/2 right-1/4 size-56 -translate-y-1/2"
         />
 
         <Container width="wide">
@@ -43,14 +50,14 @@ export function CtaBand({
             className="grid gap-8 py-12 sm:py-16 lg:grid-cols-[1.35fr_1fr] lg:items-center lg:gap-12"
           >
             <div className="flex flex-col gap-4">
-              <p className="text-brand-800 text-2xs font-semibold tracking-[0.24em] uppercase">
+              <p className="text-accent-300 text-2xs font-semibold tracking-[0.24em] uppercase">
                 {closingCta.eyebrow}
               </p>
-              <h2 id="final-cta" className="text-3xl font-medium sm:text-4xl">
+              <h2 id="final-cta" className="text-3xl font-semibold text-white sm:text-4xl">
                 {title}{' '}
-                {accent ? <span className="text-brand-800 block">{accent}</span> : null}
+                {accent ? <span className="text-accent-300 block">{accent}</span> : null}
               </h2>
-              <p className="text-ink-soft max-w-xl leading-relaxed">{lead}</p>
+              <p className="text-sand-200 max-w-xl leading-relaxed">{lead}</p>
             </div>
 
             <div className="flex flex-col gap-3 lg:items-stretch">

@@ -9,15 +9,20 @@ const ASSURANCE_ICONS = [GemIcon, SparkIcon, ShieldIcon] as const;
 /**
  * The home page hero.
  *
- * Photography first: the picture is the section, and the copy and the floating
- * assurance panel sit on top of it. A green gradient is painted underneath the
- * photograph, so the section still reads as finished if the image is missing —
- * which is exactly what happens once `public/samples/` is deleted before the
- * production build and before approved photography has been supplied.
+ * A deliberate dark, rich-branded section — the one place on the site this
+ * strong before the eye settles into the lighter pages that follow. Photography
+ * first: the picture is the section, and the copy and the floating assurance
+ * panel sit on top of it. A dark green-to-near-black gradient is painted
+ * underneath the photograph, so the section still reads as finished (and still
+ * dark) if the image is missing — which is exactly what happens once
+ * `public/samples/` is deleted before the production build and before approved
+ * photography has been supplied.
  *
- * Legibility over photography is handled twice, not once: a light scrim covers
+ * Legibility over photography is handled twice, not once: a dark scrim covers
  * the left of the image behind the headline, and it is stronger below `lg`,
- * where the text runs across the full width of the picture.
+ * where the text runs across the full width of the picture. Every inverse text
+ * colour here (`text-white`, `text-accent-300`, `text-sand-200`) is asserted in
+ * `contrastContract` (`lib/design-tokens.ts`), not chosen by eye.
  *
  * The assurance panel appears from `sm` up. On a phone it is deliberately
  * absent: the approved mobile reference goes straight from the headline to the
@@ -29,7 +34,7 @@ const ASSURANCE_ICONS = [GemIcon, SparkIcon, ShieldIcon] as const;
 export function HomeHero({ actions }: { actions: ReactNode }) {
   return (
     <section className="px-3 pt-3 sm:px-5 sm:pt-4 lg:px-6" aria-labelledby="hero-title">
-      <div className="from-brand-800 via-brand-700 to-brand-900 motion-safe:animate-gradient-pan relative isolate mx-auto w-full max-w-[86rem] overflow-hidden rounded-3xl bg-gradient-to-br bg-[length:200%_200%]">
+      <div className="from-brand-950 via-brand-800 to-brand-900 motion-safe:animate-gradient-pan relative isolate mx-auto w-full max-w-[86rem] overflow-hidden rounded-3xl bg-gradient-to-br bg-[length:200%_200%]">
         {heroImage.src ? (
           <Image
             src={heroImage.src}
@@ -49,43 +54,45 @@ export function HomeHero({ actions }: { actions: ReactNode }) {
         */}
         <div
           aria-hidden="true"
-          className="ambient-blob bg-accent-400/30 motion-safe:animate-drift-slow -top-16 right-10 -z-10 size-72"
+          className="ambient-blob bg-accent-400/35 motion-safe:animate-drift-slow -top-16 right-10 -z-10 size-72"
         />
         <div
           aria-hidden="true"
-          className="ambient-blob bg-brand-300/25 motion-safe:animate-drift-slower -bottom-24 left-1/3 -z-10 size-96"
+          className="ambient-blob bg-accent-300/20 motion-safe:animate-drift-slower -bottom-24 left-1/3 -z-10 size-96"
         />
 
         {/*
-          Two scrims. The vertical one keeps the floating header legible at the
-          top of the page; the horizontal one sits behind the headline column
-          and fades out before it reaches the assurance panel.
+          Two scrims, dark rather than light so the section stays dark even
+          where the photograph is bright. The vertical one keeps the floating
+          header's dark-on-light-glass legible at the top of the page; the
+          horizontal one sits behind the headline column and fades out before
+          it reaches the assurance panel.
         */}
         <div
           aria-hidden="true"
-          className="to-brand-900/15 absolute inset-0 -z-10 bg-gradient-to-b from-white/60 via-transparent"
+          className="to-brand-950/15 absolute inset-0 -z-10 bg-gradient-to-b from-brand-950/70 via-transparent"
         />
         <div
           aria-hidden="true"
-          className="absolute inset-0 -z-10 bg-gradient-to-r from-white/88 via-white/55 to-white/10 lg:from-white/80 lg:via-white/25 lg:to-transparent"
+          className="absolute inset-0 -z-10 bg-gradient-to-r from-brand-950/90 via-brand-950/55 to-brand-950/15 lg:from-brand-950/85 lg:via-brand-950/40 lg:to-transparent"
         />
 
         <Container width="wide">
           <div className="grid gap-8 pt-24 pb-14 sm:grid-cols-[minmax(0,1fr)_20rem] sm:items-center sm:pt-28 sm:pb-16 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-10 lg:pt-40 lg:pb-28">
             <div className="motion-safe:animate-fade-in flex max-w-2xl flex-col gap-5">
-              <p className="text-brand-800 text-2xs font-semibold tracking-[0.24em] uppercase">
+              <p className="text-accent-300 text-2xs font-semibold tracking-[0.24em] uppercase">
                 {heroCopy.eyebrow}
               </p>
 
               <h1
                 id="hero-title"
-                className="text-ink text-4xl leading-[1.08] font-medium sm:text-5xl"
+                className="text-4xl leading-[1.08] font-semibold text-white sm:text-5xl"
               >
                 {heroCopy.title}{' '}
-                <span className="text-brand-700 block">{heroCopy.titleAccent}</span>
+                <span className="text-accent-300 block">{heroCopy.titleAccent}</span>
               </h1>
 
-              <p className="text-ink-soft max-w-xl text-base leading-relaxed sm:text-lg">
+              <p className="text-sand-200 max-w-xl text-base leading-relaxed sm:text-lg">
                 {heroCopy.lead}
               </p>
 

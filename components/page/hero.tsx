@@ -79,7 +79,7 @@ export function Hero({
 
               <h1
                 className={cn(
-                  'font-medium',
+                  'font-semibold',
                   compact ? 'text-3xl sm:text-4xl' : 'text-4xl sm:text-5xl',
                 )}
               >

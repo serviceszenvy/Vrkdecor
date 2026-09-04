@@ -282,6 +282,36 @@ export const contrastContract = [
     bg: '#DFF1C7',
     min: 4.5,
   },
+  {
+    // The dark home-hero background (Phase 2 of the UI transformation —
+    // brand-950, the darkest stop of its gradient, is the worst case).
+    name: 'heading text on the dark hero',
+    fg: semanticColors.inkInverse,
+    bg: palette.brand[950],
+    min: 4.5,
+  },
+  {
+    name: 'accent text on the dark hero',
+    fg: palette.accent[300],
+    bg: palette.brand[950],
+    min: 4.5,
+  },
+  {
+    name: 'lead text on the dark hero',
+    fg: palette.sand[200],
+    bg: palette.brand[950],
+    min: 4.5,
+  },
+  {
+    // The footer's dark treatment (Phase 2) — muted secondary text on
+    // `surface-inverse` (sand-950), the same dark surface `inverse text on
+    // dark surface` and `accent text on dark surface` above already cover
+    // for the primary and accent cases.
+    name: 'muted text on the dark footer',
+    fg: palette.sand[300],
+    bg: semanticColors.surfaceInverse,
+    min: 4.5,
+  },
 ] as const;
 
 /**

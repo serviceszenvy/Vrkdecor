@@ -262,7 +262,26 @@ export default async function HomePage() {
         </div>
       </Section>
 
-      <Section tone="panel" width="wide" aria-labelledby="testimonials">
+      <Section
+        tone="panel"
+        width="wide"
+        aria-labelledby="testimonials"
+        panelClassName="from-accent-50 via-surface-tint to-brand-50 relative isolate bg-gradient-to-br"
+      >
+        {/*
+          A colourful ambient background, not a dark one — this section's job
+          in the page rhythm is to break up the run of plain white panels
+          (docs/ui-audit.md finding H1) without adding a third dark moment so
+          close to the closing CTA.
+        */}
+        <div
+          aria-hidden="true"
+          className="ambient-blob bg-accent-300/25 motion-safe:animate-drift-slow -top-10 -left-16 size-72"
+        />
+        <div
+          aria-hidden="true"
+          className="ambient-blob bg-brand-300/20 motion-safe:animate-drift-slower -right-16 -bottom-14 size-80"
+        />
         <SectionHeading
           id="testimonials"
           align="center"
@@ -276,7 +295,7 @@ export default async function HomePage() {
             <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {testimonials.map((testimonial, index) => (
                 <Reveal key={testimonial.id} as="li" delay={Math.min(index * 70, 240)}>
-                  <Card tone="tint" className="h-full">
+                  <Card tone="surface" className="h-full">
                     <CardBody>
                       <IconChip tone="tint" size="sm">
                         <StarIcon className="size-4" />
