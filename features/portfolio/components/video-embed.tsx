@@ -27,7 +27,7 @@ export function VideoEmbed({ video }: { video: PortfolioVideo }) {
   if (!id) {
     return (
       <a
-        className="text-brand-700 inline-flex min-h-11 items-center underline underline-offset-4"
+        className="text-accent-300 inline-flex min-h-11 items-center underline underline-offset-4"
         href={video.url}
         target="_blank"
         rel="noopener noreferrer"

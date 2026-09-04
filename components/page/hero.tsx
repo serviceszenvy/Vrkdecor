@@ -36,17 +36,17 @@ export function Hero({
     <section className="px-3 pt-3 sm:px-5 sm:pt-4 lg:px-6">
       <div
         className={cn(
-          'from-brand-50 via-canvas to-accent-50/60 relative isolate mx-auto w-full max-w-[86rem]',
+          'from-brand-800 via-canvas to-brand-950 relative isolate mx-auto w-full max-w-[86rem]',
           'border-line-soft overflow-hidden rounded-3xl border bg-gradient-to-br',
         )}
       >
         <div
           aria-hidden="true"
-          className="ambient-blob bg-accent-300/30 motion-safe:animate-drift-slow -top-24 -right-20 size-72"
+          className="ambient-blob bg-accent-400/30 motion-safe:animate-drift-slow -top-24 -right-20 size-72"
         />
         <div
           aria-hidden="true"
-          className="ambient-blob bg-brand-300/20 motion-safe:animate-drift-slower -bottom-16 -left-16 size-64"
+          className="ambient-blob bg-brand-400/20 motion-safe:animate-drift-slower -bottom-16 -left-16 size-64"
         />
         {/*
           Botanical decoration in the space to the right of the headline. It is
@@ -55,7 +55,7 @@ export function Hero({
         */}
         {media ? null : (
           <LeafDecor
-            className="text-brand-500/30 -right-8 -bottom-16 hidden size-80 lg:block"
+            className="text-accent-400/25 -right-8 -bottom-16 hidden size-80 lg:block"
             flip
           />
         )}
@@ -72,7 +72,7 @@ export function Hero({
           >
             <div className="motion-safe:animate-fade-in flex max-w-2xl flex-col gap-4">
               {eyebrow ? (
-                <p className="text-brand-800 text-2xs font-semibold tracking-[0.24em] uppercase">
+                <p className="text-accent-300 text-2xs font-semibold tracking-[0.24em] uppercase">
                   {eyebrow}
                 </p>
               ) : null}
@@ -84,7 +84,7 @@ export function Hero({
                 )}
               >
                 {title}
-                {accent ? <span className="text-brand-700"> {accent}</span> : null}
+                {accent ? <span className="text-brand-300"> {accent}</span> : null}
               </h1>
 
               {lead ? (

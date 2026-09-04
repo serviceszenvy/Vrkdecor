@@ -18,26 +18,29 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
  *
  * `primary` uses `brand-700`, which is the sage measured in the logo itself.
  * White on it is 5.00:1, and it is the mid-olive the approved reference design
- * uses for its primary actions.
+ * uses for its primary actions. `accent`/`inverse` pair with an explicit dark
+ * ink (`brand-950`), never the semantic `ink` token — both sit on a light
+ * fill (the lime accent, or solid white) regardless of the site's own dark
+ * theme, so they need dark text unconditionally.
  *
- * `glass` is the white pill from the reference — a translucent surface that
- * sits on photography without hiding it. It falls back to a near-opaque white
- * panel where `backdrop-filter` is unsupported, so its label is never left
- * floating on an image.
+ * `glass` is a dark, translucent surface — it falls back to a near-opaque
+ * dark panel where `backdrop-filter` is unsupported, so its label is never
+ * left unreadable over busy photography.
  */
 const variants: Record<ButtonVariant, string> = {
   primary:
     'bg-brand-700 text-white hover:bg-brand-800 border border-transparent shadow-lift motion-safe:hover:shadow-glow motion-safe:hover:-translate-y-0.5',
   accent:
-    'bg-accent-500 text-ink hover:bg-accent-600 border border-transparent motion-safe:hover:shadow-glow motion-safe:hover:-translate-y-0.5',
-  secondary: 'bg-sand-100 text-ink hover:bg-sand-200 border border-transparent',
+    'bg-accent-500 text-brand-950 hover:bg-accent-600 border border-transparent motion-safe:hover:shadow-glow motion-safe:hover:-translate-y-0.5',
+  secondary:
+    'bg-white/8 text-ink border border-white/10 hover:bg-white/14 hover:border-white/20',
   outline:
-    'bg-transparent text-brand-700 border border-brand-700 hover:bg-brand-50 hover:border-brand-800',
-  ghost: 'bg-transparent text-ink border border-transparent hover:bg-sand-100',
-  inverse: 'bg-white text-ink hover:bg-sand-100 border border-transparent',
+    'bg-transparent text-accent-300 border border-accent-300/50 hover:bg-white/5 hover:border-accent-300',
+  ghost: 'bg-transparent text-ink border border-transparent hover:bg-white/10',
+  inverse: 'bg-white text-brand-950 hover:bg-sand-100 border border-transparent',
   // `.glass-hover-glow` is a plain CSS rule, not a `hover:shadow-*` utility —
   // see the comment on it in app/globals.css (docs/ui-audit.md finding M3).
-  glass: 'glass-surface-strong glass-hover-glow text-ink hover:bg-white',
+  glass: 'glass-surface-strong glass-hover-glow text-ink hover:bg-white/10',
 };
 
 /** `min-h` values keep every control at or above the 44px touch target. */

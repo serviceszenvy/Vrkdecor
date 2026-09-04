@@ -226,7 +226,7 @@ export default async function HomePage() {
         <ol className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {howItWorks.map((step, index) => (
             <Reveal key={step.title} as="li" delay={Math.min(index * 70, 240)}>
-              <div className="border-line-soft bg-canvas/60 hover:border-brand-300/70 hover:shadow-card flex h-full flex-col gap-2 rounded-2xl border p-5 transition-[border-color,box-shadow] duration-300">
+              <div className="border-line-soft bg-canvas/60 hover:border-accent-300/50 hover:shadow-card flex h-full flex-col gap-2 rounded-2xl border p-5 transition-[border-color,box-shadow] duration-300">
                 <span className="bg-brand-700 flex size-9 items-center justify-center rounded-full text-sm font-semibold text-white">
                   {index + 1}
                 </span>
@@ -252,7 +252,7 @@ export default async function HomePage() {
               <li key={style.slug}>
                 <Link
                   href={`${routes.work}?style=${encodeURIComponent(style.slug)}`}
-                  className="border-line-soft bg-surface text-ink hover:border-brand-300 hover:bg-brand-50 inline-flex min-h-10 items-center rounded-full border px-4 text-sm transition-colors"
+                  className="border-line-soft bg-surface text-ink hover:border-accent-300/60 hover:bg-white/5 inline-flex min-h-10 items-center rounded-full border px-4 text-sm transition-colors"
                 >
                   {style.name}
                 </Link>
@@ -266,13 +266,14 @@ export default async function HomePage() {
         tone="panel"
         width="wide"
         aria-labelledby="testimonials"
-        panelClassName="from-accent-50 via-surface-tint to-brand-50 relative isolate bg-gradient-to-br"
+        panelClassName="from-accent-950/50 via-surface-tint to-brand-900 relative isolate bg-gradient-to-br"
       >
         {/*
-          A colourful ambient background, not a dark one — this section's job
-          in the page rhythm is to break up the run of plain white panels
-          (docs/ui-audit.md finding H1) without adding a third dark moment so
-          close to the closing CTA.
+          A colourful accent-tinted dark panel, not a plain repeat of `canvas`
+          — this section's job in the page rhythm is to break up the run of
+          same-toned panels (docs/ui-audit.md finding H1) while staying on
+          theme now that the whole site is dark, not just three "bookend"
+          sections.
         */}
         <div
           aria-hidden="true"
@@ -331,7 +332,7 @@ export default async function HomePage() {
           We work across {coverage.primaryAreas.join(', ')} and anywhere in Tamil Nadu
           depending on what your event needs.{' '}
           <Link
-            className="text-brand-700 underline underline-offset-4"
+            className="text-accent-300 underline underline-offset-4"
             href={routes.about}
           >
             About VRK Decor

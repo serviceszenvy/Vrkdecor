@@ -99,7 +99,10 @@ export function MobileNav() {
         aria-expanded={open}
         aria-controls={panelId}
         data-testid="mobile-nav-trigger"
-        className="glass-surface text-ink hover:text-brand-800 inline-flex size-11 items-center justify-center rounded-full transition-[background-color,color,transform] duration-200 hover:bg-white motion-safe:active:scale-90 lg:hidden"
+        // A light-context control: it lives inside the header's bright
+        // `glass-surface-inverse`, not the site's dark theme (see the note
+        // on the header phone link in site-header.tsx).
+        className="border-brand-200 text-brand-700 hover:text-brand-800 inline-flex size-11 items-center justify-center rounded-full border bg-white/70 transition-[background-color,color,transform] duration-200 hover:bg-white motion-safe:active:scale-90 lg:hidden"
       >
         {open ? <CloseIcon /> : <MenuIcon />}
         <span className="sr-only">{open ? 'Close menu' : 'Open menu'}</span>
@@ -144,12 +147,12 @@ export function MobileNav() {
                             className={cn(
                               'flex min-h-12 items-center justify-between gap-3 rounded-2xl px-4 text-base transition-colors duration-200',
                               active
-                                ? 'bg-brand-50 text-brand-800 font-semibold'
-                                : 'text-ink hover:text-brand-800 hover:bg-white/70',
+                                ? 'bg-white/10 text-accent-300 font-semibold'
+                                : 'text-ink hover:text-accent-300 hover:bg-white/10',
                             )}
                           >
                             {item.label}
-                            <ChevronRightIcon className="text-brand-500 size-4" />
+                            <ChevronRightIcon className="text-accent-400 size-4" />
                           </Link>
                         </li>
                       );

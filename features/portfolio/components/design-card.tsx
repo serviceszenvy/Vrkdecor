@@ -61,7 +61,7 @@ export function DesignCard({
               priority={priority}
             />
           ) : (
-            <div className="from-brand-200 to-accent-100 h-full w-full bg-gradient-to-br" />
+            <div className="from-brand-700 to-accent-800 h-full w-full bg-gradient-to-br" />
           )}
         </ImageFrame>
       </Reveal>

@@ -27,14 +27,15 @@ const FOOTER_SERVICES = services.slice(0, 6);
 /**
  * Site footer.
  *
- * Deliberately dark (Phase 2 of the UI transformation) — the third and final
- * dark moment on every page, after the hero and the closing CTA, closing the
- * page on the same rich brand-dark identity it opened on.
+ * The deepest ground on the page (`canvas-deep`) — every public page is dark
+ * now, so the footer no longer needs to be a special "dark exception"; it
+ * just closes the page one shade darker than the `canvas` everything else
+ * sits on, for a little visual weight at the very bottom.
  *
  * The supplied logo is drawn for light backgrounds only (no reversed variant
  * has been supplied — `docs/DESIGN-SYSTEM.md` §1 records this as a
  * recommended client action), so it sits on its own small white plate here
- * rather than directly on the dark ground. Every other inverse colour is
+ * rather than directly on the dark ground. Every other colour here is
  * asserted in `contrastContract` (`lib/design-tokens.ts`).
  *
  * Every fact here comes from `lib/site-config.ts`, which is the approved
@@ -45,7 +46,7 @@ export function SiteFooter() {
   const { address } = siteConfig.contact;
 
   return (
-    <footer className="dark-surface bg-surface-inverse relative mt-4 sm:mt-6">
+    <footer className="bg-canvas-deep relative mt-4 sm:mt-6">
       <div
         aria-hidden="true"
         className="from-accent-400/0 via-accent-400/60 to-brand-400/0 absolute inset-x-0 top-0 h-px bg-gradient-to-r"

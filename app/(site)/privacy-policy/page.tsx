@@ -108,7 +108,7 @@ export default function PrivacyPolicyPage() {
             <p className="text-ink-muted">
               To ask about your details, or to ask us to delete them, email{' '}
               <a
-                className="text-brand-700 underline underline-offset-4"
+                className="text-accent-300 underline underline-offset-4"
                 href={mailHref}
               >
                 {siteConfig.contact.email}

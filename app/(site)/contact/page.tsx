@@ -61,7 +61,7 @@ export default function ContactPage() {
       />
 
       <section className="px-3 sm:px-5 lg:px-6" aria-labelledby="contact-details">
-        <div className="from-brand-50 via-surface-tint to-accent-50 border-brand-200/50 mx-auto w-full max-w-[86rem] rounded-3xl border bg-gradient-to-br">
+        <div className="from-brand-800 via-surface-tint to-brand-950 border-accent-300/15 mx-auto w-full max-w-[86rem] rounded-3xl border bg-gradient-to-br">
           <Container width="wide">
             <div className="py-12 sm:py-16">
               <SectionHeading
@@ -80,7 +80,7 @@ export default function ContactPage() {
                     title: 'Phone',
                     content: (
                       <a
-                        className="text-brand-800 inline-flex min-h-9 items-center text-sm underline underline-offset-4"
+                        className="text-accent-300 inline-flex min-h-9 items-center text-sm underline underline-offset-4"
                         href={telHref}
                       >
                         {displayPhone}
@@ -92,7 +92,7 @@ export default function ContactPage() {
                     title: 'WhatsApp',
                     content: (
                       <a
-                        className="text-brand-800 inline-flex min-h-9 items-center text-sm underline underline-offset-4"
+                        className="text-accent-300 inline-flex min-h-9 items-center text-sm underline underline-offset-4"
                         href={whatsAppHref}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -106,7 +106,7 @@ export default function ContactPage() {
                     title: 'Email',
                     content: (
                       <a
-                        className="text-brand-800 inline-flex min-h-9 items-center text-sm break-all underline underline-offset-4"
+                        className="text-accent-300 inline-flex min-h-9 items-center text-sm break-all underline underline-offset-4"
                         href={mailHref}
                       >
                         {email}
@@ -126,7 +126,7 @@ export default function ContactPage() {
                   },
                 ].map((item, index) => (
                   <Reveal key={item.title} as="li" delay={Math.min(index * 70, 240)}>
-                    <div className="bg-surface/80 border-brand-200/50 hover:border-brand-300 hover:shadow-card group flex h-full flex-col gap-2 rounded-2xl border p-5 transition-[border-color,box-shadow] duration-300">
+                    <div className="bg-surface/80 border-accent-300/15 hover:border-accent-300/50 hover:shadow-card group flex h-full flex-col gap-2 rounded-2xl border p-5 transition-[border-color,box-shadow] duration-300">
                       <IconChip tone="brand" size="md">
                         {item.icon}
                       </IconChip>

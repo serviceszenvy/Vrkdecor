@@ -21,7 +21,7 @@ export function UnavailableDesignNotice() {
         you have in mind in the notes.{' '}
         <Link
           href={routes.work}
-          className="text-brand-700 underline underline-offset-4"
+          className="text-accent-300 underline underline-offset-4"
         >
           Browse our work
         </Link>{' '}

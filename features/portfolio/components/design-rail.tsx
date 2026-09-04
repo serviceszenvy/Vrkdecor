@@ -119,7 +119,7 @@ function RailButton({
       data-testid={`design-rail-${direction}`}
       className={cn(
         'glass-surface-strong text-ink absolute top-1/2 hidden size-11 -translate-y-1/2 items-center justify-center rounded-full transition-opacity sm:inline-flex',
-        disabled ? 'pointer-events-none opacity-0' : 'opacity-100 hover:bg-white',
+        disabled ? 'pointer-events-none opacity-0' : 'opacity-100 hover:bg-white/10',
         className,
       )}
     >

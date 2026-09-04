@@ -64,7 +64,7 @@ export function PhotoGallery({
                 />
               </ImageFrame>
               {showDesignName ? (
-                <span className="text-ink-muted group-hover:text-brand-800 mt-2 block text-sm transition-colors">
+                <span className="text-ink-muted group-hover:text-accent-300 mt-2 block text-sm transition-colors">
                   {photo.design.name}
                 </span>
               ) : null}

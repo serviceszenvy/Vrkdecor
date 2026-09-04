@@ -14,9 +14,12 @@ describe('button variants', () => {
     const outline = buttonClassNames('outline', 'md', false);
 
     // `brand-700` is the sage measured in the logo. White on it is 5.00:1, and
-    // the pairing is asserted in tests/unit/design-tokens.test.ts.
+    // the pairing is asserted in tests/unit/design-tokens.test.ts. `outline`
+    // uses `accent-300` instead of `brand-700` for its border/text since the
+    // dark-theme transformation: `brand-700` measures under 3:1 against the
+    // dark grounds this theme uses everywhere now.
     expect(primary).toContain('bg-brand-700');
-    expect(outline).toContain('border-brand-700');
+    expect(outline).toContain('border-accent-300');
     expect(primary).not.toBe(outline);
   });
 

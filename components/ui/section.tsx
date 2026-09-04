@@ -136,10 +136,14 @@ export function SectionHeading({
     3: 'font-medium',
   } as const;
 
+  // `brand-700`/`brand-800` measure under 3:1 against the dark theme's
+  // grounds — every tone now uses accent-300 (verified 5.7:1+ against every
+  // surface/canvas variant), the same value the old `inverse` tone already
+  // used before the whole site went dark.
   const eyebrowTone = {
-    default: 'text-brand-700',
+    default: 'text-accent-300',
     inverse: 'text-accent-300',
-    tint: 'text-brand-800',
+    tint: 'text-accent-300',
   } as const;
 
   const leadTone = {
@@ -149,9 +153,9 @@ export function SectionHeading({
   } as const;
 
   const accentTone = {
-    default: 'text-brand-700',
+    default: 'text-brand-300',
     inverse: 'text-accent-300',
-    tint: 'text-brand-800',
+    tint: 'text-brand-300',
   } as const;
 
   return (

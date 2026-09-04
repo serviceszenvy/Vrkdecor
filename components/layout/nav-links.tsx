@@ -33,9 +33,12 @@ export function NavLinks() {
                 aria-current={current ? 'page' : undefined}
                 className={cn(
                   'relative inline-flex min-h-11 items-center rounded-full px-3.5 text-sm transition-colors',
+                  // Explicit dark colours, not the (now light) `ink` token:
+                  // this lives inside the header's light `glass-surface-inverse`,
+                  // the one light-context surface on an otherwise dark site.
                   current
                     ? 'text-brand-800 font-semibold'
-                    : 'text-ink/80 hover:text-brand-800 font-medium hover:bg-white/50',
+                    : 'text-brand-950/75 hover:text-brand-800 font-medium hover:bg-white/50',
                 )}
               >
                 {item.label}

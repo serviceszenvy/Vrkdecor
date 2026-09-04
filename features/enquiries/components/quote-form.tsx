@@ -304,7 +304,7 @@ export function QuoteForm({
         <ul className="grid gap-2 sm:grid-cols-2">
           {services.map((service) => (
             <li key={service.slug}>
-              <label className="border-line-soft hover:border-brand-300 hover:bg-brand-50/60 has-[:checked]:border-brand-700 has-[:checked]:bg-brand-50 flex min-h-11 cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors duration-200">
+              <label className="border-line-soft hover:border-accent-300/50 hover:bg-white/5 has-[:checked]:border-accent-300 has-[:checked]:bg-accent-900/40 flex min-h-11 cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors duration-200">
                 <input
                   type="checkbox"
                   name="requiredServices"
@@ -373,7 +373,7 @@ export function QuoteForm({
             'flex cursor-pointer items-start gap-3 rounded-2xl border p-4 transition-colors duration-200',
             state.errors.consent
               ? 'border-red-400 bg-red-50'
-              : 'border-line-soft has-[:checked]:border-brand-700 has-[:checked]:bg-brand-50/60',
+              : 'border-line-soft has-[:checked]:border-accent-300 has-[:checked]:bg-accent-900/40',
           )}
         >
           <input
@@ -388,7 +388,7 @@ export function QuoteForm({
           <span className="text-sm">
             I agree that VRK Decor may contact me by phone, WhatsApp or email about this
             enquiry, and store the details I have given here.{' '}
-            <span aria-hidden="true" className="text-red-700">
+            <span aria-hidden="true" className="text-red-400">
               *
             </span>
             <span className="text-ink-muted mt-1 block">
@@ -443,7 +443,7 @@ function Fieldset({ legend, children }: { legend: string; children: React.ReactN
 
 function FieldError({ id, children }: { id: string; children: React.ReactNode }) {
   return (
-    <p id={id} className="text-sm text-red-700">
+    <p id={id} className="text-sm text-red-400">
       {children}
     </p>
   );
@@ -490,7 +490,7 @@ function Field({
       <label htmlFor={`field-${field}`} className="text-sm font-medium">
         {label}
         {required ? (
-          <span className="text-red-700" aria-hidden="true">
+          <span className="text-red-400" aria-hidden="true">
             {' '}
             *
           </span>
@@ -514,10 +514,10 @@ function Field({
         'aria-invalid': error ? true : undefined,
         'aria-describedby': describedBy,
         className: cn(
-          'border-line-soft bg-surface w-full rounded-xl border px-3 py-2.5 text-base',
+          'border-line-soft bg-surface text-ink w-full rounded-xl border px-3 py-2.5 text-base',
           'min-h-12 focus-visible:outline-2 focus-visible:outline-offset-2',
-          'transition-[border-color,box-shadow] duration-200 hover:border-brand-300',
-          'focus:border-brand-700 focus:shadow-focus-glow',
+          'transition-[border-color,box-shadow] duration-200 hover:border-accent-300/50',
+          'focus:border-accent-300 focus:shadow-focus-glow',
           error && 'border-red-400',
         ),
       })}

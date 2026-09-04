@@ -67,7 +67,7 @@ export default async function PackagesPage() {
                   <CardBody>
                     <CardTitle as="h3">{pkg.name}</CardTitle>
                     {pkg.description ? <CardMeta>{pkg.description}</CardMeta> : null}
-                    <p className="text-brand-700 font-medium">
+                    <p className="text-brand-300 font-medium">
                       {pkg.pricingMode === 'starting_from' && pkg.startingPrice !== null
                         ? `Starting from ${formatStartingPrice(pkg.startingPrice)}`
                         : 'Custom quote'}

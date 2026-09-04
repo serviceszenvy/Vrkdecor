@@ -58,13 +58,13 @@ export default async function OccasionsPage() {
                   <CardTitle as="h3">
                     <Link
                       href={`${routes.work}?occasion=${encodeURIComponent(occasion.slug)}`}
-                      className="hover:text-brand-800 transition-colors"
+                      className="hover:text-accent-300 transition-colors"
                     >
                       {occasion.name}
                     </Link>
                   </CardTitle>
                   {occasion.secondaryTerm ? (
-                    <p className="text-brand-700 text-sm">{occasion.secondaryTerm}</p>
+                    <p className="text-brand-300 text-sm">{occasion.secondaryTerm}</p>
                   ) : null}
                   {occasion.description ? (
                     <CardMeta>{occasion.description}</CardMeta>

@@ -4,16 +4,16 @@ import { cn } from '@/lib/cn';
 type BadgeTone = 'brand' | 'accent' | 'neutral' | 'inverse' | 'glass';
 
 const tones: Record<BadgeTone, string> = {
-  brand: 'bg-brand-50 text-brand-800 border-brand-200',
-  accent: 'bg-accent-100 text-accent-900 border-accent-300',
-  neutral: 'bg-sand-100 text-sand-800 border-sand-200',
+  brand: 'bg-brand-800/70 text-accent-300 border-brand-600/50',
+  accent: 'bg-accent-900/60 text-accent-300 border-accent-700/60',
+  neutral: 'bg-white/8 text-ink-muted border-white/12',
   inverse: 'bg-white/10 text-white border-white/25',
   /*
     The chip the reference design places on top of a photograph. It falls back
-    to a near-opaque white pill where `backdrop-filter` is unsupported, so the
-    label never ends up as dark text floating on a dark image.
+    to a near-opaque dark pill where `backdrop-filter` is unsupported, so the
+    label never ends up as low-contrast text floating on a busy image.
   */
-  glass: 'glass-surface-strong text-brand-800 border-transparent',
+  glass: 'glass-surface-strong text-ink border-transparent',
 };
 
 /** Used for occasion, style and service tags on portfolio cards (P5). */

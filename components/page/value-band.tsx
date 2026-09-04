@@ -19,10 +19,10 @@ const VALUE_ICONS = [FlowerIcon, TeamIcon, LeafIcon, SparkIcon] as const;
 export function ValueBand() {
   return (
     <section className="px-3 sm:px-5 lg:px-6" aria-labelledby="why-vrk">
-      <div className="from-brand-50 via-surface-tint to-accent-50 border-brand-200/50 relative isolate mx-auto w-full max-w-[86rem] overflow-hidden rounded-3xl border bg-gradient-to-br">
-        <LeafDecor className="text-brand-500/25 motion-safe:animate-drift-slow -top-6 -left-10 size-56" />
+      <div className="from-brand-800 via-surface-tint to-brand-950 border-accent-300/15 relative isolate mx-auto w-full max-w-[86rem] overflow-hidden rounded-3xl border bg-gradient-to-br">
+        <LeafDecor className="text-accent-400/22 motion-safe:animate-drift-slow -top-6 -left-10 size-56" />
         <LeafDecor
-          className="text-brand-500/25 motion-safe:animate-drift-slower -right-10 -bottom-8 size-56"
+          className="text-accent-400/22 motion-safe:animate-drift-slower -right-10 -bottom-8 size-56"
           flip
         />
 
@@ -30,7 +30,7 @@ export function ValueBand() {
           <div className="py-12 sm:py-16">
             <div className="mx-auto flex max-w-2xl flex-col items-center gap-3 text-center">
               <h2 id="why-vrk" className="text-3xl font-medium sm:text-4xl">
-                Why choose <span className="text-brand-800">VRK Decor</span>
+                Why choose <span className="text-brand-300">VRK Decor</span>
               </h2>
               <LeafRule />
             </div>
@@ -43,7 +43,7 @@ export function ValueBand() {
                     key={reason.title}
                     as="li"
                     delay={Math.min(index * 80, 240)}
-                    className="bg-surface/70 border-brand-200/50 lg:not-first:border-l-brand-300/50 group flex h-full flex-col items-center gap-2.5 rounded-2xl border px-3 py-6 text-center lg:rounded-none lg:border-transparent lg:bg-transparent lg:px-6 lg:py-2"
+                    className="bg-surface/70 border-accent-300/15 lg:not-first:border-l-accent-300/20 group flex h-full flex-col items-center gap-2.5 rounded-2xl border px-3 py-6 text-center lg:rounded-none lg:border-transparent lg:bg-transparent lg:px-6 lg:py-2"
                   >
                     <IconChip tone="tint" size="lg">
                       <ValueIcon className="size-6" />

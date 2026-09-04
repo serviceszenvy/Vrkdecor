@@ -91,7 +91,7 @@ export default async function DesignDetailPage({ params }: Params) {
         <nav aria-label="Breadcrumb" className="mb-6">
           <Link
             href={routes.work}
-            className="text-brand-700 inline-flex min-h-9 items-center text-sm underline underline-offset-4"
+            className="text-accent-300 inline-flex min-h-9 items-center text-sm underline underline-offset-4"
           >
             &larr; All designs
           </Link>
@@ -130,7 +130,7 @@ export default async function DesignDetailPage({ params }: Params) {
               ))}
             </div>
 
-            <h1 id="design-title" className="text-4xl font-medium sm:text-5xl">
+            <h1 id="design-title" className="text-4xl font-semibold sm:text-5xl">
               {design.name}
             </h1>
 
@@ -154,7 +154,7 @@ export default async function DesignDetailPage({ params }: Params) {
             </div>
           </div>
 
-          <dl className="border-brand-200/60 from-brand-50 to-surface-tint shadow-card flex flex-col gap-4 rounded-3xl border bg-gradient-to-br p-6 sm:p-7">
+          <dl className="border-accent-300/15 from-brand-800 to-surface-tint shadow-card flex flex-col gap-4 rounded-3xl border bg-gradient-to-br p-6 sm:p-7">
             {design.occasion ? (
               <div>
                 <dt className="text-ink-muted text-2xs tracking-[0.16em] uppercase">

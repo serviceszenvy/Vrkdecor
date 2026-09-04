@@ -87,9 +87,9 @@ export function IconChip({
   className?: string;
 }) {
   const tones = {
-    brand: 'bg-brand-50 text-brand-700 ring-1 ring-brand-200/70',
-    tint: 'bg-white/70 text-brand-700 ring-1 ring-white/70',
-    glass: 'glass-surface text-brand-700',
+    brand: 'bg-brand-800/60 text-accent-300 ring-1 ring-brand-600/40',
+    tint: 'bg-white/10 text-accent-300 ring-1 ring-white/15',
+    glass: 'glass-surface text-ink',
     solid: 'bg-brand-700 text-white',
   } as const;
 
@@ -126,11 +126,11 @@ export function LeafRule({ className }: { className?: string }) {
       aria-hidden="true"
       className={cn('flex items-center justify-center gap-2', className)}
     >
-      <span className="from-brand-300/0 to-brand-400 h-px w-10 bg-gradient-to-r" />
-      <svg viewBox="0 0 24 24" className="text-brand-500 size-3.5" fill="currentColor">
+      <span className="from-accent-400/0 to-accent-400 h-px w-10 bg-gradient-to-r" />
+      <svg viewBox="0 0 24 24" className="text-accent-400 size-3.5" fill="currentColor">
         <path d="M12 3c3.6 2 5.4 4.3 5.4 7a5.4 5.4 0 0 1-10.8 0c0-2.7 1.8-5 5.4-7Z" />
       </svg>
-      <span className="from-brand-400 to-brand-300/0 h-px w-10 bg-gradient-to-r" />
+      <span className="from-accent-400 to-accent-400/0 h-px w-10 bg-gradient-to-r" />
     </span>
   );
 }

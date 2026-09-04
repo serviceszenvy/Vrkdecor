@@ -50,20 +50,28 @@
   --color-sand-900: #393a34;
   --color-sand-950: #252522;
 
-  /* Semantic roles — components use these, not raw palette steps */
-  --color-surface: #ffffff;
-  --color-canvas: #f5f7f1;
-  --color-canvas-deep: #edf1e5;
-  --color-surface-tint: #ecf2e6;
-  --color-surface-subtle: #f7f7f5;
-  --color-surface-muted: #edeeea;
-  --color-surface-inverse: #252522;
-  --color-ink: #252522;
-  --color-ink-muted: #707267;
-  --color-ink-soft: #5b5c54;
-  --color-ink-inverse: #ffffff;
-  --color-line: #dcddd7;
-  --color-line-soft: #e4e7dd;
+  /*
+   * Semantic roles — components use these, not raw palette steps. Redefined
+   * dark for the full dark-theme transformation: `canvas` is exactly the
+   * brief's `#37432B`; every other ground is a lighter/darker step of the
+   * same family, or the distinct `sand` neutral for an alternating zone —
+   * never the same flat colour repeated. `ink`/`inkMuted`/`inkSoft` flip to
+   * light; `surfaceInverse`/`inkInverse` flip roles (the one bright
+   * exception now, not the one dark exception).
+   */
+  --color-surface: #475637;
+  --color-canvas: #37432b;
+  --color-canvas-deep: #242c1c;
+  --color-surface-tint: #393a34;
+  --color-surface-subtle: #252522;
+  --color-surface-muted: #484a43;
+  --color-surface-inverse: #f5f7f1;
+  --color-ink: #f5f7f1;
+  --color-ink-muted: #c5c6be;
+  --color-ink-soft: #dcddd7;
+  --color-ink-inverse: #242c1c;
+  --color-line: #6d8455;
+  --color-line-soft: #61764b;
 
   /*
    * Typography.
@@ -218,25 +226,29 @@
 
 @layer base {
   :root {
-    color-scheme: light;
+    color-scheme: dark;
     /* Height of the mobile sticky action bar; reserved so it never covers content. */
     --mobile-cta-height: 4.25rem;
 
     /*
-     * Glassmorphism tokens. Mirrors `glass` in lib/design-tokens.ts.
+     * Glassmorphism tokens. Mirrors `glass` in lib/design-tokens.ts. Dark,
+     * translucent and brand-tinted for the full dark-theme transformation —
+     * see the comment on `glass` there for the four-level rationale.
      * `--glass-blur` is capped deliberately: backdrop-filter repaints on every
      * scroll frame, and a large radius is the most expensive thing a glass
      * design can ask of a mid-range phone.
      */
-    --glass-surface: rgb(255 255 255 / 0.62);
-    --glass-surface-strong: rgb(255 255 255 / 0.86);
-    --glass-surface-tint: rgb(236 242 230 / 0.74);
-    /* Warmer, more saturated glass for the small number of highlight moments. */
-    --glass-surface-vivid: rgb(221 240 196 / 0.8);
-    --glass-surface-inverse: rgb(37 37 34 / 0.42);
-    --glass-border: rgb(255 255 255 / 0.55);
-    --glass-border-soft: rgb(97 118 75 / 0.16);
-    --glass-highlight: rgb(255 255 255 / 0.65);
+    --glass-surface: rgb(55 67 43 / 0.55);
+    --glass-surface-strong: rgb(36 44 28 / 0.82);
+    --glass-surface-tint: rgb(71 86 55 / 0.62);
+    /* Accent-tinted glass for the small number of highlight moments. */
+    --glass-surface-vivid: rgb(75 109 32 / 0.65);
+    /* The one bright glass exception (light, not dark). */
+    --glass-surface-inverse: rgb(245 247 241 / 0.82);
+    /* A subtle accent-coloured glow, not a plain white edge. */
+    --glass-border: rgb(199 231 157 / 0.35);
+    --glass-border-soft: rgb(142 200 64 / 0.18);
+    --glass-highlight: rgb(199 231 157 / 0.4);
     --glass-blur: 16px;
     --glass-blur-strong: 24px;
   }
@@ -263,22 +275,14 @@
     text-wrap: pretty;
   }
 
-  /* Visible, high-contrast focus for every interactive element. */
-  :focus-visible {
-    @apply outline-brand-700 rounded-sm outline-2 outline-offset-2;
-  }
-
   /*
-   * `brand-700` is ~2.9:1 on the dark hero/CTA/footer backgrounds
-   * (`brand-950`/`surface-inverse`) introduced in Phase 2 — under the 3:1
-   * WCAG UI-component minimum, and near-invisible in practice. Every
-   * interactive element inside a `.dark-surface` container gets the same
-   * `accent-300` already used for text there (10.5:1+ against both, see
-   * `contrastContract`) instead. Higher specificity than the bare rule
-   * above (one extra class), so no `!important` needed.
+   * Visible, high-contrast focus for every interactive element. `brand-700`
+   * measures under 3:1 against the dark grounds this theme uses everywhere
+   * now, so the ring is `accent-300` — verified 5.7:1+ against every
+   * surface/canvas variant in `contrastContract`.
    */
-  .dark-surface :focus-visible {
-    outline-color: var(--color-accent-300);
+  :focus-visible {
+    @apply outline-accent-300 rounded-sm outline-2 outline-offset-2;
   }
 
   /* Images never overflow their container. */
@@ -302,19 +306,19 @@
    * to be applied.
    */
   .glass-surface {
-    background-color: rgb(255 255 255 / 0.9);
+    background-color: rgb(55 67 43 / 0.92);
     border: 1px solid var(--glass-border-soft);
     box-shadow: var(--shadow-glass);
   }
 
   .glass-surface-strong {
-    background-color: rgb(255 255 255 / 0.95);
+    background-color: rgb(36 44 28 / 0.95);
     border: 1px solid var(--glass-border-soft);
     box-shadow: var(--shadow-glass);
   }
 
   .glass-surface-tint {
-    background-color: rgb(236 242 230 / 0.94);
+    background-color: rgb(71 86 55 / 0.94);
     border: 1px solid var(--glass-border-soft);
     box-shadow: var(--shadow-glass);
   }
@@ -326,7 +330,21 @@
    * degradation as the three surfaces above: opaque-enough without blur.
    */
   .glass-surface-vivid {
-    background-color: rgb(221 240 196 / 0.95);
+    background-color: rgb(75 109 32 / 0.95);
+    border: 1px solid var(--glass-border-soft);
+    box-shadow: var(--shadow-glass);
+  }
+
+  /*
+   * The one bright glass exception — light, not dark. Used where the site
+   * needs a moment of real brightness for hierarchy or legibility (the
+   * header, which carries the supplied logo — drawn for light backgrounds
+   * only, with no reversed variant supplied, see docs/DESIGN-SYSTEM.md §1).
+   * Everything inside it pairs with dark text (`brand-950`/`brand-700`),
+   * the opposite of every other glass surface in this file.
+   */
+  .glass-surface-inverse {
+    background-color: rgb(245 247 241 / 0.95);
     border: 1px solid var(--glass-border-soft);
     box-shadow: var(--shadow-glass);
   }
@@ -358,6 +376,13 @@
       border-color: var(--glass-border);
       -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
       backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
+    }
+
+    .glass-surface-inverse {
+      background-color: var(--glass-surface-inverse);
+      border-color: var(--glass-border);
+      -webkit-backdrop-filter: blur(var(--glass-blur-strong)) saturate(1.3);
+      backdrop-filter: blur(var(--glass-blur-strong)) saturate(1.3);
     }
   }
 
@@ -432,27 +457,28 @@
   }
 
   /*
-   * The soft botanical wash behind the page. Three very wide, low-opacity
-   * radial gradients — cheap to paint, fixed to the element, and quiet enough
-   * that photography still leads. Opacity sits well inside the contrast
-   * contract's margin (body text on canvas is 14+:1 against a 4.5:1
-   * requirement), so this reads as ambient warmth, not a loss of legibility.
+   * The ambient wash behind the page — three wide, glowing radial gradients,
+   * cheap to paint, fixed to the element. Brighter than a light theme could
+   * ever use (a glow reads as light emitted from a dark ground, not a loss
+   * of contrast), but still restrained enough that text stays the focus —
+   * every pairing in `contrastContract` clears its floor by a wide margin
+   * regardless (body text on canvas is 9.7:1 against a 4.5:1 requirement).
    */
   .canvas-wash {
     background-image:
       radial-gradient(
-        58rem 32rem at 82% -6%,
-        rgb(142 200 64 / 0.14),
+        60rem 34rem at 85% -8%,
+        rgb(142 200 64 / 0.22),
         rgb(142 200 64 / 0) 62%
       ),
       radial-gradient(
-        46rem 28rem at 4% 12%,
-        rgb(97 118 75 / 0.11),
-        rgb(97 118 75 / 0) 60%
+        48rem 30rem at 2% 10%,
+        rgb(142 200 64 / 0.14),
+        rgb(142 200 64 / 0) 60%
       ),
       radial-gradient(
-        38rem 24rem at 50% 100%,
-        rgb(216 168 90 / 0.06),
+        40rem 26rem at 50% 100%,
+        rgb(216 168 90 / 0.1),
         rgb(216 168 90 / 0) 65%
       );
   }
@@ -573,7 +599,13 @@
   }
 
   .glass-surface-strong {
-    background-color: rgb(255 255 255 / 0.95) !important;
+    background-color: rgb(36 44 28 / 0.95) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .glass-surface-inverse {
+    background-color: rgb(245 247 241 / 0.95) !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
   }

@@ -45,7 +45,7 @@ function FilterRow({
       'motion-safe:active:scale-95',
       isActive
         ? 'border-brand-700 bg-brand-700 text-white shadow-glow-sm'
-        : 'border-line-soft bg-surface text-ink hover:border-brand-300 hover:bg-brand-50 hover:shadow-card',
+        : 'border-line-soft bg-surface text-ink hover:border-accent-300/60 hover:bg-white/5 hover:shadow-card',
     );
 
   return (
@@ -137,7 +137,7 @@ export function FilterBar({
           <>
             {' · '}
             <Link
-              className="text-brand-700 underline underline-offset-4"
+              className="text-accent-300 underline underline-offset-4"
               href={routes.work}
             >
               Clear filters

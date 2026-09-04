@@ -68,12 +68,12 @@ export function OccasionGrid({ occasions }: { occasions: readonly OccasionTile[]
           <Reveal key={occasion.slug} as="li" delay={Math.min(index * 40, 240)}>
             <Link
               href={`${routes.work}?occasion=${encodeURIComponent(occasion.slug)}`}
-              className="border-line-soft bg-surface hover:border-brand-300 hover:bg-brand-50/60 hover:shadow-card group flex h-full min-h-[7.5rem] flex-col items-center justify-center gap-2 overflow-hidden rounded-2xl border px-1.5 py-5 text-center transition-[background-color,border-color,box-shadow] duration-300 sm:px-3"
+              className="border-line-soft bg-surface hover:border-accent-300/60 hover:bg-white/5 hover:shadow-card group flex h-full min-h-[7.5rem] flex-col items-center justify-center gap-2 overflow-hidden rounded-2xl border px-1.5 py-5 text-center transition-[background-color,border-color,box-shadow] duration-300 sm:px-3"
             >
               <IconChip
                 tone="brand"
                 size="md"
-                className="group-hover:bg-brand-100 transition-colors"
+                className="group-hover:bg-brand-700/70 transition-colors"
               >
                 <OccasionIcon className="size-6" />
               </IconChip>

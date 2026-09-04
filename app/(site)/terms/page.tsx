@@ -99,7 +99,7 @@ export default function TermsPage() {
             <p className="text-ink-muted">
               Questions about these terms can be sent to{' '}
               <a
-                className="text-brand-700 underline underline-offset-4"
+                className="text-accent-300 underline underline-offset-4"
                 href={mailHref}
               >
                 {siteConfig.contact.email}

@@ -6,15 +6,18 @@ type CardTone = 'surface' | 'glass' | 'tint' | 'plain';
 const tones: Record<CardTone, string> = {
   surface: 'bg-surface border border-line-soft',
   glass: 'glass-surface glass-edge',
-  tint: 'bg-surface-tint border border-brand-200/60',
+  tint: 'bg-surface-tint border border-accent-300/20',
   plain: 'border border-transparent',
 };
 
-/** Hover border tint per tone, so the lift reads as intentional, not generic. */
+/**
+ * A subtle accent-coloured glow on hover, not a flat border-colour swap — it
+ * reads as a glass reflection catching the light, per the dark-theme brief.
+ */
 const interactiveBorders: Record<CardTone, string> = {
-  surface: 'hover:border-brand-300/70 focus-within:border-brand-300/70',
+  surface: 'hover:border-accent-300/50 focus-within:border-accent-300/50',
   glass: '',
-  tint: 'hover:border-brand-300 focus-within:border-brand-300',
+  tint: 'hover:border-accent-300/60 focus-within:border-accent-300/60',
   plain: '',
 };
 
