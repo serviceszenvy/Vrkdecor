@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { CtaBand, Hero, StatList } from '@/components/page';
-import { ButtonLink, Reveal, Section, SectionHeading } from '@/components/ui';
+import { ButtonLink, IconChip, Reveal, Section, SectionHeading } from '@/components/ui';
+import { PinIcon } from '@/components/layout/icons';
 import { coverage, credentials, positioning, whyChooseUs } from '@/lib/content';
 import { routes } from '@/lib/navigation';
 import { pageMetadata } from '@/lib/seo';
@@ -14,9 +15,30 @@ export const metadata: Metadata = pageMetadata({
 });
 
 /**
- * About — Requirements sections 2, 3 and 18.
- * Every statement on this page restates an approved business fact. No history,
- * founder story, award or superlative is asserted, because none is approved.
+ * Founder content, client-supplied for this page (not in the approved
+ * `01_REQUIREMENTS` figures, so it lives here rather than in
+ * `lib/content/business.ts`, which `tests/unit/content.test.ts` checks
+ * verbatim against those figures). The bio is deliberately general — vision
+ * and approach, not a claimed history, award or number — per the same "do not
+ * invent business facts" rule the rest of this page follows.
+ *
+ * No photograph has been supplied. Rather than use a stock photo of a real
+ * person to stand in for a specific named individual, the portrait slot below
+ * is a monogram placeholder — swap in a real photo by replacing that one
+ * element when one is available.
+ */
+const founder = {
+  name: 'V. Raja Kumerasen',
+  title: 'Founder & CEO',
+  bio: 'Every VRK Decor celebration starts from the same idea: the setting should feel like it was made for this family, on this day, not assembled from a catalogue. That attention — to colour, to proportion, to the small details a guest notices without knowing why — shapes how the team designs and builds every event we take on, from the first sketch to the last light switched on.',
+};
+
+/**
+ * About — Requirements sections 2, 3 and 18, plus a Founder section (client-
+ * supplied name and generic, non-factual bio) and a polished coverage section
+ * reusing the same approved `coverage` figures already used elsewhere.
+ * Every statement on this page restates an approved business fact or the
+ * founder content above. No history, award or unsupported claim is asserted.
  */
 export default function AboutPage() {
   const { address } = siteConfig.contact;
@@ -65,21 +87,72 @@ export default function AboutPage() {
         </ul>
       </Section>
 
-      <Section tone="panel" width="wide" aria-labelledby="where-we-work">
+      <Section tone="panel" width="wide" aria-labelledby="founder">
+        <SectionHeading
+          id="founder"
+          eyebrow="Leadership"
+          title="Led by"
+          accent="design, not guesswork"
+        />
+        <Reveal
+          as="div"
+          className="border-accent-300/15 from-brand-800 to-surface-tint mt-10 grid gap-8 rounded-3xl border bg-gradient-to-br p-6 sm:p-10 lg:grid-cols-[auto_1fr] lg:items-center lg:gap-12"
+        >
+          {/*
+            Monogram placeholder — see the comment on `founder` above for why
+            this is not a stock photo. Swap this one element for a real
+            portrait (`next/image`) when one is supplied.
+          */}
+          <div
+            aria-hidden="true"
+            className="from-brand-600 to-accent-700 ring-accent-300/30 font-display mx-auto flex size-32 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-3xl font-medium tracking-tight text-white ring-2 sm:size-40 sm:text-4xl"
+          >
+            VRK
+          </div>
+          <div className="flex flex-col gap-3 text-center lg:text-left">
+            <div>
+              <p className="font-display text-2xl font-medium">{founder.name}</p>
+              <p className="text-accent-300 text-sm font-semibold tracking-[0.14em] uppercase">
+                {founder.title}
+              </p>
+            </div>
+            <p className="text-ink-muted leading-relaxed">{founder.bio}</p>
+          </div>
+        </Reveal>
+      </Section>
+
+      <Section
+        tone="panel"
+        width="wide"
+        aria-labelledby="where-we-work"
+        panelClassName="relative isolate"
+      >
+        <div
+          aria-hidden="true"
+          className="ambient-blob bg-accent-400/15 motion-safe:animate-drift-slow -top-16 -right-16 size-72"
+        />
         <SectionHeading
           id="where-we-work"
+          align="center"
+          rule
           eyebrow="Coverage"
-          title="Where we work"
+          title="Serving across"
+          accent="Tamil Nadu"
           lead={coverage.wider}
         />
-        <ul className="text-ink mt-6 flex flex-wrap gap-x-6 gap-y-2">
-          {coverage.primaryAreas.map((area) => (
-            <li key={area} className="text-lg">
-              {area}
-            </li>
+        <ul className="mt-8 flex flex-wrap justify-center gap-3">
+          {coverage.primaryAreas.map((area, index) => (
+            <Reveal key={area} as="li" delay={Math.min(index * 60, 240)}>
+              <span className="border-accent-300/20 bg-surface hover:border-accent-300/50 hover:shadow-glow-sm inline-flex items-center gap-2 rounded-full border py-1.5 pr-4 pl-1.5 text-sm transition-[border-color,box-shadow] duration-300">
+                <IconChip tone="brand" size="sm">
+                  <PinIcon className="size-3.5" />
+                </IconChip>
+                {area}
+              </span>
+            </Reveal>
           ))}
         </ul>
-        <address className="text-ink-muted mt-8 text-sm not-italic">
+        <address className="text-ink-muted mx-auto mt-10 max-w-sm text-center text-sm leading-relaxed not-italic">
           {siteConfig.name}
           <br />
           {address.street}
