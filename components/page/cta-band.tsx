@@ -33,7 +33,7 @@ export function CtaBand({
 }) {
   return (
     <section className="px-3 sm:px-5 lg:px-6" aria-labelledby="final-cta">
-      <div className="from-brand-950 via-brand-900 to-sand-950 relative isolate mx-auto w-full max-w-[86rem] overflow-hidden rounded-3xl bg-gradient-to-r">
+      <div className="dark-surface from-brand-950 via-brand-900 to-sand-950 relative isolate mx-auto w-full max-w-[86rem] overflow-hidden rounded-3xl bg-gradient-to-r">
         <LeafDecor className="text-accent-400/20 motion-safe:animate-drift-slow -top-8 -left-12 size-64" />
         <LeafDecor
           className="text-brand-400/20 motion-safe:animate-drift-slower -right-12 -bottom-10 size-64"

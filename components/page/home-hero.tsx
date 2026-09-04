@@ -34,7 +34,7 @@ const ASSURANCE_ICONS = [GemIcon, SparkIcon, ShieldIcon] as const;
 export function HomeHero({ actions }: { actions: ReactNode }) {
   return (
     <section className="px-3 pt-3 sm:px-5 sm:pt-4 lg:px-6" aria-labelledby="hero-title">
-      <div className="from-brand-950 via-brand-800 to-brand-900 motion-safe:animate-gradient-pan relative isolate mx-auto w-full max-w-[86rem] overflow-hidden rounded-3xl bg-gradient-to-br bg-[length:200%_200%]">
+      <div className="dark-surface from-brand-950 via-brand-800 to-brand-900 motion-safe:animate-gradient-pan relative isolate mx-auto w-full max-w-[86rem] overflow-hidden rounded-3xl bg-gradient-to-br bg-[length:200%_200%]">
         {heroImage.src ? (
           <Image
             src={heroImage.src}

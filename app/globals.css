@@ -268,6 +268,19 @@
     @apply outline-brand-700 rounded-sm outline-2 outline-offset-2;
   }
 
+  /*
+   * `brand-700` is ~2.9:1 on the dark hero/CTA/footer backgrounds
+   * (`brand-950`/`surface-inverse`) introduced in Phase 2 — under the 3:1
+   * WCAG UI-component minimum, and near-invisible in practice. Every
+   * interactive element inside a `.dark-surface` container gets the same
+   * `accent-300` already used for text there (10.5:1+ against both, see
+   * `contrastContract`) instead. Higher specificity than the bare rule
+   * above (one extra class), so no `!important` needed.
+   */
+  .dark-surface :focus-visible {
+    outline-color: var(--color-accent-300);
+  }
+
   /* Images never overflow their container. */
   img,
   video {

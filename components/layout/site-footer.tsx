@@ -45,7 +45,7 @@ export function SiteFooter() {
   const { address } = siteConfig.contact;
 
   return (
-    <footer className="bg-surface-inverse relative mt-4 sm:mt-6">
+    <footer className="dark-surface bg-surface-inverse relative mt-4 sm:mt-6">
       <div
         aria-hidden="true"
         className="from-accent-400/0 via-accent-400/60 to-brand-400/0 absolute inset-x-0 top-0 h-px bg-gradient-to-r"
