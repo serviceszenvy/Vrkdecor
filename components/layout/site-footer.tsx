@@ -205,7 +205,15 @@ export function SiteFooter() {
               <HeartSolidIcon />
             </span>
             <span className="sr-only">love</span>
-            by Zenvy
+            by{' '}
+            <a
+              href="https://serviceszenvy.wixsite.com/home"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-accent-300 underline underline-offset-4 transition-colors"
+            >
+              Zenvy
+            </a>
           </p>
         </div>
       </Container>

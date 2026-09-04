@@ -247,20 +247,30 @@ export async function listDesignSlugs(): Promise<string[]> {
  * would have shown next. Wraps at both ends: a detail page is a closed loop,
  * not a dead end, so the customer can keep going either direction.
  *
- * Both are null when the Design cannot be found or the portfolio has fewer
- * than two published Designs.
+ * `position`/`total` give a "3 of 12" counter its numbers, 1-indexed to
+ * match how a customer would count them, not how the array is indexed.
+ *
+ * `previous`/`next` are both null, and `position`/`total` are 0, when the
+ * Design cannot be found or the portfolio has fewer than two published
+ * Designs.
  */
 export async function getAdjacentDesigns(slug: string): Promise<{
   previous: PortfolioDesign | null;
   next: PortfolioDesign | null;
+  position: number;
+  total: number;
 }> {
   const designs = await loadPublishedDesigns();
   const index = designs.findIndex((design) => design.slug === slug);
-  if (index === -1 || designs.length < 2) return { previous: null, next: null };
+  if (index === -1 || designs.length < 2) {
+    return { previous: null, next: null, position: 0, total: designs.length };
+  }
 
   return {
     previous: designs[(index - 1 + designs.length) % designs.length] ?? null,
     next: designs[(index + 1) % designs.length] ?? null,
+    position: index + 1,
+    total: designs.length,
   };
 }
 

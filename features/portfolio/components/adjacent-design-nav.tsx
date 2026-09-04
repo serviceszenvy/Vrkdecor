@@ -17,16 +17,28 @@ import { coverImage, type PortfolioDesign } from '../types';
 export function AdjacentDesignNav({
   previous,
   next,
+  position,
+  total,
 }: {
   previous: PortfolioDesign | null;
   next: PortfolioDesign | null;
+  /** 1-indexed position of the current design within the portfolio. */
+  position?: number;
+  total?: number;
 }) {
   if (!previous && !next) return null;
 
   return (
-    <nav aria-label="More designs" className="grid gap-3 sm:grid-cols-2">
-      {previous ? <DesignNavCard direction="previous" design={previous} /> : <div />}
-      {next ? <DesignNavCard direction="next" design={next} /> : <div />}
+    <nav aria-label="More designs" className="flex flex-col gap-3">
+      {position && total ? (
+        <p className="text-ink-muted text-center text-2xs font-semibold tracking-[0.18em] uppercase">
+          Design {position} of {total}
+        </p>
+      ) : null}
+      <div className="grid gap-3 sm:grid-cols-2">
+        {previous ? <DesignNavCard direction="previous" design={previous} /> : <div />}
+        {next ? <DesignNavCard direction="next" design={next} /> : <div />}
+      </div>
     </nav>
   );
 }

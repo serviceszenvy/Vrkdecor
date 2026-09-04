@@ -252,7 +252,12 @@ export default async function DesignDetailPage({ params }: Params) {
 
       <div className="px-3 sm:px-5 lg:px-6">
         <Reveal as="div" className="mx-auto w-full max-w-[86rem]">
-          <AdjacentDesignNav previous={adjacent.previous} next={adjacent.next} />
+          <AdjacentDesignNav
+            previous={adjacent.previous}
+            next={adjacent.next}
+            position={adjacent.position}
+            total={adjacent.total}
+          />
         </Reveal>
       </div>
 
