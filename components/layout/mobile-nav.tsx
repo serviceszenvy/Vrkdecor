@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState, type CSSProperties } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -99,7 +99,7 @@ export function MobileNav() {
         aria-expanded={open}
         aria-controls={panelId}
         data-testid="mobile-nav-trigger"
-        className="glass-surface text-ink hover:text-brand-800 inline-flex size-11 items-center justify-center rounded-full transition-[background-color,color,transform] duration-200 hover:bg-white motion-safe:active:scale-90 lg:hidden"
+        className="glass-surface text-ink hover:text-brand-800 inline-flex size-11 items-center justify-center rounded-full transition-colors hover:bg-white lg:hidden"
       >
         {open ? <CloseIcon /> : <MenuIcon />}
         <span className="sr-only">{open ? 'Close menu' : 'Open menu'}</span>
@@ -114,7 +114,7 @@ export function MobileNav() {
         ? createPortal(
             <>
               <div
-                className="bg-brand-950/45 motion-safe:animate-fade-in fixed inset-0 z-40 backdrop-blur-[2px] lg:hidden"
+                className="bg-brand-950/55 motion-safe:animate-fade-in fixed inset-0 z-40 backdrop-blur-[3px] lg:hidden"
                 onClick={() => setOpen(false)}
                 aria-hidden="true"
               />
@@ -127,29 +127,36 @@ export function MobileNav() {
                   // Sits below the floating header so the close control stays
                   // visible and usable while the panel is open.
                   'fixed inset-x-3 top-[4.75rem] z-40 sm:inset-x-4 sm:top-[5.5rem] lg:hidden',
-                  'glass-surface-strong glass-edge rounded-3xl',
+                  'glass-surface-strong glass-edge motion-safe:animate-slide-down rounded-3xl',
                   'flex max-h-[calc(100dvh-6.5rem)] flex-col overflow-y-auto p-3',
-                  'motion-safe:animate-sheet-in origin-top',
                 )}
               >
                 <nav aria-label="Mobile">
-                  <ul className="flex flex-col">
-                    {headerNav.map((item) => {
+                  <ul
+                    className="stagger flex flex-col"
+                    style={{ '--stagger-step': '45ms' } as CSSProperties}
+                  >
+                    {headerNav.map((item, index) => {
                       const active = isCurrent(current, item.href);
                       return (
-                        <li key={item.href}>
+                        <li key={item.href} style={{ '--i': index } as CSSProperties}>
                           <Link
                             href={item.href}
                             aria-current={active ? 'page' : undefined}
                             className={cn(
-                              'flex min-h-12 items-center justify-between gap-3 rounded-2xl px-4 text-base transition-colors duration-200',
+                              'flex min-h-12 items-center justify-between gap-3 rounded-2xl px-4 text-base transition-colors',
                               active
-                                ? 'bg-brand-50 text-brand-800 font-semibold'
-                                : 'text-ink hover:text-brand-800 hover:bg-white/70',
+                                ? 'bg-brand-900 text-accent-200 font-semibold'
+                                : 'text-ink hover:bg-brand-50',
                             )}
                           >
                             {item.label}
-                            <ChevronRightIcon className="text-brand-500 size-4" />
+                            <ChevronRightIcon
+                              className={cn(
+                                'size-4',
+                                active ? 'text-accent-300' : 'text-brand-500',
+                              )}
+                            />
                           </Link>
                         </li>
                       );

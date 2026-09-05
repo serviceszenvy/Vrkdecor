@@ -298,6 +298,212 @@ export function CameraIcon(props: IconProps) {
   );
 }
 
+/* -------------------------------------------------- services & occasions */
+
+/** A mandap or arch: two pillars under a curved canopy with a hanging lamp. */
+export function ArchIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M4 20V11a8 8 0 0 1 16 0v9" />
+      <path d="M2.5 20h19M7 20v-7.5M17 20v-7.5" />
+      <path d="M12 7.5v2.2M10.6 11.6a1.4 1.4 0 1 0 2.8 0 1.4 1.4 0 0 0-2.8 0Z" />
+    </Icon>
+  );
+}
+
+/** A garland swag with hanging strands. */
+export function GarlandIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M3 6c2.5 6 5.5 8 9 8s6.5-2 9-8" />
+      <path d="M7 11.5 6 15M12 14v4.5M17 11.5l1 3.5" />
+      <circle cx="6" cy="16.5" r="1.3" />
+      <circle cx="12" cy="20" r="1.3" />
+      <circle cx="18" cy="16.5" r="1.3" />
+    </Icon>
+  );
+}
+
+/** A stage with a backdrop and lights. */
+export function StageIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M3 20h18M5 20v-4h14v4" />
+      <path d="M6 16V7.5A1.5 1.5 0 0 1 7.5 6h9A1.5 1.5 0 0 1 18 7.5V16" />
+      <path d="M9 9.5v.01M12 9.5v.01M15 9.5v.01" />
+      <path d="M12 3v3" />
+    </Icon>
+  );
+}
+
+/** A decorated car, seen from the side. */
+export function CarIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M4 15.5 5.6 10a2 2 0 0 1 1.9-1.4h9a2 2 0 0 1 1.9 1.4L20 15.5" />
+      <path d="M3 15.5h18v3H3z" />
+      <circle cx="7.5" cy="18.5" r="1.6" />
+      <circle cx="16.5" cy="18.5" r="1.6" />
+      <path d="M10 5.5c.6-1.4 1.6-2 2-2s1.4.6 2 2" />
+    </Icon>
+  );
+}
+
+/** A church with a bell tower. */
+export function ChurchIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M12 3v4M10 5h4" />
+      <path d="M8 20v-8l4-4 4 4v8" />
+      <path d="M3 20h18M3 20v-6l5-2M21 20v-6l-5-2" />
+      <path d="M10.5 20v-3.5a1.5 1.5 0 0 1 3 0V20" />
+    </Icon>
+  );
+}
+
+/** A pair of balloons on strings. */
+export function BalloonIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M9 3.5a3.8 4.6 0 1 0 0 9.2 3.8 4.6 0 0 0 0-9.2Z" />
+      <path d="M15.5 6a3 3.6 0 1 0 0 7.2 3 3.6 0 0 0 0-7.2Z" />
+      <path d="M9 12.7c0 2.8 1 4.3 2 7.8M15.5 13.2c0 2.5-.6 3.6-1.5 5.8" />
+    </Icon>
+  );
+}
+
+/** Confetti and streamers. */
+export function ConfettiIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="m4 20 3.5-10L14 16.5 4 20Z" />
+      <path d="M13 4.5c1.5 2 .5 3.5-1 4.5s-2.5 2.5-1 4.5" />
+      <path d="M16 9.5c2-1 3.5 0 4.5 1.5" />
+      <path d="M17.5 4v.01M20 6.5v.01M19 13.5v.01M9 4.5v.01" />
+    </Icon>
+  );
+}
+
+/** A microphone, for sound. */
+export function MicIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <rect x="9" y="3" width="6" height="11" rx="3" />
+      <path d="M6 11a6 6 0 0 0 12 0M12 17v3.5M9 20.5h6" />
+    </Icon>
+  );
+}
+
+/** A chair, for furniture and seating. */
+export function ChairIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M7 12V5.5A1.5 1.5 0 0 1 8.5 4h7A1.5 1.5 0 0 1 17 5.5V12" />
+      <path d="M5 12h14v3.5H5z" />
+      <path d="M6.5 15.5V20M17.5 15.5V20M7 12h10" />
+    </Icon>
+  );
+}
+
+/** A screen on a stand, for LED walls and displays. */
+export function ScreenIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <rect x="3" y="4.5" width="18" height="11.5" rx="2" />
+      <path d="M12 16v4M8.5 20h7" />
+      <path d="m7 12.5 3-3 2.5 2 4.5-4" />
+    </Icon>
+  );
+}
+
+/** A clipboard with a tick, for full event management. */
+export function ClipboardIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <rect x="5" y="4.5" width="14" height="16" rx="2" />
+      <path d="M9 4.5V3.5h6v1M9 4.5h6" />
+      <path d="m8.5 13 2.4 2.4L15.5 10.5" />
+    </Icon>
+  );
+}
+
+/** The sun, for haldi and daytime ceremonies. */
+export function SunIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8" />
+    </Icon>
+  );
+}
+
+/** A palm, for beach and Kerala settings. */
+export function PalmIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M11 21c.5-6 1.5-9.5 3-13" />
+      <path d="M14 8c-3-2.5-6.5-2-9 .5 3-.6 5.5 0 7.5 1.5" />
+      <path d="M14 8c-1-3.5.5-6 3.5-6-1 1.5-1.3 3.2-1 5" />
+      <path d="M14 8c3.5-1.5 6.5 0 8 2.5-2.5-1-5-.8-7 .3" />
+      <path d="M3 21h18" />
+    </Icon>
+  );
+}
+
+/** A ribbon rosette, for openings and launches. */
+export function RibbonIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <circle cx="12" cy="9" r="5" />
+      <circle cx="12" cy="9" r="2" />
+      <path d="m9 13.5-2 7 5-2.5 5 2.5-2-7" />
+    </Icon>
+  );
+}
+
+/** Lips and a brush, for makeup and styling. */
+export function BrushIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="m14 4 6 6-8.5 8.5a2.1 2.1 0 0 1-3 0L5.5 15.5a2.1 2.1 0 0 1 0-3L14 4Z" />
+      <path d="m11 7 6 6M4 20c1.8-.2 3-.9 3.5-2.2" />
+    </Icon>
+  );
+}
+
+/** A serving cloche, for food and catering. */
+export function ClocheIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M4 16a8 8 0 0 1 16 0Z" />
+      <path d="M12 6.5V8M2.5 19h19" />
+      <circle cx="12" cy="5.5" r="1" />
+    </Icon>
+  );
+}
+
+/** A baby rattle, for baby showers. */
+export function RattleIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <circle cx="9" cy="8.5" r="4.5" />
+      <path d="m12.2 11.7 6.3 6.3a1.6 1.6 0 0 1-2.3 2.3l-6.3-6.3" />
+      <path d="M7.5 7.5c.4-.6 1-1 1.8-1" />
+    </Icon>
+  );
+}
+
+/** Two glasses raised, for parties and anniversaries. */
+export function ToastIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="m6 4 4 1-1.5 6.5a2.5 2.5 0 0 1-4.9-1.1L6 4Z" />
+      <path d="m18 4-4 1 1.5 6.5a2.5 2.5 0 0 0 4.9-1.1L18 4Z" />
+      <path d="m7 13-1.5 6.5M4 20h3.5M17 13l1.5 6.5M16.5 20H20" />
+    </Icon>
+  );
+}
+
 /* -------------------------------------------------------------- social */
 
 export function InstagramIcon(props: IconProps) {

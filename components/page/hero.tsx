@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import { Container } from '@/components/ui';
 import { cn } from '@/lib/cn';
 import { LeafDecor } from './leaf-decor';
@@ -6,13 +6,13 @@ import { LeafDecor } from './leaf-decor';
 /**
  * Hero for the inner pages.
  *
- * A calm tinted band rather than a photograph: these pages lead with their own
- * content (a portfolio grid, a service list, a form), and a second full-bleed
- * image above them would compete with it. The home page has its own
- * photographic hero in `home-hero.tsx`.
+ * The same dark olive stage as the home hero, in a shorter form: every page
+ * opens on the brand's own colour before handing over to its content on the
+ * light ground. The copy staggers in on load; the ambient light drifts on its
+ * own and is stilled under `prefers-reduced-motion`.
  *
- * `media` is still accepted for a page that does want a picture beside the
- * headline; the layout takes it without change.
+ * `media` is accepted for a page that wants a picture beside the headline;
+ * the layout takes it without change.
  */
 export function Hero({
   eyebrow,
@@ -25,7 +25,7 @@ export function Hero({
 }: {
   eyebrow?: string;
   title: string;
-  /** Emphasised continuation of the title, in brand green. */
+  /** Emphasised continuation of the title, in lime. */
   accent?: string;
   lead?: string;
   actions?: ReactNode;
@@ -33,20 +33,24 @@ export function Hero({
   compact?: boolean;
 }) {
   return (
-    <section className="px-3 pt-3 sm:px-5 sm:pt-4 lg:px-6">
+    <section className="px-3 pt-2 sm:px-5 sm:pt-2.5 lg:px-6 lg:pt-3">
       <div
         className={cn(
-          'from-brand-50 via-canvas to-accent-50/60 relative isolate mx-auto w-full max-w-[86rem]',
-          'border-line-soft overflow-hidden rounded-3xl border bg-gradient-to-br',
+          'surface-aurora on-deep relative isolate mx-auto w-full max-w-[86rem] text-white',
+          'shadow-deep overflow-hidden rounded-[2rem] border border-white/10',
         )}
       >
-        <div
+        <span
           aria-hidden="true"
-          className="ambient-blob bg-accent-300/30 motion-safe:animate-drift-slow -top-24 -right-20 size-72"
+          className="ambient-blob bg-accent-500/40 -top-32 -right-24 size-[26rem]"
+        />
+        <span
+          aria-hidden="true"
+          className="ambient-blob ambient-blob-slow bg-brand-400/40 -bottom-40 -left-24 size-[24rem]"
         />
         <div
           aria-hidden="true"
-          className="ambient-blob bg-brand-300/20 motion-safe:animate-drift-slower -bottom-16 -left-16 size-64"
+          className="pattern-dots absolute inset-0 -z-10 opacity-50"
         />
         {/*
           Botanical decoration in the space to the right of the headline. It is
@@ -55,7 +59,7 @@ export function Hero({
         */}
         {media ? null : (
           <LeafDecor
-            className="text-brand-500/30 -right-8 -bottom-16 hidden size-80 lg:block"
+            className="text-accent-200/25 -right-8 -bottom-16 hidden size-80 lg:block"
             flip
           />
         )}
@@ -66,13 +70,17 @@ export function Hero({
               'grid items-center gap-10 lg:gap-16',
               media ? 'lg:grid-cols-2' : '',
               compact
-                ? 'pt-24 pb-10 sm:pt-28 sm:pb-12 lg:pt-32 lg:pb-16'
-                : 'pt-24 pb-12 sm:pt-32 sm:pb-16 lg:pt-40 lg:pb-24',
+                ? 'pt-12 pb-10 sm:pt-14 sm:pb-12 lg:pt-16 lg:pb-16'
+                : 'pt-14 pb-12 sm:pt-20 sm:pb-16 lg:pt-24 lg:pb-24',
             )}
           >
-            <div className="motion-safe:animate-fade-in flex max-w-2xl flex-col gap-4">
+            <div className="stagger flex max-w-2xl flex-col gap-4">
               {eyebrow ? (
-                <p className="text-brand-800 text-2xs font-semibold tracking-[0.24em] uppercase">
+                <p
+                  className="text-accent-300 text-2xs inline-flex items-center gap-2.5 font-semibold tracking-[0.24em] uppercase"
+                  style={{ '--i': 0 } as CSSProperties}
+                >
+                  <span className="bg-accent-400 inline-block size-2 rounded-full shadow-[0_0_0_4px_rgb(142_200_64/0.25)]" />
                   {eyebrow}
                 </p>
               ) : null}
@@ -80,21 +88,30 @@ export function Hero({
               <h1
                 className={cn(
                   'font-medium',
-                  compact ? 'text-3xl sm:text-4xl' : 'text-4xl sm:text-5xl',
+                  compact ? 'text-4xl sm:text-5xl' : 'text-5xl sm:text-6xl',
                 )}
+                style={{ '--i': 1 } as CSSProperties}
               >
                 {title}
-                {accent ? <span className="text-brand-700"> {accent}</span> : null}
+                {accent ? <span className="text-gradient-lime"> {accent}</span> : null}
               </h1>
 
               {lead ? (
-                <p className="text-ink-soft max-w-xl text-base leading-relaxed sm:text-lg">
+                <p
+                  className="text-ink-on-deep max-w-xl text-base leading-relaxed sm:text-lg"
+                  style={{ '--i': 2 } as CSSProperties}
+                >
                   {lead}
                 </p>
               ) : null}
 
               {actions ? (
-                <div className="mt-2 flex flex-wrap gap-3">{actions}</div>
+                <div
+                  className="mt-2 flex flex-wrap gap-3"
+                  style={{ '--i': 3 } as CSSProperties}
+                >
+                  {actions}
+                </div>
               ) : null}
             </div>
 
@@ -103,7 +120,11 @@ export function Hero({
               shrinks to its content, which collapses a percentage-width child
               to zero.
             */}
-            {media ? <div className="w-full lg:pl-4">{media}</div> : null}
+            {media ? (
+              <div className="w-full motion-safe:animate-[scale-in_0.9s_var(--ease-out-soft)_0.3s_both] lg:pl-4">
+                {media}
+              </div>
+            ) : null}
           </div>
         </Container>
       </div>

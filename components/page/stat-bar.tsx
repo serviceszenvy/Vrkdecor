@@ -1,5 +1,5 @@
 import type { ComponentType, SVGProps } from 'react';
-import { Container, IconChip, Reveal } from '@/components/ui';
+import { Container, IconChip } from '@/components/ui';
 import { cn } from '@/lib/cn';
 
 export type Stat = {
@@ -25,8 +25,7 @@ export function StatBar({ stats }: { stats: readonly Stat[] }) {
         <h2 id="figures" className="sr-only">
           VRK Decor at a glance
         </h2>
-        <Reveal
-          as="dl"
+        <dl
           className={cn(
             'glass-surface-strong glass-edge relative z-10 mx-auto -mt-6 grid rounded-3xl',
             'grid-cols-2 gap-y-2 p-3 sm:grid-cols-4 sm:p-4 lg:-mt-10',
@@ -38,7 +37,7 @@ export function StatBar({ stats }: { stats: readonly Stat[] }) {
               <div
                 key={stat.label}
                 className={cn(
-                  'flex items-center gap-3 px-3 py-3 sm:px-5',
+                  'group flex items-center gap-3 px-3 py-3 sm:px-5',
                   // Hairlines between the cells, without a border on the edges.
                   index % 2 === 1 && 'border-line-soft border-l sm:border-l',
                   index === 2 && 'border-line-soft border-l-0 sm:border-l',
@@ -46,7 +45,7 @@ export function StatBar({ stats }: { stats: readonly Stat[] }) {
                   index === 3 && 'border-line-soft border-l',
                 )}
               >
-                <IconChip tone="brand" size="md" className="hidden sm:inline-flex">
+                <IconChip tone="deep" size="md" className="hidden sm:inline-flex">
                   <StatIcon />
                 </IconChip>
                 {/*
@@ -57,14 +56,14 @@ export function StatBar({ stats }: { stats: readonly Stat[] }) {
                 */}
                 <div className="flex flex-col-reverse">
                   <dt className="text-ink-muted text-xs sm:text-sm">{stat.label}</dt>
-                  <dd className="font-display text-ink text-2xl leading-tight font-medium sm:text-3xl">
+                  <dd className="font-display text-gradient-sage text-2xl leading-tight font-medium sm:text-3xl">
                     {stat.value}
                   </dd>
                 </div>
               </div>
             );
           })}
-        </Reveal>
+        </dl>
       </Container>
     </section>
   );

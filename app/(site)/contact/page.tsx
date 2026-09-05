@@ -1,168 +1,186 @@
 import type { Metadata } from 'next';
-import { CtaBand, Hero } from '@/components/page';
-import {
-  ButtonLink,
-  Container,
-  IconChip,
-  Reveal,
-  Section,
-  SectionHeading,
-} from '@/components/ui';
+import { Hero, ServiceArea } from '@/components/page';
+import { Reveal, Section } from '@/components/ui';
 import { MailIcon, PhoneIcon, PinIcon, WhatsAppIcon } from '@/components/layout/icons';
-import { coverage } from '@/lib/content';
-import { mailHref, telHref, whatsAppHref } from '@/lib/navigation';
+import {
+  EnquiryOptions,
+  LocalStoreNotice,
+  QuoteForm,
+} from '@/features/enquiries/components';
+import { isUsingLocalEnquiryStore } from '@/features/enquiries';
+import {
+  designEnquiryMessage,
+  mailHref,
+  telHref,
+  whatsAppHref,
+  whatsAppHrefWithMessage,
+} from '@/lib/navigation';
 import { pageMetadata } from '@/lib/seo';
 import { siteConfig } from '@/lib/site-config';
+import {
+  MAX_EVENT_YEARS_AHEAD,
+  todayInBusinessTimezone,
+} from '@/lib/validation/enquiry';
+
+/**
+ * Rendered per request, like `/quote`: the form's date bounds are computed
+ * from today in the business timezone, and a page built once at deploy time
+ * would carry a stale "today" until the next deployment.
+ */
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = pageMetadata({
   title: 'Contact',
   description:
-    'Call or WhatsApp VRK Decor on +91 99940 72435, or email vrk.groups@gmail.com. Based at 301 M.S Road, Vettunimadam, Nagercoil, Tamil Nadu 629003.',
+    'Call or WhatsApp VRK Decor on +91 99940 72435, email vrk.groups@gmail.com or send a short enquiry. Based at 301 M.S Road, Vettunimadam, Nagercoil, Tamil Nadu 629003.',
   path: '/contact',
 });
 
 /**
- * Contact — Requirements sections 2 and 12.
+ * Contact — Requirements sections 2 and 12, simplified by the refinement brief
+ * (section 12).
  *
- * WhatsApp click-to-chat is the primary direct communication path, with a phone
- * CTA alongside it. The enquiry form itself is the quote engine, implemented in
- * P6 with server-side validation and rate limiting; this page links to it
- * rather than shipping an unvalidated form.
+ * One enquiry experience rather than two: "Let's plan your celebration", the
+ * three ways to reach the team (WhatsApp, a call, the short form), the studio
+ * details, and where we work. The form on this page is the same quote engine
+ * as `/quote`, with the same server-side validation and rate limiting, so a
+ * general enquiry from here lands in the same Admin Panel inbox.
  *
  * No opening hours are shown because none are approved in the requirements.
- * The approved reference design shows a set of hours; until VRK Decor confirms
- * them they would be an invented business fact, so the row is absent rather
- * than guessed.
  */
 export default function ContactPage() {
   const { address, email } = siteConfig.contact;
   const displayPhone = '+91 99940 72435';
+  const today = todayInBusinessTimezone();
+  const maxEventDate = `${Number(today.slice(0, 4)) + MAX_EVENT_YEARS_AHEAD}${today.slice(4)}`;
 
   return (
     <div className="flex flex-col gap-4 pb-4 sm:gap-6 sm:pb-6">
       <Hero
         compact
         eyebrow="Contact"
-        title="Talk to the"
-        accent="VRK Decor team"
-        lead="Message us on WhatsApp or give us a call about your celebration, or send a quote request with your date, your venue and what you need."
-        actions={
-          <>
-            <ButtonLink href={whatsAppHref} variant="primary" size="lg">
-              <WhatsAppIcon className="size-4" />
-              WhatsApp us
-            </ButtonLink>
-            <ButtonLink href={telHref} variant="glass" size="lg">
-              <PhoneIcon className="size-4" />
-              Call {displayPhone}
-            </ButtonLink>
-          </>
-        }
+        title="Let's plan"
+        accent="your celebration"
+        lead="Tell us the occasion, the date and where it is, and we will take it from there. Message us, call us or send the short enquiry below."
       />
 
-      <section className="px-3 sm:px-5 lg:px-6" aria-labelledby="contact-details">
-        <div className="from-brand-50 via-surface-tint to-accent-50 border-brand-200/50 mx-auto w-full max-w-[86rem] rounded-3xl border bg-gradient-to-br">
-          <Container width="wide">
-            <div className="py-12 sm:py-16">
-              <SectionHeading
-                id="contact-details"
-                align="center"
-                rule
-                tone="tint"
-                title="How to"
-                accent="reach us"
-              />
-
-              <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {[
-                  {
-                    icon: <PhoneIcon />,
-                    title: 'Phone',
-                    content: (
-                      <a
-                        className="text-brand-800 inline-flex min-h-9 items-center text-sm underline underline-offset-4"
-                        href={telHref}
-                      >
-                        {displayPhone}
-                      </a>
-                    ),
-                  },
-                  {
-                    icon: <WhatsAppIcon />,
-                    title: 'WhatsApp',
-                    content: (
-                      <a
-                        className="text-brand-800 inline-flex min-h-9 items-center text-sm underline underline-offset-4"
-                        href={whatsAppHref}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Message us on WhatsApp
-                      </a>
-                    ),
-                  },
-                  {
-                    icon: <MailIcon />,
-                    title: 'Email',
-                    content: (
-                      <a
-                        className="text-brand-800 inline-flex min-h-9 items-center text-sm break-all underline underline-offset-4"
-                        href={mailHref}
-                      >
-                        {email}
-                      </a>
-                    ),
-                  },
-                  {
-                    icon: <PinIcon />,
-                    title: 'Studio',
-                    content: (
-                      <address className="text-ink-soft text-sm not-italic">
-                        {address.street}
-                        <br />
-                        {address.city}, {address.state} {address.postalCode}
-                      </address>
-                    ),
-                  },
-                ].map((item, index) => (
-                  <Reveal key={item.title} as="li" delay={Math.min(index * 70, 240)}>
-                    <div className="bg-surface/80 border-brand-200/50 hover:border-brand-300 hover:shadow-card group flex h-full flex-col gap-2 rounded-2xl border p-5 transition-[border-color,box-shadow] duration-300">
-                      <IconChip tone="brand" size="md">
-                        {item.icon}
-                      </IconChip>
-                      <h3 className="font-display mt-1 text-lg font-medium">
-                        {item.title}
-                      </h3>
-                      {item.content}
-                    </div>
-                  </Reveal>
-                ))}
-              </ul>
-
-              <p className="text-ink-soft mt-8 text-sm">
-                We work across {coverage.primaryAreas.join(', ')}. {coverage.wider}
-              </p>
-            </div>
-          </Container>
-        </div>
-      </section>
-
-      <Section tone="panel" width="wide" aria-labelledby="request-quote">
-        <SectionHeading
-          id="request-quote"
-          eyebrow="Quotations"
-          title="Ready to"
-          accent="ask for a quote?"
-          lead="Send us your date, your venue, your city and the services you need. If you add an email address you will get a confirmation straight away, and we will follow up on the phone or on WhatsApp."
-        />
-        <div className="mt-8">
-          <ButtonLink href="/quote" variant="primary" size="lg">
-            Get a Quote
-          </ButtonLink>
+      <Section tone="panel" width="wide" aria-labelledby="enquiry-options">
+        <div className="flex flex-col gap-8">
+          {isUsingLocalEnquiryStore() ? <LocalStoreNotice /> : null}
+          <EnquiryOptions
+            whatsAppHref={whatsAppHrefWithMessage(designEnquiryMessage())}
+            formHref="#enquiry-form"
+            heading="Three ways to reach us"
+            lead="Choose whichever works best for you. Any one of them reaches the same team, and nobody is asked to do all three."
+          />
         </div>
       </Section>
 
-      <CtaBand />
+      <Section tone="panel-bloom" width="wide" aria-labelledby="contact-details">
+        <Reveal>
+          <h2
+            id="contact-details"
+            className="text-brand-800 text-2xs font-semibold tracking-[0.22em] uppercase"
+          >
+            The studio
+          </h2>
+        </Reveal>
+        <ul className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            {
+              key: 'phone',
+              title: 'Phone',
+              icon: PhoneIcon,
+              content: (
+                <a
+                  className="text-brand-900 hover:text-brand-700 text-sm font-medium"
+                  href={telHref}
+                >
+                  {displayPhone}
+                </a>
+              ),
+            },
+            {
+              key: 'whatsapp',
+              title: 'WhatsApp',
+              icon: WhatsAppIcon,
+              content: (
+                <a
+                  className="text-brand-900 hover:text-brand-700 text-sm font-medium"
+                  href={whatsAppHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Message us on WhatsApp
+                </a>
+              ),
+            },
+            {
+              key: 'email',
+              title: 'Email',
+              icon: MailIcon,
+              content: (
+                <a
+                  className="text-brand-900 hover:text-brand-700 text-sm font-medium break-all"
+                  href={mailHref}
+                >
+                  {email}
+                </a>
+              ),
+            },
+            {
+              key: 'studio',
+              title: 'Visit us',
+              icon: PinIcon,
+              content: (
+                <address className="text-ink-soft text-sm not-italic">
+                  {address.street}
+                  <br />
+                  {address.city}, {address.state} {address.postalCode}
+                </address>
+              ),
+            },
+          ].map((item, index) => {
+            const ItemIcon = item.icon;
+            return (
+              <Reveal
+                as="li"
+                key={item.key}
+                delay={index * 90}
+                effect="scale"
+                className="group border-brand-200/70 lift shine shadow-card flex gap-4 rounded-2xl border bg-white/90 p-5"
+              >
+                <span className="icon-deep size-12 shrink-0">
+                  <ItemIcon className="size-5" />
+                </span>
+                <span className="flex min-w-0 flex-col gap-1">
+                  <span className="font-display text-lg font-medium">{item.title}</span>
+                  {item.content}
+                </span>
+              </Reveal>
+            );
+          })}
+        </ul>
+      </Section>
+
+      <ServiceArea tone="deep" action="about" id="where-we-create" />
+
+      <Section
+        tone="panel"
+        width="default"
+        aria-labelledby="quote-form-heading"
+        id="enquiry-form"
+      >
+        <Reveal>
+          <QuoteForm
+            design={null}
+            photo={null}
+            today={today}
+            maxEventDate={maxEventDate}
+            heading="Tell us about your celebration"
+          />
+        </Reveal>
+      </Section>
     </div>
   );
 }

@@ -1,60 +1,87 @@
 # VRK Decor — Changelog
 
-## 0.8.2 — 2026-09-03 — Public site polish: glassmorphism, colour and motion
+## 0.8.2 — 2026-09-05 — UI/UX refinement v2 (public website)
 
-A design-only refinement of the 0.8.1 redesign, scoped to the public site only
-(the Admin Panel was not touched). No design token value changed, no business
-logic, route, API, or dependency changed. `tests/unit/design-tokens.test.ts`
-and `contrast.test.ts` pass unmodified.
+A presentation and content release on top of 0.8.1, from the client's
+"Complete UI/UX, Content & Experience Refinement" brief. No database change,
+no dependency added, no security control altered. One validation rule was
+relaxed to match the simplified form (see Changed). The Admin Panel is
+untouched.
 
 ### Added
 
-- **`Reveal`** (`components/ui/reveal.tsx`) and **`useInView`**
-  (`lib/hooks/use-in-view.ts`): a dependency-free scroll-reveal primitive built
-  on `IntersectionObserver`. Content is never hidden from a visitor without
-  JavaScript — the `.reveal` CSS only applies inside `@media (scripting:
-  enabled)` — and reduced-motion visitors get the end state instantly via the
-  existing global `prefers-reduced-motion` rule. Applied with a small stagger
-  to card grids, list items and portfolio galleries across every public page.
-- **`glass-surface-vivid`** — a fourth, warmer glass tone (`lib/design-tokens.ts`
-  `glass.surfaceVivid`, mirrored into `app/globals.css` and `GlassPanel`'s
-  `tone="vivid"`) for a small number of highlight moments, alongside the
-  existing default/strong/tint surfaces.
-- **Ambient motion tokens** (`--animate-drift-slow`, `--animate-drift-slower`,
-  `--animate-gradient-pan`, `--animate-fade-in`, `--animate-sheet-in`) and a
-  reusable `.ambient-blob` utility, used for slow-drifting, low-opacity
-  brand-coloured background blobs on the hero, inner-page hero band, closing
-  CTA and value band — always inside each panel's existing `overflow-hidden`,
-  so they cannot introduce horizontal scroll. All applied with `motion-safe:`.
-- **`--shadow-glow`** — a brand-tinted hover shadow used on interactive cards,
-  primary/accent buttons and portfolio cards, replacing the plain
-  `shadow-raised` lift in those specific spots.
+- **A dark layer on the light site.** `surface-deep` (#37432b, the logo's own
+  olive), `surface-deeper`, `ink-on-deep`, dark glass (`.glass-surface-deep`),
+  the `.surface-aurora` and `.surface-bloom` backgrounds, ambient blobs, dot
+  patterns and lime gradient text. Six new contrast pairings in the contract.
+- **A motion system.** `Reveal` (`components/ui/reveal.tsx`) plus CSS: scroll
+  reveals with rise / scale / left / right / mask effects, staggered entrances,
+  page transitions (`app/(site)/template.tsx`), ambient drift, floating chips,
+  hover lift and light sweep, the `.icon-deep` glow, accordion expansion and
+  lightbox entrances. Hidden states apply only under `@media (scripting:
+enabled)`; `prefers-reduced-motion` stills everything.
+- **Home: four signature cards** (`SignatureGrid`, 2 × 2 on desktop, 2 columns on
+  tablet, 1 on a phone) including a birthday celebration; the sample birthday
+  design is featured and rewritten.
+- **Our Work: accordion filters** (`FilterBar`): All plus the most popular
+  occasions, then "More occasions" revealing the rest and the style and service
+  rows. Popularity comes from published-design counts (`listFilterOptions` now
+  returns counts). The selected filter is always visible.
+- **Previous / Next work navigation** (`WorkNav`) with a counter on every
+  design page, wrapping at both ends.
+- **Services page rebuilt** with the twelve approved services in three groups
+  and a grouped "Occasions we decorate" section (`lib/content/services-page.ts`),
+  seventeen new distinctive icons, and a chip row of all fourteen approved
+  occasions with their Tamil terms.
+- **Gallery** as a masonry wall on the deep surface with hover chips and no
+  captions; **lightbox** redesigned with a blurred colour stage, glass bar and
+  "Get a Quote for this design" carrying the design and the photograph.
+- **Quote flow**: `EnquiryOptions` (WhatsApp / Call / Send an enquiry as
+  alternatives), a redesigned `CapturedDesign` panel, and the WhatsApp message
+  now carries the design page URL (`absoluteDesignUrl`).
+- **About page** rebuilt: editorial hero, figures, story split, philosophy,
+  Founder & CEO section (`lib/content/founder.ts`, `FounderPortrait` with a
+  designed placeholder), a timeline and Where We Create.
+- **Where We Create** (`ServiceArea`): location chips and a map-inspired
+  drawing, on the Home, About and Contact pages.
+- **Zenvy** in the footer links to https://serviceszenvy.wixsite.com/home.
 
 ### Changed
 
-- **Buttons, cards, badges, icon chips** — richer but still restrained hover/
-  press motion (a subtle lift, glow shadow, scale) layered onto the existing
-  transitions; no variant's asserted class tokens changed
-  (`tests/unit/ui-primitives.test.ts` passes unmodified).
-- **Mobile navigation** — the panel and overlay now animate in
-  (`sheet-in`/`fade-in`) instead of appearing instantly; trigger and nav links
-  get press/hover feedback. Focus trap, Escape handling, body-scroll lock and
-  every `data-testid` are unchanged.
-- **Header, sticky mobile CTA, WhatsApp FAB, footer** — press/hover feedback,
-  an entrance transition, and a thin brand-gradient hairline at the top of the
-  footer. FAB size, position and the "above the sticky bar" geometry are
-  unchanged.
-- **Portfolio** (`DesignCard`, `DesignRail`, `DesignGrid`, `FilterBar`,
-  `Lightbox`, `PhotoGallery`) — staggered reveal, richer hover glow and scrim,
-  lightbox entrance and press feedback. The single stretched-link-per-card
-  pattern, all lightbox `data-testid`s, and swipe-gesture thresholds are
-  unchanged.
-- **Quote form** — focus/hover polish on every field, and `has-[:checked]`
-  highlighting on the service and consent checkboxes so a selection is visible
-  at a glance. No field name, validation rule, or markup structure changed.
-- **`.canvas-wash`** — three low-opacity radial gradients instead of two
-  (opacity nudged up modestly); still well inside the contrast contract's
-  margin (body text on canvas is 14+:1 against a 4.5:1 requirement).
+- **Home hero** fits the first desktop viewport (`100svh` minus header, capped
+  and floored) with a tighter header; grows naturally below `lg`.
+- **Every inner-page hero, the value band, the closing call to action and the
+  footer** now sit on the deep olive surface.
+- **The quote form** asks for name, phone, event type, event date, location and
+  a message, with email and reference images behind "Add more details".
+  `venue` is optional and `requiredServices` may be empty in
+  `lib/validation/enquiry.ts`; both database columns already allowed it.
+- **Contact page** is one enquiry experience: "Let's plan your celebration",
+  the three options, the studio details, Where We Create and the embedded form.
+  Rendered per request.
+- **Quote CTAs rationed**: at most two strong quote actions in a page body.
+  Inner-page heroes point at the work instead.
+- **Navigation**: Occasions removed from the primary navigation; `/occasions`
+  redirects permanently to `/services#occasions`.
+- **Buttons** gained `lime`, `deep` and `glass-deep` variants and a hover lift;
+  badges gained `lime` and `deep`; `IconChip` gained `deep`, `lime` and
+  `glass-deep`; `Section` gained `panel-deep` and `panel-bloom`.
+- **Occasion, service and stat icons** now use the dark olive disc with a lime
+  ring.
+
+### Removed
+
+- `app/(site)/occasions/page.tsx`. The content lives on Services.
+- The `DesignRail` is no longer used on the home page (the file remains).
+
+### Tests
+
+- Unit: 373 (was 364). Validation tests updated for the optional venue and
+  services; new tests for the retired route, the service grouping's honesty
+  and the celebration links.
+- End-to-end: 240 (was 238), all passing on desktop and mobile Chrome.
+  Updated for the simplified form, the new Services structure, the redirect,
+  the lightbox wording and the Zenvy link.
 
 ## 0.8.1 — 2026-09-01 — Visual redesign (public website and Admin Panel)
 

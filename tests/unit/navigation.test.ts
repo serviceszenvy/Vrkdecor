@@ -14,12 +14,18 @@ describe('navigation', () => {
     expect(primaryNav.map((item) => item.label)).toEqual([
       'Our Work',
       'Services',
-      'Occasions',
       'Packages',
       'Gallery',
       'About',
       'Contact',
     ]);
+  });
+
+  it('sends the retired Occasions route to the occasions section of Services', () => {
+    // The page was folded into Services on 2026-09-05; next.config.ts also
+    // redirects /occasions permanently so no old link breaks.
+    expect(routes.occasions).toBe('/services#occasions');
+    expect(primaryNav.some((item) => item.href === '/occasions')).toBe(false);
   });
 
   it('uses clean, lowercase, hyphenated internal routes', () => {

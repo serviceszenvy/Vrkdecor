@@ -56,21 +56,34 @@ type FormOverrides = Partial<{
   service: string;
 }>;
 
+/**
+ * Fills the simplified form (refinement brief, section 10): name, phone,
+ * event type, event date, location and message. Email lives behind the
+ * "Add more details" disclosure, which is opened only when a test needs it.
+ */
 async function fillQuoteForm(page: Page, phone: string, overrides: FormOverrides = {}) {
-  await page.getByLabel('Your name').fill(overrides.name ?? 'Meena Rajan');
-  await page.getByLabel('Phone or WhatsApp number').fill(overrides.phone ?? phone);
-  if (overrides.email) await page.getByLabel('Email address').fill(overrides.email);
+  await page.getByLabel(/^Name/).fill(overrides.name ?? 'Meena Rajan');
+  await page.getByLabel(/^Phone \/ WhatsApp/).fill(overrides.phone ?? phone);
+  if (overrides.email) {
+    const extras = page.getByTestId('quote-extras');
+    if (!(await extras.getAttribute('open'))) {
+      await extras.locator('summary').click();
+    }
+    await page.getByLabel(/^Email/).fill(overrides.email);
+  }
 
-  await page.getByLabel('Type of event').selectOption(overrides.eventType ?? 'wedding');
-  await page.getByLabel('Event date').fill(overrides.eventDate ?? '2027-02-14');
-  await page.getByLabel('Venue').fill(overrides.venue ?? 'Sea View Hall');
-  await page.getByLabel('City').fill(overrides.city ?? 'Nagercoil');
-
+  await page.getByLabel(/^Event type/).selectOption(overrides.eventType ?? 'wedding');
+  await page.getByLabel(/^Event date/).fill(overrides.eventDate ?? '2027-02-14');
   await page
-    .getByRole('checkbox', { name: overrides.service ?? 'Floral Decoration' })
-    .check();
+    .getByLabel(/^Location/)
+    .fill(
+      overrides.city ??
+        (overrides.venue ? `${overrides.venue}, Nagercoil` : 'Nagercoil'),
+    );
 
-  if (overrides.notes) await page.getByLabel('Notes').fill(overrides.notes);
+  if (overrides.notes) {
+    await page.getByLabel(/Tell us what you have in mind/).fill(overrides.notes);
+  }
   if (overrides.consent !== false) {
     await page.getByRole('checkbox', { name: /I agree that VRK Decor/ }).check();
   }
@@ -151,7 +164,7 @@ test.describe('the customer never re-selects the design', () => {
     // The captured design is presented, not offered as a choice.
     await expect(page.getByTestId('captured-design')).toBeVisible();
     await expect(page.getByTestId('captured-design')).toContainText(
-      'You do not need to choose it again',
+      'nothing to describe or choose again',
     );
 
     // No visible control anywhere on the page is bound to the design.
@@ -165,7 +178,7 @@ test.describe('the customer never re-selects the design', () => {
     // Nothing on the form lets a visitor pick a design by name either.
     const selects = form.locator('select');
     await expect(selects).toHaveCount(1);
-    await expect(selects.first()).toHaveAccessibleName(/Type of event/);
+    await expect(selects.first()).toHaveAccessibleName(/Event type/);
   });
 
   test('the design shown is the one in the link, not the one clicked last', async ({
@@ -298,10 +311,11 @@ test.describe('validation', () => {
     await expect(summary).toContainText('Please enter your name.');
     await expect(summary).toContainText('Please enter a phone or WhatsApp number.');
     await expect(summary).toContainText('Please choose your event date.');
-    await expect(summary).toContainText('Please enter the venue.');
-    await expect(summary).toContainText('Please enter the city.');
-    await expect(summary).toContainText('Please choose at least one service');
+    await expect(summary).toContainText('Please enter the location.');
     await expect(summary).toContainText('Please agree to us contacting you');
+    // The simplified form no longer asks for a venue or a list of services.
+    await expect(summary).not.toContainText('venue');
+    await expect(summary).not.toContainText('at least one service');
   });
 
   test('a request without consent is refused', async ({ page }, testInfo) => {
@@ -358,14 +372,13 @@ test.describe('validation', () => {
     await page.getByTestId('quote-submit').click();
 
     await expect(page.getByTestId('quote-error-summary')).toBeVisible();
-    await expect(page.getByLabel('Your name')).toHaveValue('Anitha Kumar');
-    await expect(page.getByLabel('Venue')).toHaveValue('Kanyakumari Grand');
-    await expect(page.getByLabel('Notes')).toHaveValue(
+    await expect(page.getByLabel(/^Name/)).toHaveValue('Anitha Kumar');
+    await expect(page.getByLabel(/^Location/)).toHaveValue(
+      'Kanyakumari Grand, Nagercoil',
+    );
+    await expect(page.getByLabel(/Tell us what you have in mind/)).toHaveValue(
       'Two ceremonies, morning and evening.',
     );
-    await expect(
-      page.getByRole('checkbox', { name: 'Floral Decoration' }),
-    ).toBeChecked();
   });
 
   test('the captured design survives a validation failure', async ({
@@ -399,7 +412,7 @@ test.describe('validation', () => {
     await expect(
       summary.getByRole('link', { name: 'Please enter your name.' }),
     ).toHaveAttribute('href', '#field-name');
-    await expect(page.getByLabel('Your name')).toHaveAttribute('aria-invalid', 'true');
+    await expect(page.getByLabel(/^Name/)).toHaveAttribute('aria-invalid', 'true');
   });
 });
 
@@ -436,6 +449,10 @@ test.describe('rate limiting', () => {
 });
 
 test.describe('without JavaScript', () => {
+  // A full server round trip per interaction, on an emulated phone, with the
+  // page's entrance motion: slow by nature, so the budget is tripled.
+  test.slow();
+
   test('the quote form still validates and still submits', async ({
     browser,
   }, testInfo) => {

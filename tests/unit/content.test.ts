@@ -127,3 +127,39 @@ describe('pricing presentation', () => {
     expect(arithmetic).toBeNull();
   });
 });
+
+/**
+ * The Services page groups the twelve approved services. The grouping is
+ * presentation, so it must never contradict the approved delivery model:
+ * a group headed "our own team" may hold only in-house services.
+ */
+describe('services page grouping', () => {
+  it('covers every approved service exactly once', async () => {
+    const { serviceGroups } = await import('@/lib/content/services-page');
+    const grouped = serviceGroups.flatMap((group) => [...group.serviceSlugs]);
+    expect([...grouped].sort()).toEqual(services.map((s) => s.slug).sort());
+  });
+
+  it('never presents a partner-vendor service as delivered by our own team', async () => {
+    const { serviceGroups } = await import('@/lib/content/services-page');
+    const model = new Map(services.map((s) => [s.slug, s.deliveryModel]));
+    for (const group of serviceGroups) {
+      const partnerGroup = /partner/i.test(group.eyebrow);
+      for (const slug of group.serviceSlugs) {
+        expect(model.get(slug), `${slug} in "${group.eyebrow}"`).toBe(
+          partnerGroup ? 'partner_vendor' : 'in_house',
+        );
+      }
+    }
+  });
+
+  it('links every celebration to an approved occasion', async () => {
+    const { celebrationGroups } = await import('@/lib/content/services-page');
+    const approved = new Set(occasions.map((o) => o.slug));
+    for (const group of celebrationGroups) {
+      for (const item of group.items) {
+        expect(approved.has(item.occasionSlug), item.name).toBe(true);
+      }
+    }
+  });
+});

@@ -9,7 +9,10 @@ export type ButtonVariant =
   | 'outline'
   | 'ghost'
   | 'inverse'
-  | 'glass';
+  | 'glass'
+  | 'glass-deep'
+  | 'lime'
+  | 'deep';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 /**
@@ -27,15 +30,20 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
  */
 const variants: Record<ButtonVariant, string> = {
   primary:
-    'bg-brand-700 text-white hover:bg-brand-800 border border-transparent shadow-[0_10px_24px_-14px_rgb(36_44_28/0.85)] motion-safe:hover:shadow-glow motion-safe:hover:-translate-y-0.5',
-  accent:
-    'bg-accent-500 text-ink hover:bg-accent-600 border border-transparent motion-safe:hover:shadow-glow motion-safe:hover:-translate-y-0.5',
+    'bg-brand-700 text-white hover:bg-brand-800 border border-transparent shine shadow-[0_12px_28px_-12px_rgb(36_44_28/0.85),0_0_0_1px_rgb(142_200_64/0.2)] hover:shadow-[0_16px_34px_-12px_rgb(36_44_28/0.9),0_0_0_1px_rgb(142_200_64/0.45)]',
+  accent: 'bg-accent-500 text-ink hover:bg-accent-600 border border-transparent shine',
   secondary: 'bg-sand-100 text-ink hover:bg-sand-200 border border-transparent',
-  outline:
-    'bg-transparent text-brand-700 border border-brand-700 hover:bg-brand-50 hover:border-brand-800',
+  outline: 'bg-transparent text-brand-700 border border-brand-700 hover:bg-brand-50',
   ghost: 'bg-transparent text-ink border border-transparent hover:bg-sand-100',
   inverse: 'bg-white text-ink hover:bg-sand-100 border border-transparent',
-  glass: 'glass-surface-strong text-ink hover:bg-white motion-safe:hover:shadow-raised',
+  glass: 'glass-surface-strong text-ink hover:bg-white',
+  /* A translucent pill for the dark surfaces: white text, lime on hover. */
+  'glass-deep':
+    'glass-surface-deep text-white hover:text-accent-200 hover:border-accent-400/60 shine',
+  /* The lime pill: the brightest action on the site, reserved for one CTA. */
+  lime: 'bg-accent-500 text-brand-950 hover:bg-accent-400 border border-transparent shine shadow-[0_14px_34px_-12px_rgb(142_200_64/0.8)]',
+  /* Dark olive pill on the light ground. */
+  deep: 'bg-brand-900 text-white hover:bg-brand-950 border border-transparent shine shadow-[0_12px_28px_-12px_rgb(36_44_28/0.8)]',
 };
 
 /** `min-h` values keep every control at or above the 44px touch target. */
@@ -47,8 +55,8 @@ const sizes: Record<ButtonSize, string> = {
 
 const base = cn(
   'inline-flex items-center justify-center rounded-full font-medium',
-  'transition-[background-color,box-shadow,transform,color] duration-200 ease-out',
-  'motion-safe:active:translate-y-px motion-safe:active:scale-[0.98]',
+  'transition-[background-color,box-shadow,transform,color,border-color] duration-300',
+  'motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-px',
   'disabled:pointer-events-none disabled:opacity-50',
 );
 

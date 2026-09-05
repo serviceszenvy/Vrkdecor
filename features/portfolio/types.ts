@@ -88,6 +88,9 @@ export function toPhotos(designs: readonly PortfolioDesign[]): PortfolioPhoto[] 
   );
 }
 
+/** A filter option together with the number of published Designs it matches. */
+export type PortfolioFilterOption = PortfolioTag & { count: number };
+
 export type PortfolioFilters = {
   occasion?: string | undefined;
   style?: string | undefined;

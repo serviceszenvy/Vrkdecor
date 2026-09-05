@@ -4,20 +4,20 @@ import { useActionState, useId } from 'react';
 import { useFormStatus } from 'react-dom';
 import Link from 'next/link';
 import { Button, ButtonLink } from '@/components/ui';
-import { PARTNER_VENDOR_LABEL, occasions, services } from '@/lib/content';
+import { ArrowRightIcon, ChevronRightIcon } from '@/components/layout/icons';
+import { occasions } from '@/lib/content';
 import { cn } from '@/lib/cn';
 import {
+  absoluteDesignUrl,
   designEnquiryMessage,
   routes,
   telHref,
   whatsAppHrefWithMessage,
 } from '@/lib/navigation';
 import {
-  BUDGET_MAX,
   CITY_MAX,
   NAME_MAX,
   NOTES_MAX,
-  VENUE_MAX,
   type EnquiryField,
 } from '@/lib/validation/enquiry';
 import { submitQuoteRequest } from '../actions';
@@ -26,14 +26,19 @@ import type { CapturedDesign, QuoteSourcePhoto } from '../types';
 import { ReferenceImageField } from './reference-image-field';
 
 /**
- * The quote request form.
+ * The enquiry form.
  *
- * Requirements section 11 defines the fields exactly:
- *   required — name, WhatsApp/phone, event type, event date, venue, city,
- *              required services, consent
- *   optional — email, guest count, budget, notes
+ * Short on purpose (refinement brief, section 10). Six things a customer can
+ * answer in a minute, on a phone, without thinking about it:
  *
- * Notable behaviour:
+ *   Name · Phone / WhatsApp · Event type · Event date · Location · Message
+ *
+ * plus the consent line the requirements make mandatory. Email and up to three
+ * private inspiration photographs are still available, folded into an
+ * "Add more details" disclosure so the form reads as six fields rather than
+ * ten.
+ *
+ * Unchanged behaviour:
  *   - the Design is carried in hidden fields and shown read-only above; there
  *     is deliberately no control that lets the customer pick one
  *   - the form posts to a Server Action, so it works with JavaScript disabled
@@ -41,12 +46,8 @@ import { ReferenceImageField } from './reference-image-field';
  *   - submitted values are echoed back on failure, so nothing is retyped
  *   - errors appear both in a summary that takes focus and beside each field,
  *     wired with `aria-invalid` and `aria-describedby`
- *   - the event type and services are pre-selected from the captured Design
- *     when it has them, which the customer can change: they are stating their
- *     own requirement, not re-selecting the design
- *   - up to three PRIVATE inspiration images may be attached (P7). The control
- *     is a plain file input, so it degrades too; every file is validated
- *     server-side by its actual bytes before anything is stored
+ *   - the event type is pre-selected from the captured Design when it has
+ *     one, which the customer can change
  *   - when a submission fails or is throttled, the error carries the WhatsApp
  *     and phone continuation with it, so a customer is never left at a dead end
  */
@@ -55,11 +56,13 @@ export function QuoteForm({
   photo,
   today,
   maxEventDate,
+  heading = 'Tell us about your celebration',
 }: {
   design: CapturedDesign | null;
   photo: QuoteSourcePhoto | null;
   today: string;
   maxEventDate: string;
+  heading?: string;
 }) {
   const [state, formAction] = useActionState(submitQuoteRequest, initialQuoteFormState);
   const summaryId = useId();
@@ -69,22 +72,21 @@ export function QuoteForm({
     return typeof submitted === 'string' ? submitted : fallback;
   };
 
-  const checkedServices = (): string[] => {
-    const submitted = state.values.requiredServices;
-    if (Array.isArray(submitted)) return submitted;
-    return design?.serviceSlugs ?? [];
-  };
-
-  const selectedServices = checkedServices();
   const errorEntries = Object.entries(state.errors) as [EnquiryField, string][];
   const hasErrors = errorEntries.length > 0;
+  const extrasOpen = Boolean(value('email')) || Boolean(state.errors.email);
+
+  const whatsAppFallback = whatsAppHrefWithMessage(
+    designEnquiryMessage(design?.name, design ? absoluteDesignUrl(design.slug) : null),
+  );
 
   return (
     <form
       action={formAction}
       noValidate
       encType="multipart/form-data"
-      className="flex flex-col gap-8"
+      className="flex flex-col gap-7"
+      data-testid="quote-form"
     >
       {/*
         The parent Design. Hidden, because the customer does not choose it — and
@@ -94,13 +96,26 @@ export function QuoteForm({
       {design ? <input type="hidden" name="design" value={design.slug} /> : null}
       {photo ? <input type="hidden" name="photo" value={photo.id} /> : null}
 
+      <div className="flex flex-col gap-2">
+        <h2 id="quote-form-heading" className="font-display text-3xl font-medium">
+          {heading}
+        </h2>
+        <p className="text-ink-muted text-sm">
+          Six quick things and we will take it from there. Fields marked{' '}
+          <span className="text-red-700" aria-hidden="true">
+            *
+          </span>
+          <span className="sr-only">with an asterisk</span> are required.
+        </p>
+      </div>
+
       {hasErrors || state.message ? (
         <div
           id={summaryId}
           role="alert"
           tabIndex={-1}
           data-testid="quote-error-summary"
-          className="motion-safe:animate-fade-in rounded-2xl border border-red-300 bg-red-50 p-4 text-sm text-red-900"
+          className="motion-safe:animate-slide-down rounded-2xl border border-red-300 bg-red-50 p-4 text-sm text-red-900"
         >
           <p className="font-medium">
             {state.message ?? 'Please check the highlighted fields and try again.'}
@@ -126,11 +141,7 @@ export function QuoteForm({
               className="mt-4 flex flex-wrap gap-3"
               data-testid="quote-error-continuation"
             >
-              <ButtonLink
-                href={whatsAppHrefWithMessage(designEnquiryMessage(design?.name))}
-                variant="primary"
-                size="md"
-              >
+              <ButtonLink href={whatsAppFallback} variant="primary" size="md">
                 WhatsApp us instead
               </ButtonLink>
               <ButtonLink href={telHref} variant="outline" size="md">
@@ -141,20 +152,15 @@ export function QuoteForm({
         </div>
       ) : null}
 
-      <Fieldset legend="Your details">
-        <Field
-          field="name"
-          label="Your name"
-          required
-          error={state.errors.name}
-          hint="So we know who to ask for."
-        >
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Field field="name" label="Name" required error={state.errors.name}>
           {(props) => (
             <input
               {...props}
               type="text"
               autoComplete="name"
               maxLength={NAME_MAX}
+              placeholder="Your name"
               defaultValue={value('name')}
             />
           )}
@@ -162,10 +168,9 @@ export function QuoteForm({
 
         <Field
           field="phone"
-          label="Phone or WhatsApp number"
+          label="Phone / WhatsApp"
           required
           error={state.errors.phone}
-          hint="We follow up by phone and on WhatsApp, so this is how we reach you."
         >
           {(props) => (
             <input
@@ -181,27 +186,8 @@ export function QuoteForm({
         </Field>
 
         <Field
-          field="email"
-          label="Email address"
-          error={state.errors.email}
-          hint="Optional. Add it and we will email you a confirmation of this request straight away."
-        >
-          {(props) => (
-            <input
-              {...props}
-              type="email"
-              autoComplete="email"
-              maxLength={254}
-              defaultValue={value('email')}
-            />
-          )}
-        </Field>
-      </Fieldset>
-
-      <Fieldset legend="About your event">
-        <Field
           field="eventType"
-          label="Type of event"
+          label="Event type"
           required
           error={state.errors.eventType}
         >
@@ -210,7 +196,7 @@ export function QuoteForm({
               {...props}
               defaultValue={value('eventType', design?.occasionSlug ?? '')}
             >
-              <option value="">Please choose…</option>
+              <option value="">Choose the occasion</option>
               {occasions.map((occasion) => (
                 <option key={occasion.slug} value={occasion.slug}>
                   {occasion.name}
@@ -226,7 +212,7 @@ export function QuoteForm({
           label="Event date"
           required
           error={state.errors.eventDate}
-          hint="If the date is not fixed yet, give us your best estimate."
+          hint="Not fixed yet? Give us your best estimate."
         >
           {(props) => (
             <input
@@ -240,140 +226,86 @@ export function QuoteForm({
         </Field>
 
         <Field
-          field="venue"
-          label="Venue"
+          field="city"
+          label="Location"
           required
-          error={state.errors.venue}
-          hint="Hall, hotel, temple or home, whichever you have in mind."
+          error={state.errors.city}
+          className="sm:col-span-2"
         >
-          {(props) => (
-            <input
-              {...props}
-              type="text"
-              maxLength={VENUE_MAX}
-              defaultValue={value('venue')}
-            />
-          )}
-        </Field>
-
-        <Field field="city" label="City" required error={state.errors.city}>
           {(props) => (
             <input
               {...props}
               type="text"
               autoComplete="address-level2"
               maxLength={CITY_MAX}
+              placeholder="Town or city, and the venue if you know it"
               defaultValue={value('city')}
             />
           )}
         </Field>
 
         <Field
-          field="guestCount"
-          label="Approximate number of guests"
-          error={state.errors.guestCount}
-          hint="Optional."
-        >
-          {(props) => (
-            <input
-              {...props}
-              type="number"
-              inputMode="numeric"
-              min={1}
-              max={100000}
-              defaultValue={value('guestCount')}
-            />
-          )}
-        </Field>
-      </Fieldset>
-
-      <fieldset className="flex flex-col gap-3">
-        <legend className="font-display text-xl font-medium">
-          What do you need?{' '}
-          <span className="text-ink-muted text-sm font-normal">(required)</span>
-        </legend>
-        <p className="text-ink-muted text-sm" id="field-requiredServices">
-          Choose everything you would like quoted. Some services are delivered with our
-          trusted partner vendors.
-        </p>
-        {state.errors.requiredServices ? (
-          <FieldError id="error-requiredServices">
-            {state.errors.requiredServices}
-          </FieldError>
-        ) : null}
-        <ul className="grid gap-2 sm:grid-cols-2">
-          {services.map((service) => (
-            <li key={service.slug}>
-              <label className="border-line-soft hover:border-brand-300 hover:bg-brand-50/60 has-[:checked]:border-brand-700 has-[:checked]:bg-brand-50 flex min-h-11 cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors duration-200">
-                <input
-                  type="checkbox"
-                  name="requiredServices"
-                  value={service.slug}
-                  defaultChecked={selectedServices.includes(service.slug)}
-                  aria-invalid={state.errors.requiredServices ? true : undefined}
-                  aria-describedby={
-                    state.errors.requiredServices ? 'error-requiredServices' : undefined
-                  }
-                  className="accent-brand-700 mt-0.5 size-5 shrink-0"
-                />
-                <span className="text-sm">
-                  {service.name}
-                  {service.deliveryModel === 'partner_vendor' ? (
-                    <span className="text-ink-muted block text-xs">
-                      {PARTNER_VENDOR_LABEL}
-                    </span>
-                  ) : null}
-                </span>
-              </label>
-            </li>
-          ))}
-        </ul>
-      </fieldset>
-
-      <Fieldset legend="Anything else?">
-        <Field
-          field="budget"
-          label="Budget in mind"
-          error={state.errors.budget}
-          hint="Optional. Tell us in your own words. We do not publish price ranges."
-        >
-          {(props) => (
-            <input
-              {...props}
-              type="text"
-              maxLength={BUDGET_MAX}
-              defaultValue={value('budget')}
-            />
-          )}
-        </Field>
-
-        <Field
           field="notes"
-          label="Notes"
+          label="Tell us what you have in mind"
           error={state.errors.notes}
-          hint="Optional. Colours, themes, timings, anything you would like us to know."
+          className="sm:col-span-2"
         >
           {(props) => (
             <textarea
               {...props}
-              rows={5}
+              rows={4}
               maxLength={NOTES_MAX}
+              placeholder="Colours, themes, the number of guests, anything you would like us to know"
               defaultValue={value('notes')}
             />
           )}
         </Field>
+      </div>
 
-        <ReferenceImageField />
-      </Fieldset>
+      {/*
+        Everything else, folded away. A native disclosure, so it works without
+        JavaScript and opens itself when a value inside it needs attention.
+      */}
+      <details
+        className="group border-line-soft rounded-2xl border bg-white/70 open:bg-white"
+        open={extrasOpen || undefined}
+        data-testid="quote-extras"
+      >
+        <summary className="text-brand-800 flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 text-sm font-semibold select-none [&::-webkit-details-marker]:hidden">
+          Add more details (optional)
+          <ChevronRightIcon className="size-4 transition-transform duration-300 group-open:rotate-90" />
+        </summary>
+        <div className="border-line-soft flex flex-col gap-5 border-t px-4 pt-4 pb-5">
+          <Field
+            field="email"
+            label="Email"
+            error={state.errors.email}
+            hint="Add it and we will email you a confirmation of this request straight away."
+          >
+            {(props) => (
+              <input
+                {...props}
+                type="email"
+                autoComplete="email"
+                maxLength={254}
+                placeholder="you@example.com"
+                defaultValue={value('email')}
+              />
+            )}
+          </Field>
+
+          <ReferenceImageField />
+        </div>
+      </details>
 
       <div className="flex flex-col gap-3">
         <label
           id="field-consent"
           className={cn(
-            'flex cursor-pointer items-start gap-3 rounded-2xl border p-4 transition-colors duration-200',
+            'flex cursor-pointer items-start gap-3 rounded-2xl border p-4',
             state.errors.consent
               ? 'border-red-400 bg-red-50'
-              : 'border-line-soft has-[:checked]:border-brand-700 has-[:checked]:bg-brand-50/60',
+              : 'border-line-soft bg-white/70',
           )}
         >
           <input
@@ -391,7 +323,7 @@ export function QuoteForm({
             <span aria-hidden="true" className="text-red-700">
               *
             </span>
-            <span className="text-ink-muted mt-1 block">
+            <span className="text-ink-muted mt-1 block text-xs">
               See our{' '}
               <Link href={routes.privacy} className="underline underline-offset-4">
                 Privacy Policy
@@ -405,11 +337,11 @@ export function QuoteForm({
         ) : null}
       </div>
 
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <SubmitButton />
-        <p className="text-ink-muted text-sm">
-          We will get back to you by phone or WhatsApp. We never calculate a final
-          quotation automatically. Every design is priced by our team.
+        <p className="text-ink-muted max-w-md text-sm">
+          We will come back to you on the phone or on WhatsApp. Every design is priced
+          by our team, so nothing here is a final quotation.
         </p>
       </div>
     </form>
@@ -427,17 +359,9 @@ function SubmitButton() {
       data-testid="quote-submit"
       className="sm:self-start"
     >
-      {pending ? 'Sending…' : 'Send quote request'}
+      {pending ? 'Sending…' : 'Send Enquiry'}
+      {pending ? null : <ArrowRightIcon className="size-4" />}
     </Button>
-  );
-}
-
-function Fieldset({ legend, children }: { legend: string; children: React.ReactNode }) {
-  return (
-    <fieldset className="flex flex-col gap-5">
-      <legend className="font-display text-xl font-medium">{legend}</legend>
-      {children}
-    </fieldset>
   );
 }
 
@@ -472,6 +396,7 @@ function Field({
   hint,
   error,
   required = false,
+  className,
   children,
 }: {
   field: EnquiryField;
@@ -479,6 +404,7 @@ function Field({
   hint?: string;
   error?: string | undefined;
   required?: boolean;
+  className?: string;
   children: (props: ControlProps) => React.ReactNode;
 }) {
   const hintId = hint ? `hint-${field}` : undefined;
@@ -486,7 +412,7 @@ function Field({
   const describedBy = [errorId, hintId].filter(Boolean).join(' ') || undefined;
 
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className={cn('flex flex-col gap-1.5', className)}>
       <label htmlFor={`field-${field}`} className="text-sm font-medium">
         {label}
         {required ? (
@@ -499,12 +425,6 @@ function Field({
         )}
       </label>
 
-      {hint ? (
-        <p id={hintId} className="text-ink-muted text-sm">
-          {hint}
-        </p>
-      ) : null}
-
       {error ? <FieldError id={errorId!}>{error}</FieldError> : null}
 
       {children({
@@ -514,13 +434,18 @@ function Field({
         'aria-invalid': error ? true : undefined,
         'aria-describedby': describedBy,
         className: cn(
-          'border-line-soft bg-surface w-full rounded-xl border px-3 py-2.5 text-base',
-          'min-h-12 focus-visible:outline-2 focus-visible:outline-offset-2',
-          'transition-[border-color,box-shadow] duration-200 hover:border-brand-300',
-          'focus:border-brand-700 focus:shadow-[0_0_0_4px_rgb(97_118_75/0.12)]',
+          'border-line-soft bg-white w-full rounded-xl border px-3.5 py-2.5 text-base',
+          'min-h-12 placeholder:text-sand-400 transition-[border-color,box-shadow] duration-200',
+          'hover:border-brand-300 focus:border-brand-600 focus:shadow-[0_0_0_4px_rgb(142_200_64/0.18)] focus-visible:outline-none',
           error && 'border-red-400',
         ),
       })}
+
+      {hint ? (
+        <p id={hintId} className="text-ink-muted text-xs">
+          {hint}
+        </p>
+      ) : null}
     </div>
   );
 }

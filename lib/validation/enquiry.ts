@@ -9,10 +9,18 @@ import {
 /**
  * Enquiry validation — the server-side contract for a quote request.
  *
- * Source of truth: Requirements & SOW section 11.
- *   Required: Name, WhatsApp/Phone, Event type, Event date, Venue, City,
- *             Required services, Consent.
- *   Optional: Email, guest count, budget, notes.
+ * Source of truth: Requirements & SOW section 11, as simplified by the
+ * refinement brief of 2026-09-05 (section 10), which reduced the form to what
+ * a customer genuinely needs to give at the first contact:
+ *   Required: Name, WhatsApp/Phone, Event type, Event date, Location (stored
+ *             as `city`), Consent.
+ *   Optional: Message (stored as `notes`), email, and the fields the shorter
+ *             form no longer shows but the schema still accepts if a client
+ *             sends them: venue, guest count, budget, required services.
+ * The venue and the services are discussed on the follow-up call, which is
+ * how VRK Decor works anyway. The database columns are unchanged: `venue` was
+ * already nullable and `required_services` already defaulted to an empty
+ * array. See 09_DECISIONS/DECISIONS.md.
  *
  * This module is the authority. The browser may run the same schema for
  * immediate feedback, but nothing is persisted until the server has parsed the
@@ -212,25 +220,22 @@ export function enquirySchema(today: string = todayInBusinessTimezone()) {
         message: `We can only take bookings up to ${MAX_EVENT_YEARS_AHEAD} years ahead. Please call or WhatsApp us instead.`,
       }),
 
-    venue: z
-      .string()
-      .transform((value) => sanitiseText(value))
-      .refine((value) => value.length >= 2, { message: 'Please enter the venue.' })
-      .refine((value) => value.length <= VENUE_MAX, {
-        message: `Please keep the venue to ${VENUE_MAX} characters or fewer.`,
-      }),
+    // Optional since the form was simplified; discussed on the follow-up call.
+    venue: optionalText(VENUE_MAX),
 
+    // Presented to the customer as "Location" (city or town of the event).
     city: z
       .string()
       .transform((value) => sanitiseText(value))
-      .refine((value) => value.length >= 2, { message: 'Please enter the city.' })
+      .refine((value) => value.length >= 2, { message: 'Please enter the location.' })
       .refine((value) => value.length <= CITY_MAX, {
         message: `Please keep the city to ${CITY_MAX} characters or fewer.`,
       }),
 
+    // Optional since the form was simplified. Still a closed vocabulary: any
+    // value that is sent must be an approved service slug.
     requiredServices: z
       .array(z.enum(SERVICE_SLUGS as [string, ...string[]]))
-      .min(1, { message: 'Please choose at least one service you need.' })
       // De-duplicate and restore the approved display order, so a repeated or
       // reordered field cannot change what is stored.
       .transform((values) => SERVICE_SLUGS.filter((slug) => values.includes(slug))),

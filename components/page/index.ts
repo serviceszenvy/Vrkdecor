@@ -1,12 +1,14 @@
 export { CtaBand } from './cta-band';
 export { DraftNotice } from './draft-notice';
 export { EmptyState } from './empty-state';
+export { FounderPortrait } from './founder-portrait';
 export { Hero } from './hero';
 export { HomeHero } from './home-hero';
 export { LeafDecor } from './leaf-decor';
 export { OccasionGrid } from './occasion-grid';
 export type { OccasionTile } from './occasion-grid';
-export { serviceIcon } from './service-icon';
+export { celebrationIcon, serviceIcon } from './service-icon';
+export { ServiceArea } from './service-area';
 export { StatBar } from './stat-bar';
 export type { Stat } from './stat-bar';
 export { StatList } from './stat-list';

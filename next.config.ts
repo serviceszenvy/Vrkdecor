@@ -105,6 +105,20 @@ const nextConfig: NextConfig = {
     deviceSizes: [360, 480, 640, 828, 1080, 1280, 1600, 1920],
     imageSizes: [64, 96, 128, 200, 256, 384],
   },
+  /*
+    The Occasions page was folded into Services (refinement brief, 2026-09-05).
+    A permanent redirect keeps every old link, bookmark and search result
+    working and hands its ranking to the page that now carries the content.
+  */
+  async redirects() {
+    return [
+      {
+        source: '/occasions',
+        destination: '/services#occasions',
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

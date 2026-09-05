@@ -235,7 +235,6 @@ because nothing is behind anything.
 | `glass-surface`        | `rgb(255 255 255 / 0.62)` | Floating chips and small panels over photography                |
 | `glass-surface-strong` | `rgb(255 255 255 / 0.86)` | Header, hero panel, statistics bar, mobile sheet, admin sidebar |
 | `glass-surface-tint`   | `rgb(236 242 230 / 0.74)` | Brand moments such as the closing call to action                |
-| `glass-surface-vivid`  | `rgb(221 240 196 / 0.8)`  | A small number of warmer highlight moments (`GlassPanel tone="vivid"`) |
 | `glass-border`         | `rgb(255 255 255 / 0.55)` | Edge of a glass surface                                         |
 | `glass-highlight`      | `rgb(255 255 255 / 0.65)` | The thin top highlight (`.glass-edge`)                          |
 | `glass-blur`           | `16px`                    | Default backdrop blur                                           |
@@ -254,24 +253,61 @@ Three rules, each enforced by a test in `tests/unit/design-tokens.test.ts`:
    are opaque white. Nobody should read a customer's phone number through a
    blurred photograph.
 
+---
+
+## 4c. The deep layer and the motion layer (refinement v2, 2026-09-05)
+
+The light ground stays. What changed is that the site now has a deliberate
+dark layer in the logo's own colour, and a motion layer that makes it feel
+alive without a dependency.
+
+### Deep surfaces
+
+| Token / class         | Value                                   | Where it is used                                                              |
+| --------------------- | --------------------------------------- | ----------------------------------------------------------------------------- |
+| `surface-deep`        | `#37432B` (`brand-900`)                 | Every page hero, the value band, the closing CTA, the founder section, footer |
+| `surface-deeper`      | `#242C1C` (`brand-950`)                 | Lightbox stage, deep gradients                                                |
+| `ink-on-deep`         | `#E4EAD8` (8.5:1 on `surface-deep`)     | Secondary text on the deep surfaces                                           |
+| `.surface-aurora`     | deep olive lit by lime and sage         | The class that paints every deep band                                         |
+| `.surface-bloom`      | tinted light panel with lime/sage glows | The colourful light panel (`Section tone="panel-bloom"`)                      |
+| `.glass-surface-deep` | `rgb(36 44 28 / 0.52)` + blur           | Cards, controls and bars on the deep surfaces                                 |
+| `.ambient-blob`       | blurred, drifting brand-coloured disc   | Behind the hero, bands and footer; `z-index: -1` inside an `isolate` parent   |
+| `.icon-deep`          | olive disc, lime ring, glow on hover    | Every service, occasion and stat icon                                         |
+| `.text-gradient-lime` | lime gradient text                      | One emphasised word in a heading on a deep surface                            |
+| `.text-gradient-sage` | sage gradient text                      | One emphasised word in a heading on the light ground                          |
+
+Six pairings were added to the contrast contract for the deep surfaces (white,
+`ink-on-deep`, `accent-300`, `accent-500` as large text, white on `deeper`, and
+the lime focus ring), all asserted by the design-token tests. On a deep surface
+the focus ring is lime (`.on-deep :focus-visible`), because the sage ring
+vanishes there.
+
 ### Motion
 
-Ambient background motion (`--animate-drift-slow`, `--animate-drift-slower`,
-`--animate-gradient-pan` in `app/globals.css`) drives slow, small-amplitude
-blob and gradient movement on hero-like panels only — the home and inner-page
-hero, the closing call to action, the value band — never on ordinary cards or
-generic `Section` panels, so colour stays an accent rather than a constant
-background distraction. `--animate-sheet-in` and `--animate-fade-in` give the
-mobile navigation sheet, floating actions and modal-like surfaces (the
-lightbox, the quote form's error summary) an entrance instead of appearing
-instantly.
+One easing family (`--ease-out-soft`, `--ease-spring`) and a short list of
+movements, layered rather than repeated:
 
-Scroll-reveal content (`components/ui/reveal.tsx`, `Reveal`) fades and rises
-into place once as a section enters the viewport, staggered by up to ~240ms
-across a grid. It never hides content from a visitor without JavaScript — the
-`.reveal` base styles apply only inside `@media (scripting: enabled)` — and
-respects `prefers-reduced-motion` through the same global rule that governs
-every other transition in this system.
+- **Reveals** — `components/ui/reveal.tsx` marks an element `data-reveal` and
+  an `IntersectionObserver` flips it to `visible`. Effects: rise (default),
+  scale, left, right and mask. Siblings stagger with `delay`.
+- **Entrances** — `.stagger` for hero copy on load; `.page-enter` replayed by
+  `app/(site)/template.tsx` on every navigation.
+- **Ambient** — blob drift, the floating chip, the pulsing coverage map.
+- **Hover** — `.lift` (rise and shadow), `.shine` (a light sweep), the
+  `.icon-deep` tilt and glow, image zoom on cards.
+- **Accordion** — `grid-template-rows: 0fr → 1fr`, so content animates at any
+  height without measuring it.
+- **Lightbox and mobile menu** — fade and slide entrances, crossfading images.
+
+Two rules keep motion from ever costing content:
+
+1. The hidden reveal state, the staggered hero entrance and the page
+   transition apply only under `@media (scripting: enabled)`. Without
+   JavaScript every element is simply visible and still, and the first tap
+   never lands on something that is still moving.
+2. `prefers-reduced-motion: reduce` collapses every animation and transition to
+   an instant, and the reveal hidden state is cleared. The pointer-parallax on
+   the home hero is not started at all for coarse pointers or reduced motion.
 
 ---
 

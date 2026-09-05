@@ -21,14 +21,14 @@ import { cn } from '@/lib/cn';
  *     repaints on every scroll frame
  */
 
-type GlassTone = 'default' | 'strong' | 'tint' | 'vivid';
+type GlassTone = 'default' | 'strong' | 'tint' | 'deep';
 type GlassRadius = 'lg' | 'xl' | '2xl' | '3xl' | 'pill';
 
 const tones: Record<GlassTone, string> = {
   default: 'glass-surface',
   strong: 'glass-surface-strong',
   tint: 'glass-surface-tint',
-  vivid: 'glass-surface-vivid',
+  deep: 'glass-surface-deep',
 };
 
 const radii: Record<GlassRadius, string> = {
@@ -82,8 +82,8 @@ export function IconChip({
   className,
 }: {
   children: ReactNode;
-  tone?: 'brand' | 'tint' | 'glass' | 'solid';
-  size?: 'sm' | 'md' | 'lg';
+  tone?: 'brand' | 'tint' | 'glass' | 'solid' | 'deep' | 'lime' | 'glass-deep';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
 }) {
   const tones = {
@@ -91,12 +91,19 @@ export function IconChip({
     tint: 'bg-white/70 text-brand-700 ring-1 ring-white/70',
     glass: 'glass-surface text-brand-700',
     solid: 'bg-brand-700 text-white',
+    /* The dark olive disc with the lime ring; see `.icon-deep` in globals.css. */
+    deep: 'icon-deep',
+    /* The lime disc, for one highlighted point. */
+    lime: 'bg-accent-500 text-brand-950 shadow-[0_10px_24px_-10px_rgb(142_200_64/0.8)]',
+    /* Translucent disc on a dark surface. */
+    'glass-deep': 'glass-surface-deep text-accent-200',
   } as const;
 
   const sizes = {
     sm: 'size-10',
     md: 'size-12',
     lg: 'size-14',
+    xl: 'size-16',
   } as const;
 
   return (
@@ -104,8 +111,6 @@ export function IconChip({
       aria-hidden="true"
       className={cn(
         'inline-flex shrink-0 items-center justify-center rounded-full',
-        'transition-[transform,background-color,box-shadow] duration-300 ease-out',
-        'motion-safe:group-hover:-translate-y-0.5 motion-safe:group-hover:scale-105',
         tones[tone],
         sizes[size],
         className,

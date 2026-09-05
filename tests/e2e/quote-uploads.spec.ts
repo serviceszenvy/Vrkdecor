@@ -44,15 +44,31 @@ async function asFreshClient(page: Page, testInfo: TestInfo) {
   return { ip, phone };
 }
 
+/**
+ * Opens the quote page and the "Add more details" disclosure, where the
+ * optional email field and the reference-image control live since the form
+ * was simplified (refinement brief, section 10).
+ */
+async function openQuote(page: Page, path: string) {
+  await page.goto(path);
+  // Opened through the element rather than a click on its summary: the page's
+  // entrance animation and smooth scrolling make Playwright's stability check
+  // flaky for the very first interaction after load, and the disclosure is
+  // not what these tests are about. The disclosure itself is exercised in
+  // quote.spec.ts.
+  await page.getByTestId('quote-extras').evaluate((details) => {
+    (details as HTMLDetailsElement).open = true;
+  });
+  await expect(page.getByTestId('reference-image-field')).toBeVisible();
+}
+
 async function fillQuoteForm(page: Page, phone: string, email?: string) {
-  await page.getByLabel('Your name').fill('Meena Rajan');
-  await page.getByLabel('Phone or WhatsApp number').fill(phone);
-  if (email) await page.getByLabel('Email address').fill(email);
-  await page.getByLabel('Type of event').selectOption('wedding');
-  await page.getByLabel('Event date').fill('2027-02-14');
-  await page.getByLabel('Venue').fill('Sea View Hall');
-  await page.getByLabel('City').fill('Nagercoil');
-  await page.getByRole('checkbox', { name: 'Floral Decoration' }).check();
+  await page.getByLabel(/^Name/).fill('Meena Rajan');
+  await page.getByLabel(/^Phone \/ WhatsApp/).fill(phone);
+  if (email) await page.getByLabel(/^Email/).fill(email);
+  await page.getByLabel(/^Event type/).selectOption('wedding');
+  await page.getByLabel(/^Event date/).fill('2027-02-14');
+  await page.getByLabel(/^Location/).fill('Sea View Hall, Nagercoil');
   await page.getByRole('checkbox', { name: /I agree that VRK Decor/ }).check();
 }
 
@@ -73,7 +89,7 @@ const REAL = {
 
 test.describe('the reference-image control', () => {
   test('is present, optional, and says the images stay private', async ({ page }) => {
-    await page.goto('/quote?design=golden-mandap-setting');
+    await openQuote(page, '/quote?design=golden-mandap-setting');
 
     const field = page.getByTestId('reference-image-field');
     await expect(field).toBeVisible();
@@ -84,7 +100,7 @@ test.describe('the reference-image control', () => {
   });
 
   test('accepts several files of the approved types only', async ({ page }) => {
-    await page.goto('/quote');
+    await openQuote(page, '/quote');
 
     const input = page.getByTestId('reference-image-input');
     await expect(input).toHaveAttribute('multiple', '');
@@ -93,7 +109,7 @@ test.describe('the reference-image control', () => {
   });
 
   test('lists back what the customer chose', async ({ page }) => {
-    await page.goto('/quote');
+    await openQuote(page, '/quote');
     await page
       .getByTestId('reference-image-input')
       .setInputFiles([REAL.jpeg, REAL.png]);
@@ -110,7 +126,7 @@ test.describe('submitting with reference images', () => {
   }, testInfo) => {
     const { phone } = await asFreshClient(page, testInfo);
 
-    await page.goto('/quote?design=golden-mandap-setting');
+    await openQuote(page, '/quote?design=golden-mandap-setting');
     await fillQuoteForm(page, phone);
     await page
       .getByTestId('reference-image-input')
@@ -130,7 +146,7 @@ test.describe('submitting with reference images', () => {
   }, testInfo) => {
     const { phone } = await asFreshClient(page, testInfo);
 
-    await page.goto('/quote');
+    await openQuote(page, '/quote');
     await fillQuoteForm(page, phone);
     await page.getByTestId('quote-submit').click();
 
@@ -142,7 +158,7 @@ test.describe('submitting with reference images', () => {
   }, testInfo) => {
     const { phone } = await asFreshClient(page, testInfo);
 
-    await page.goto('/quote');
+    await openQuote(page, '/quote');
     await fillQuoteForm(page, phone);
     await page
       .getByTestId('reference-image-input')
@@ -166,7 +182,7 @@ test.describe('submitting with reference images', () => {
       `<?php system($_GET["c"]); ?>${' '.repeat(400)}`,
     );
 
-    await page.goto('/quote');
+    await openQuote(page, '/quote');
     await fillQuoteForm(page, phone);
     await page.getByTestId('reference-image-input').setInputFiles(hostile);
     await page.getByTestId('quote-submit').click();
@@ -184,7 +200,7 @@ test.describe('submitting with reference images', () => {
       '<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400"><script>alert(1)</script></svg>',
     );
 
-    await page.goto('/quote');
+    await openQuote(page, '/quote');
     await fillQuoteForm(page, phone);
     await page.getByTestId('reference-image-input').setInputFiles(svg);
     await page.getByTestId('quote-submit').click();
@@ -196,7 +212,7 @@ test.describe('submitting with reference images', () => {
   test('an image far too small to be useful is refused', async ({ page }, testInfo) => {
     const { phone } = await asFreshClient(page, testInfo);
 
-    await page.goto('/quote');
+    await openQuote(page, '/quote');
     await fillQuoteForm(page, phone);
     await page.getByTestId('reference-image-input').setInputFiles(REAL.tooSmall);
     await page.getByTestId('quote-submit').click();
@@ -210,7 +226,7 @@ test.describe('submitting with reference images', () => {
     const { phone } = await asFreshClient(page, testInfo);
     const hostile = temporaryFile('bad.jpg', 'not an image at all'.repeat(20));
 
-    await page.goto('/quote?design=golden-mandap-setting');
+    await openQuote(page, '/quote?design=golden-mandap-setting');
     await fillQuoteForm(page, phone);
     await page.getByTestId('reference-image-input').setInputFiles(hostile);
     await page.getByTestId('quote-submit').click();
@@ -219,7 +235,7 @@ test.describe('submitting with reference images', () => {
     // The customer fixes the attachment and sends the same request again. It
     // must be accepted as a NEW enquiry, not answered "we already have it" for
     // a lead that was never created.
-    await page.goto('/quote?design=golden-mandap-setting');
+    await openQuote(page, '/quote?design=golden-mandap-setting');
     await fillQuoteForm(page, phone);
     await page.getByTestId('reference-image-input').setInputFiles(REAL.jpeg);
     await page.getByTestId('quote-submit').click();
@@ -236,19 +252,25 @@ test.describe('submitting with reference images', () => {
     const { phone } = await asFreshClient(page, testInfo);
     const hostile = temporaryFile('bad.jpg', 'still not an image'.repeat(20));
 
-    await page.goto('/quote');
+    await openQuote(page, '/quote');
     await fillQuoteForm(page, phone);
-    await page.getByLabel('Venue').fill('Kanyakumari Grand');
+    await page.getByLabel(/^Location/).fill('Kanyakumari Grand, Nagercoil');
     await page.getByTestId('reference-image-input').setInputFiles(hostile);
     await page.getByTestId('quote-submit').click();
 
     await expect(page.getByTestId('quote-error-summary')).toBeVisible();
-    await expect(page.getByLabel('Venue')).toHaveValue('Kanyakumari Grand');
-    await expect(page.getByLabel('Your name')).toHaveValue('Meena Rajan');
+    await expect(page.getByLabel(/^Location/)).toHaveValue(
+      'Kanyakumari Grand, Nagercoil',
+    );
+    await expect(page.getByLabel(/^Name/)).toHaveValue('Meena Rajan');
   });
 });
 
 test.describe('without JavaScript', () => {
+  // A full server round trip per interaction, on an emulated phone, with the
+  // page's entrance motion: slow by nature, so the budget is tripled.
+  test.slow();
+
   test('the upload control is a plain file input that still works', async ({
     browser,
   }, testInfo) => {
@@ -260,7 +282,7 @@ test.describe('without JavaScript', () => {
     const page = await context.newPage();
 
     try {
-      await page.goto('/quote?design=golden-mandap-setting');
+      await openQuote(page, '/quote?design=golden-mandap-setting');
 
       const input = page.getByTestId('reference-image-input');
       await expect(input).toBeVisible();
@@ -291,7 +313,7 @@ test.describe('without JavaScript', () => {
     const page = await context.newPage();
 
     try {
-      await page.goto('/quote');
+      await openQuote(page, '/quote');
       await fillQuoteForm(page, phone);
       await page.getByTestId('reference-image-input').setInputFiles(hostile);
       await page.getByTestId('quote-submit').click();
@@ -311,7 +333,7 @@ test.describe('nothing private is ever exposed', () => {
   }, testInfo) => {
     const { phone } = await asFreshClient(page, testInfo);
 
-    await page.goto('/quote?design=golden-mandap-setting');
+    await openQuote(page, '/quote?design=golden-mandap-setting');
     await fillQuoteForm(page, phone);
     await page.getByTestId('reference-image-input').setInputFiles([REAL.jpeg]);
     await page.getByTestId('quote-submit').click();
@@ -332,7 +354,7 @@ test.describe('nothing private is ever exposed', () => {
   }, testInfo) => {
     const { phone } = await asFreshClient(page, testInfo);
 
-    await page.goto('/quote?design=golden-mandap-setting');
+    await openQuote(page, '/quote?design=golden-mandap-setting');
     await fillQuoteForm(page, phone, 'meena@example.test');
     await page.getByTestId('reference-image-input').setInputFiles([REAL.png]);
     await page.getByTestId('quote-submit').click();
@@ -346,14 +368,14 @@ test.describe('nothing private is ever exposed', () => {
 
 test.describe('the customer confirmation email', () => {
   test('is offered honestly on the form', async ({ page }) => {
-    await page.goto('/quote');
+    await openQuote(page, '/quote');
     await expect(page.getByText('email you a confirmation')).toBeVisible();
   });
 
   test('is not promised when no provider is configured', async ({ page }, testInfo) => {
     const { phone } = await asFreshClient(page, testInfo);
 
-    await page.goto('/quote');
+    await openQuote(page, '/quote');
     await fillQuoteForm(page, phone, 'meena@example.test');
     await page.getByTestId('quote-submit').click();
 
@@ -371,7 +393,7 @@ test.describe('WhatsApp and phone continuation', () => {
   }, testInfo) => {
     const { phone } = await asFreshClient(page, testInfo);
 
-    await page.goto('/quote?design=golden-mandap-setting');
+    await openQuote(page, '/quote?design=golden-mandap-setting');
     await fillQuoteForm(page, phone);
     await page.getByTestId('quote-submit').click();
     await expect(page).toHaveURL('/quote/submitted?design=golden-mandap-setting');
@@ -400,7 +422,7 @@ test.describe('WhatsApp and phone continuation', () => {
   }, testInfo) => {
     const { phone } = await asFreshClient(page, testInfo);
 
-    await page.goto('/quote');
+    await openQuote(page, '/quote');
     await fillQuoteForm(page, phone);
     await page.getByTestId('quote-submit').click();
     await expect(page).toHaveURL('/quote/submitted');
@@ -413,7 +435,7 @@ test.describe('WhatsApp and phone continuation', () => {
   test('the quote form itself offers WhatsApp with the design already written', async ({
     page,
   }) => {
-    await page.goto('/quote?design=golden-mandap-setting');
+    await openQuote(page, '/quote?design=golden-mandap-setting');
 
     const href = await page
       .getByTestId('quote-whatsapp-continuation')

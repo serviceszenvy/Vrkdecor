@@ -555,6 +555,81 @@ official brand guideline is supplied.
 - **The Admin Panel moved from tabs to a sidebar.** Six sections already
   overflowed a phone in a row of tabs, and there will be more.
 
+## UI/UX refinement v2 (2026-09-05)
+
+Source: the client's "VRK Decor — Complete UI/UX, Content & Experience
+Refinement" brief, applied to the 0.8.1 visual redesign. The brief assumed a
+fully dark site; the client clarified in the session that the light theme
+should stay but become noticeably more colourful, with clearly visible dark
+sections in the logo's own colours. That is what was built.
+
+- **Light ground kept, dark layer added.** The page ground is still the warm
+  off-white canvas. The hero of every page, the value band, the closing call to
+  action, the founder section, the gallery wall and the footer now sit on
+  `surface-deep` (#37432b, the logo's dark olive) lit by lime and sage. New
+  tokens: `surface-deep`, `surface-deeper`, `ink-on-deep`, dark glass, and six
+  new contrast pairings, all asserted by the design-token tests.
+- **A motion layer with two safety rails.** Scroll reveals, staggered entrances,
+  ambient drift, page transitions, hover depth and the icon glow are CSS plus one
+  small `IntersectionObserver` component. The hidden reveal state applies only
+  under `@media (scripting: enabled)`, so a page without JavaScript shows
+  everything, and `prefers-reduced-motion` collapses every animation to an
+  instant. No dependency was added.
+- **The home hero is sized to the first desktop viewport.** `100svh` less the
+  floating header and the page inset, capped at 54rem and floored so a short
+  laptop never crushes the type. Below `lg` the constraint is dropped and the
+  hero grows naturally. Nothing is cropped.
+- **The Occasions page was removed.** It duplicated Services. Services now
+  carries both the twelve approved services (grouped by who delivers them) and
+  the occasions, grouped the way a customer thinks about them. `/occasions` is a
+  permanent (308) redirect to `/services#occasions`, `routes.occasions` points
+  at the anchor, and the admin revalidation no longer names the old path.
+- **Celebration categories are presentation, not catalogue.** The brief asked
+  for categories such as haldi, destination and beach weddings, church decor,
+  showroom openings, car decor and Kerala weddings. They appear on Services as
+  kinds of celebration, each linked to the closest of the fourteen APPROVED
+  occasions. The database, the quote form's event types and the Admin Panel are
+  unchanged, and a unit test fails if a celebration points at an unapproved
+  slug or if a partner-vendor service is ever grouped under "our own team".
+  **Client action: confirm the celebration categories and their wording.**
+- **The quote form was simplified.** Name, phone, event type, event date,
+  location and a message, plus the mandatory consent line; email and the three
+  private reference images sit behind an "Add more details" disclosure. To make
+  that honest, `venue` became optional and `requiredServices` may be empty in
+  `lib/validation/enquiry.ts`. Both columns already allowed it (`venue` was
+  nullable and `required_services` defaulted to `'{}'`), so there is no
+  migration. The venue and the services are discussed on the follow-up call,
+  which is how VRK Decor works anyway. Every other rule is unchanged: closed
+  vocabularies, sanitisation, phone normalisation, consent, throttling, and the
+  Design re-resolved server-side.
+- **WhatsApp carries the selected design's URL.** `designEnquiryMessage` now
+  takes the public URL of the design page (`absoluteDesignUrl`, built from the
+  slug on the approved production domain) so the team knows exactly which
+  design is being asked about. The message is still public content only, still
+  length-capped, and drops the name rather than truncating the URL.
+- **Three alternative ways to enquire, everywhere.** `/quote` and `/contact`
+  present WhatsApp, Call and Send an enquiry as equal alternatives under one
+  heading. The Contact page embeds the same quote engine (same Server Action,
+  validation and rate limiting) instead of linking to it, and is rendered per
+  request so the form's date bounds are current.
+- **Quote CTAs were rationed.** A page body carries at most two strong quote
+  actions: a page-specific one where it exists (the design's own button, the
+  lightbox) and the closing band. Inner-page heroes no longer ask for a quote;
+  they point at the work. The header and the mobile bar remain site-wide.
+- **Previous / Next between designs.** The design page shows the previous and
+  next design in listing order, wrapping at the ends, with a counter. Plain
+  links to the existing routes; the page transition template does the rest.
+- **The gallery is a wall, not a catalogue.** Masonry at each photograph's own
+  proportion on the deep surface, no caption under any image; the design name is
+  a hover chip and the lightbox title, and always in the accessible name.
+- **The founder section states only what was supplied.** Name and role from
+  the brief, positional copy, no achievement, year count or client count. The
+  portrait is a designed placeholder; `lib/content/founder.ts` is the one
+  replacement point. **Client action: supply the founder photograph.**
+- **The sample birthday design is now featured** so the home page's four
+  signature cards include a birthday celebration. Real data: whatever the admin
+  marks featured, four of them.
+
 ## Pending
 
 - Exact Hostinger plan
@@ -571,3 +646,6 @@ official brand guideline is supplied.
   reference design, which differ from the approved requirements
 - Instagram / social account handle for the Home page showcase
 - Legal review of the draft Privacy Policy and Terms & Conditions
+- The founder's photograph for the About page (`lib/content/founder.ts`)
+- Confirmation of the celebration categories and wording on the Services page
+- Confirmation that venue and services may be left to the follow-up call (the simplified quote form)

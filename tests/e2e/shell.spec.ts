@@ -16,7 +16,6 @@ test.describe('application shell', () => {
     for (const label of [
       'Our Work',
       'Services',
-      'Occasions',
       'Packages',
       'Gallery',
       'About',
@@ -24,6 +23,17 @@ test.describe('application shell', () => {
     ]) {
       await expect(nav.getByRole('link', { name: label })).toHaveCount(1);
     }
+    await expect(nav.getByRole('link', { name: 'Occasions' })).toHaveCount(0);
+  });
+
+  test('footer credits Zenvy with a link to its site', async ({ page }) => {
+    await page.goto('/');
+    const zenvy = page.getByRole('contentinfo').getByTestId('zenvy-link');
+    await expect(zenvy).toHaveAttribute(
+      'href',
+      'https://serviceszenvy.wixsite.com/home',
+    );
+    await expect(zenvy).toHaveAttribute('target', '_blank');
   });
 
   test('footer exposes contact actions built from the approved details', async ({

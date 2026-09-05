@@ -14,6 +14,7 @@ import {
   matchesFilters,
   sortForListing,
   type PortfolioDesign,
+  type PortfolioFilterOption,
   type PortfolioFilters,
   type PortfolioTag,
 } from './types';
@@ -245,16 +246,22 @@ export async function listDesignSlugs(): Promise<string[]> {
  * so the UI never offers a filter that returns nothing.
  */
 export async function listFilterOptions(): Promise<{
-  occasions: PortfolioTag[];
-  styles: PortfolioTag[];
-  services: PortfolioTag[];
+  occasions: PortfolioFilterOption[];
+  styles: PortfolioFilterOption[];
+  services: PortfolioFilterOption[];
 }> {
   const designs = await loadPublishedDesigns();
 
+  // Each option carries how many published Designs it matches, so the filter
+  // UI can show the most popular occasions first and fold the rest away.
   const collect = (pick: (design: PortfolioDesign) => PortfolioTag[]) => {
-    const seen = new Map<string, PortfolioTag>();
+    const seen = new Map<string, PortfolioFilterOption>();
     for (const design of designs) {
-      for (const tag of pick(design)) if (!seen.has(tag.slug)) seen.set(tag.slug, tag);
+      for (const tag of pick(design)) {
+        const existing = seen.get(tag.slug);
+        if (existing) existing.count += 1;
+        else seen.set(tag.slug, { ...tag, count: 1 });
+      }
     }
     return [...seen.values()].sort((a, b) => a.name.localeCompare(b.name));
   };

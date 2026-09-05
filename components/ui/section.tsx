@@ -4,7 +4,16 @@ import { Container } from './container';
 import { LeafRule } from './glass';
 
 type Spacing = 'compact' | 'default' | 'spacious' | 'panel';
-type Tone = 'surface' | 'canvas' | 'subtle' | 'muted' | 'tint' | 'inverse' | 'panel';
+type Tone =
+  | 'surface'
+  | 'canvas'
+  | 'subtle'
+  | 'muted'
+  | 'tint'
+  | 'inverse'
+  | 'panel'
+  | 'panel-deep'
+  | 'panel-bloom';
 
 const spacings: Record<Spacing, string> = {
   compact: 'py-10 sm:py-12',
@@ -21,6 +30,17 @@ const tones: Record<Tone, string> = {
   tint: 'bg-surface-tint text-ink',
   inverse: 'bg-surface-inverse text-ink-inverse',
   panel: 'text-ink',
+  'panel-deep': 'text-ink-inverse',
+  'panel-bloom': 'text-ink',
+};
+
+/** The surface each rounded panel tone paints. */
+const panelSurfaces: Record<'panel' | 'panel-deep' | 'panel-bloom', string> = {
+  panel: 'bg-surface border-line-soft shadow-panel',
+  /* The dark olive band, lit by lime and sage; white text and lime focus. */
+  'panel-deep': 'surface-aurora on-deep border-white/10 shadow-deep text-white',
+  /* The tinted, more colourful light panel. */
+  'panel-bloom': 'surface-bloom border-brand-200/60 shadow-panel',
 };
 
 /**
@@ -51,7 +71,7 @@ export function Section({
   id?: string;
   'aria-labelledby'?: string;
 }) {
-  if (tone === 'panel') {
+  if (tone === 'panel' || tone === 'panel-deep' || tone === 'panel-bloom') {
     return (
       <section
         id={id}
@@ -60,13 +80,16 @@ export function Section({
       >
         <div
           className={cn(
-            'bg-surface border-line-soft shadow-panel mx-auto w-full max-w-[86rem]',
+            'relative isolate mx-auto w-full max-w-[86rem]',
             'overflow-hidden rounded-3xl border',
+            panelSurfaces[tone],
             spacings[spacing],
             panelClassName,
           )}
         >
-          <Container width={width}>{children}</Container>
+          <Container width={width} className="relative">
+            {children}
+          </Container>
         </div>
       </section>
     );
@@ -133,13 +156,13 @@ export function SectionHeading({
 
   const leadTone = {
     default: 'text-ink-muted',
-    inverse: 'text-sand-200',
+    inverse: 'text-ink-on-deep',
     tint: 'text-ink-soft',
   } as const;
 
   const accentTone = {
-    default: 'text-brand-700',
-    inverse: 'text-accent-300',
+    default: 'text-gradient-sage',
+    inverse: 'text-gradient-lime',
     tint: 'text-brand-800',
   } as const;
 

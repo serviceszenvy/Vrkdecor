@@ -187,8 +187,8 @@ export const sampleDesigns: readonly SampleDesign[] = [
   },
   {
     id: 'sample-design-6',
-    name: 'Bright Birthday Setup',
-    slug: 'bright-birthday-setup',
+    name: 'Birthday Celebration Setup',
+    slug: 'birthday-celebration-setup',
     occasionSlug: 'birthday',
     styleSlugs: ['colourful', 'modern'],
     serviceSlugs: [
@@ -198,13 +198,15 @@ export const sampleDesigns: readonly SampleDesign[] = [
     ],
     location: 'Tuticorin',
     description:
-      'A bright birthday setup with a balloon arch, a dessert table and coloured lighting.',
-    featured: false,
+      'A birthday celebration with a balloon arch over the cake table, a name backdrop, a dessert corner and warm coloured lighting for the evening.',
+    // Featured so the home page's four signature cards include a birthday
+    // celebration alongside the wedding, reception and baby shower.
+    featured: true,
     images: images('birthday-colourful', [
-      'Balloon arch above a dessert table',
-      'Dessert table detail',
-      'Coloured lighting across the setup',
-      'Full view of the birthday setup',
+      'Balloon arch above the birthday cake table',
+      'Dessert corner beside the name backdrop',
+      'Warm coloured lighting across the birthday setup',
+      'Full view of the birthday celebration setup',
     ]),
     videos: [],
   },

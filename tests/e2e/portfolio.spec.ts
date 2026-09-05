@@ -51,10 +51,10 @@ test.describe('portfolio listing', () => {
     ).toHaveAttribute('aria-current', 'true');
 
     await page.goto('/our-work?style=royal');
-    await expect(page.getByRole('status')).toContainText('match your filters');
+    await expect(page.getByRole('status')).toContainText(/match(es)? your filters/);
 
     await page.goto('/our-work?service=floral-decoration');
-    await expect(page.getByRole('status')).toContainText('match your filters');
+    await expect(page.getByRole('status')).toContainText(/match(es)? your filters/);
   });
 
   test('combining filters that match nothing shows an empty state, not an error', async ({
@@ -73,7 +73,7 @@ test.describe('portfolio listing', () => {
     const page = await context.newPage();
 
     await page.goto('/our-work?occasion=wedding');
-    await expect(page.getByRole('status')).toContainText('match your filters');
+    await expect(page.getByRole('status')).toContainText(/match(es)? your filters/);
     await expect(page.locator('img').first()).toBeVisible();
 
     await context.close();

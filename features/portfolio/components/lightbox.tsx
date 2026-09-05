@@ -5,7 +5,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { createPortal } from 'react-dom';
 import { ButtonLink } from '@/components/ui';
-import { CloseIcon } from '@/components/layout/icons';
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  CloseIcon,
+  SparkIcon,
+} from '@/components/layout/icons';
+import { cn } from '@/lib/cn';
 import { designHref, designQuoteHref } from '../quote-link';
 import type { PortfolioPhoto } from '../types';
 
@@ -13,11 +19,17 @@ import type { PortfolioPhoto } from '../types';
  * Photo lightbox.
  *
  * Every photograph carries its parent Design, so the lightbox always offers
- * "Get Quote for This Design" and a link to the parent — the photo-level quote
- * CTA required by Requirements section 8 and 11. The customer never re-selects
- * the design.
+ * "Get a Quote" for that design and a link to the parent — the photo-level
+ * quote CTA required by Requirements sections 8 and 11. The customer never
+ * re-selects the design: the quote link carries the design slug AND the
+ * photograph id, so the quote page shows the very image they were looking at.
  *
- * Accessibility and interaction:
+ * Presentation: a deep olive stage with the photograph's own colours blurred
+ * behind it, the photograph scaling in, a glass bar with the design's name, a
+ * counter and the two actions. The whole thing animates in and each change of
+ * photograph crossfades.
+ *
+ * Accessibility and interaction, unchanged in substance:
  *   - a modal dialog with a focus trap and Escape to close, returning focus to
  *     the thumbnail that opened it
  *   - Left/Right arrows move between photographs
@@ -103,6 +115,10 @@ export function Lightbox({
 
   if (!isOpen || !photo) return null;
 
+  const meta = [photo.design.occasion?.name, photo.design.location]
+    .filter(Boolean)
+    .join(' · ');
+
   return createPortal(
     <div
       role="dialog"
@@ -110,7 +126,7 @@ export function Lightbox({
       aria-labelledby={titleId}
       data-testid="lightbox"
       ref={dialogRef}
-      className="bg-brand-950/96 motion-safe:animate-fade-in fixed inset-0 z-50 flex flex-col backdrop-blur-sm"
+      className="on-deep bg-brand-950/92 motion-safe:animate-fade-in fixed inset-0 z-50 flex flex-col text-white backdrop-blur-md"
       onTouchStart={(event) => {
         const touch = event.changedTouches[0];
         if (touch) touchStart.current = { x: touch.clientX, y: touch.clientY };
@@ -128,84 +144,117 @@ export function Lightbox({
         goTo(dx < 0 ? 1 : -1);
       }}
     >
-      <div className="flex items-center justify-between gap-4 px-4 py-3 text-white">
-        <p className="text-sm" aria-live="polite">
+      {/* The photograph's own colours, blurred, as the stage behind it. */}
+      <div aria-hidden="true" className="absolute inset-0 -z-10 overflow-hidden">
+        <Image
+          key={`glow-${photo.image.id}`}
+          src={photo.image.url}
+          alt=""
+          fill
+          sizes="40vw"
+          className="scale-125 object-cover opacity-35 blur-3xl saturate-150"
+        />
+        <div className="from-brand-950/70 to-brand-950/90 absolute inset-0 bg-gradient-to-b via-transparent" />
+      </div>
+
+      <div className="flex items-center justify-between gap-4 px-4 py-3 sm:px-6">
+        <p
+          className="glass-surface-deep inline-flex min-h-9 items-center rounded-full px-3 text-sm tabular-nums"
+          aria-live="polite"
+        >
           {openIndex + 1} of {photos.length}
         </p>
         <button
           type="button"
           onClick={onClose}
           data-testid="lightbox-close"
-          className="inline-flex size-11 items-center justify-center rounded-full border border-white/20 transition-[background-color,transform] duration-200 hover:bg-white/15 motion-safe:active:scale-90"
+          className="glass-surface-deep hover:border-accent-400/60 inline-flex size-11 items-center justify-center rounded-full transition-[border-color,transform] duration-300 motion-safe:hover:rotate-90"
         >
           <CloseIcon />
           <span className="sr-only">Close gallery</span>
         </button>
       </div>
 
-      <div className="relative flex min-h-0 flex-1 items-center justify-center px-2">
-        <button
-          type="button"
-          onClick={() => goTo(-1)}
-          data-testid="lightbox-previous"
-          className="absolute left-2 z-10 inline-flex size-11 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition-[background-color,transform] duration-200 hover:bg-white/25 motion-safe:hover:scale-105 motion-safe:active:scale-90"
-        >
-          <span aria-hidden="true">&#8249;</span>
-          <span className="sr-only">Previous photograph</span>
-        </button>
+      <div className="relative flex min-h-0 flex-1 items-center justify-center px-2 py-2 sm:px-16">
+        <LightboxArrow direction="previous" onClick={() => goTo(-1)} />
 
-        <div className="relative h-full max-h-full w-full max-w-5xl">
+        <figure className="relative h-full max-h-full w-full max-w-6xl">
           <Image
             key={photo.image.id}
             src={photo.image.url}
             alt={photo.image.alt}
             fill
             sizes="100vw"
-            className="object-contain"
+            priority
+            className="motion-safe:animate-scale-in object-contain drop-shadow-[0_30px_60px_rgb(0_0_0/0.5)]"
           />
-        </div>
+        </figure>
 
-        <button
-          type="button"
-          onClick={() => goTo(1)}
-          data-testid="lightbox-next"
-          className="absolute right-2 z-10 inline-flex size-11 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition-[background-color,transform] duration-200 hover:bg-white/25 motion-safe:hover:scale-105 motion-safe:active:scale-90"
-        >
-          <span aria-hidden="true">&#8250;</span>
-          <span className="sr-only">Next photograph</span>
-        </button>
+        <LightboxArrow direction="next" onClick={() => goTo(1)} />
       </div>
 
-      <div className="flex flex-col gap-3 border-t border-white/10 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="text-white">
-          <p id={titleId} className="font-display text-lg font-medium">
-            {photo.design.name}
-          </p>
-          <p className="text-sand-300 text-sm">
-            {[photo.design.occasion?.name, photo.design.location]
-              .filter(Boolean)
-              .join(' · ')}
-          </p>
-        </div>
+      <div className="px-3 pb-3 sm:px-6 sm:pb-5">
+        <div className="glass-surface-deep glass-edge motion-safe:animate-slide-down mx-auto flex max-w-6xl flex-col gap-3 rounded-3xl p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4">
+          <div className="min-w-0 px-1">
+            <p id={titleId} className="font-display truncate text-lg font-medium">
+              {photo.design.name}
+            </p>
+            {meta ? <p className="text-ink-on-deep truncate text-sm">{meta}</p> : null}
+          </div>
 
-        <div className="flex flex-wrap gap-2">
-          <ButtonLink
-            href={designQuoteHref(photo.design.slug, photo.image.id)}
-            variant="accent"
-            size="md"
-            data-testid="lightbox-quote-cta"
-          >
-            Get Quote for This Design
-          </ButtonLink>
-          <Link
-            href={designHref(photo.design.slug)}
-            className="inline-flex min-h-12 items-center rounded-full border border-white/30 px-5 text-white transition-colors hover:bg-white/10"
-          >
-            View design
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            <ButtonLink
+              href={designQuoteHref(photo.design.slug, photo.image.id)}
+              variant="lime"
+              size="md"
+              data-testid="lightbox-quote-cta"
+            >
+              <SparkIcon className="size-4" />
+              Get a Quote for this design
+            </ButtonLink>
+            <Link
+              href={designHref(photo.design.slug)}
+              className="inline-flex min-h-12 items-center gap-1.5 rounded-full border border-white/25 px-5 text-white transition-colors hover:border-white/60 hover:bg-white/10"
+            >
+              View design
+              <ArrowRightIcon className="size-4" />
+            </Link>
+          </div>
         </div>
       </div>
     </div>,
     document.body,
+  );
+}
+
+function LightboxArrow({
+  direction,
+  onClick,
+}: {
+  direction: 'previous' | 'next';
+  onClick: () => void;
+}) {
+  const isNext = direction === 'next';
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      data-testid={`lightbox-${direction}`}
+      className={cn(
+        'glass-surface-deep hover:border-accent-400/60 absolute z-10 inline-flex size-11 items-center justify-center rounded-full transition-[border-color,transform] duration-300 sm:size-12',
+        isNext
+          ? 'right-2 motion-safe:hover:translate-x-0.5 sm:right-4'
+          : 'left-2 motion-safe:hover:-translate-x-0.5 sm:left-4',
+      )}
+    >
+      {isNext ? (
+        <ArrowRightIcon className="size-5" />
+      ) : (
+        <ArrowLeftIcon className="size-5" />
+      )}
+      <span className="sr-only">
+        {isNext ? 'Next photograph' : 'Previous photograph'}
+      </span>
+    </button>
   );
 }

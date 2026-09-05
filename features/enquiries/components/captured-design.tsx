@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Badge, ImageFrame } from '@/components/ui';
+import { Badge } from '@/components/ui';
+import { ArrowRightIcon, SparkIcon } from '@/components/layout/icons';
 import { designHref } from '@/features/portfolio';
 import type { CapturedDesign as CapturedDesignModel } from '../types';
 
@@ -15,7 +16,8 @@ import type { CapturedDesign as CapturedDesignModel } from '../types';
  *
  * When the request started from a specific photograph, that photograph is the
  * one shown — the customer sees the image they clicked, not a different cover
- * shot of the same design.
+ * shot of the same design — and the panel says so in one line:
+ * "I'm requesting a quote for this particular design."
  */
 export function CapturedDesign({
   design,
@@ -28,56 +30,64 @@ export function CapturedDesign({
     <div
       data-testid="captured-design"
       data-design-slug={design.slug}
-      className="border-brand-200/60 from-brand-50 to-surface-tint rounded-3xl border bg-gradient-to-br p-4 sm:p-5"
+      className="surface-aurora on-deep shine shadow-deep relative isolate overflow-hidden rounded-3xl border border-white/10 p-3 text-white sm:p-4"
     >
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+      <span
+        aria-hidden="true"
+        className="ambient-blob bg-accent-500/35 -top-24 -right-16 size-72"
+      />
+      <div className="grid gap-4 sm:grid-cols-[minmax(0,17rem)_1fr] sm:items-center sm:gap-6">
         {design.image ? (
-          <div className="w-full shrink-0 sm:w-40">
-            <ImageFrame ratio="landscape">
-              <Image
-                src={design.image.url}
-                alt={design.image.alt}
-                fill
-                sizes="(min-width: 640px) 160px, 100vw"
-                className="object-cover"
-              />
-            </ImageFrame>
+          <div className="bg-brand-950 relative aspect-[4/3] w-full overflow-hidden rounded-2xl ring-1 ring-white/15">
+            <Image
+              src={design.image.url}
+              alt={design.image.alt}
+              fill
+              sizes="(min-width: 640px) 272px, 100vw"
+              className="motion-safe:animate-scale-in object-cover"
+            />
+            <span className="absolute top-3 left-3">
+              <Badge tone="lime">
+                {fromPhoto ? 'Selected photograph' : 'Selected design'}
+              </Badge>
+            </span>
           </div>
         ) : null}
 
-        <div className="flex min-w-0 flex-col gap-2">
-          <p className="text-ink-muted text-2xs font-semibold tracking-[0.16em] uppercase">
+        <div className="flex min-w-0 flex-col gap-2 px-1 pb-1 sm:px-0">
+          <p className="text-accent-300 text-2xs inline-flex items-center gap-2 font-semibold tracking-[0.18em] uppercase">
+            <SparkIcon className="size-3.5" />
             {fromPhoto ? 'Quote for this photograph' : 'Quote for this design'}
           </p>
 
           <p
-            className="font-display text-xl font-medium"
+            className="font-display text-2xl leading-tight font-medium sm:text-3xl"
             data-testid="captured-design-name"
           >
             {design.name}
           </p>
 
           {design.occasionName || design.location ? (
-            <p className="text-ink-muted text-sm">
+            <p className="text-ink-on-deep text-sm">
               {[design.occasionName, design.location].filter(Boolean).join(' · ')}
             </p>
           ) : null}
 
-          <div className="flex flex-wrap items-center gap-2 pt-1">
-            <Badge tone="brand">Added automatically</Badge>
+          <p className="text-ink-on-deep text-sm leading-relaxed">
+            You are requesting a quote for this particular design. It stays attached to
+            your request, so there is nothing to describe or choose again.
+          </p>
+
+          <div className="flex flex-wrap items-center gap-3 pt-1">
+            <Badge tone="glass">Added automatically</Badge>
             <Link
               href={designHref(design.slug)}
-              className="text-brand-700 inline-flex min-h-9 items-center text-sm underline underline-offset-4"
+              className="text-accent-200 inline-flex min-h-9 items-center gap-1 text-sm font-medium underline-offset-4 hover:underline"
             >
               View this design
+              <ArrowRightIcon className="size-3.5" />
             </Link>
           </div>
-
-          <p className="text-ink-muted text-sm">
-            {fromPhoto
-              ? 'We have recorded the photograph you were looking at and the design it belongs to. You do not need to choose it again.'
-              : 'We have recorded this design with your request. You do not need to choose it again.'}
-          </p>
         </div>
       </div>
     </div>

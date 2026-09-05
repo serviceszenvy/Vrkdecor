@@ -5,14 +5,16 @@ import { siteConfig } from './site-config';
  * (Requirements & SOW section 4: Home, Our Work, Services, Occasions, Packages,
  * Gallery, About, Contact; primary CTA "Get a Quote").
  *
- * The shell links to these routes now; the pages themselves are created by
- * later phases — P4 (public pages), P5 (portfolio) and P6 (quote flow).
+ * Occasions no longer has a page of its own: the refinement brief of
+ * 2026-09-05 folded it into Services, where the occasions section is the
+ * `#occasions` anchor. `/occasions` is a permanent redirect there
+ * (next.config.ts), so no old link breaks.
  */
 export const routes = {
   home: '/',
   work: '/our-work',
   services: '/services',
-  occasions: '/occasions',
+  occasions: '/services#occasions',
   packages: '/packages',
   gallery: '/gallery',
   about: '/about',
@@ -31,7 +33,6 @@ export type NavItem = {
 export const primaryNav: readonly NavItem[] = [
   { label: 'Our Work', href: routes.work },
   { label: 'Services', href: routes.services },
-  { label: 'Occasions', href: routes.occasions },
   { label: 'Packages', href: routes.packages },
   { label: 'Gallery', href: routes.gallery },
   { label: 'About', href: routes.about },
@@ -115,11 +116,39 @@ export function enquiryContinuationMessage(designName?: string | null): string {
 
 /**
  * The message a customer carries into WhatsApp INSTEAD of using the form.
+ *
+ * When the enquiry started from a specific design (or a photograph of one),
+ * the message carries the design's name AND the public URL of its page, so
+ * the team knows exactly which design is being asked about without a single
+ * question. The URL is the canonical design page on the production domain,
+ * built from the published slug: public content, nothing about the customer.
  */
-export function designEnquiryMessage(designName?: string | null): string {
+export function designEnquiryMessage(
+  designName?: string | null,
+  designUrl?: string | null,
+): string {
+  if (designUrl) {
+    const withName = `Hello VRK Decor, I would like a quotation for an upcoming celebration. I'm interested in this design: "${designName ?? ''}" ${designUrl} Thanks!`;
+    const withoutName = `Hello VRK Decor, I would like a quotation for an upcoming celebration. I'm interested in this design: ${designUrl} Thanks!`;
+    // The URL is the part the team needs. If a long name would push the URL
+    // past the length cap (and truncate it), the name is dropped instead.
+    return designName && withName.length <= WHATSAPP_MESSAGE_MAX
+      ? withName
+      : withoutName;
+  }
   return designName
     ? `Hello VRK Decor, I am interested in "${designName}" and would like a quotation.`
     : 'Hello VRK Decor, I would like a quotation for an upcoming celebration.';
+}
+
+/**
+ * The absolute, public URL of a published design's page.
+ *
+ * Built from the slug alone, on the approved production domain, so the value
+ * that ends up in a WhatsApp message can only ever point at this website.
+ */
+export function absoluteDesignUrl(slug: string): string {
+  return `${siteConfig.url}${routes.work}/${encodeURIComponent(slug)}`;
 }
 
 export const mailHref = `mailto:${siteConfig.contact.email}`;

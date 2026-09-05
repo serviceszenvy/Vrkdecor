@@ -6,7 +6,7 @@ export function DesignGrid({ designs }: { designs: readonly PortfolioDesign[] })
   return (
     <ul className="grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
       {designs.map((design, index) => (
-        <Reveal key={design.id} as="li" delay={Math.min((index % 6) * 60, 240)}>
+        <Reveal as="li" key={design.id} delay={(index % 3) * 100} effect="scale">
           <DesignCard
             design={design}
             priority={index < 3}

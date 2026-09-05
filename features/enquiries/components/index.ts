@@ -1,4 +1,5 @@
 export { CapturedDesign } from './captured-design';
+export { EnquiryOptions } from './enquiry-options';
 export { LocalStoreNotice } from './local-store-notice';
 export { QuoteForm } from './quote-form';
 export { ReferenceImageField } from './reference-image-field';

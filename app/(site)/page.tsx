@@ -5,6 +5,7 @@ import {
   EmptyState,
   HomeHero,
   OccasionGrid,
+  ServiceArea,
   StatBar,
   ValueBand,
   serviceIcon,
@@ -13,10 +14,6 @@ import {
 import {
   Badge,
   ButtonLink,
-  Card,
-  CardBody,
-  CardMeta,
-  CardTitle,
   IconChip,
   Reveal,
   Section,
@@ -39,7 +36,7 @@ import {
   styles,
 } from '@/lib/content';
 import { isShowingSampleContent, listFeaturedDesigns } from '@/features/portfolio';
-import { DesignRail, SampleContentNotice } from '@/features/portfolio/components';
+import { SampleContentNotice, SignatureGrid } from '@/features/portfolio/components';
 import { getOccasions, getServices, getTestimonials } from '@/lib/db/public-content';
 import { routes } from '@/lib/navigation';
 import { pageMetadata } from '@/lib/seo';
@@ -58,10 +55,14 @@ const STAT_ICONS = [CalendarIcon, StarIcon, TeamIcon] as const;
 /**
  * Home page — Requirements section 7.
  *
- * Sections implemented: photographic hero with Explore Our Work and Our
- * Services, the approved figures, featured designs, occasions, why choose VRK
- * Decor, services overview, how it works, testimonials and the closing CTA. The
- * persistent WhatsApp action is in the application shell.
+ * Sections: the viewport-fitted hero with Explore Our Work and Our Services,
+ * the approved figures, four signature designs, why choose VRK Decor, the
+ * occasion grid, the services overview, how it works, styles, testimonials,
+ * where we create, and the closing call to action. The persistent WhatsApp
+ * action is in the application shell.
+ *
+ * Quote actions on this page: the header and the closing band. Nothing else
+ * asks for a quote, on purpose (refinement brief, section 11).
  *
  * Deliberately not present: before/after (no data yet) and the social showcase
  * (no approved account handle has been supplied). Both are recorded in the
@@ -71,7 +72,7 @@ export default async function HomePage() {
   const [occasions, services, designs, testimonials] = await Promise.all([
     getOccasions(),
     getServices(),
-    listFeaturedDesigns(8),
+    listFeaturedDesigns(4),
     getTestimonials(),
   ]);
 
@@ -96,11 +97,11 @@ export default async function HomePage() {
       <HomeHero
         actions={
           <>
-            <ButtonLink href={routes.work} variant="primary" size="lg">
+            <ButtonLink href={routes.work} variant="lime" size="lg">
               Explore Our Work
               <ArrowRightIcon className="size-4" />
             </ButtonLink>
-            <ButtonLink href={routes.services} variant="glass" size="lg">
+            <ButtonLink href={routes.services} variant="glass-deep" size="lg">
               Our Services
               <GridIcon className="size-4" />
             </ButtonLink>
@@ -111,21 +112,22 @@ export default async function HomePage() {
       <StatBar stats={stats} />
 
       <Section tone="panel" width="wide" aria-labelledby="featured-designs">
-        <div className="flex flex-wrap items-end justify-between gap-4">
+        <Reveal className="flex flex-wrap items-end justify-between gap-4">
           <SectionHeading
             id="featured-designs"
+            eyebrow="Recent celebrations"
             title="Our"
             accent="Signature"
             tail="Work"
-            lead="A few of the celebrations we have set up recently."
+            lead="Four celebrations we have set up recently, from a wedding mandap to a birthday evening."
           />
-          <ButtonLink href={routes.work} variant="glass" size="sm">
+          <ButtonLink href={routes.work} variant="outline" size="sm">
             View All Work
             <ArrowRightIcon className="size-4" />
           </ButtonLink>
-        </div>
+        </Reveal>
 
-        <div className="mt-8">
+        <div className="mt-8 sm:mt-10">
           {designs.length > 0 ? (
             <>
               {isShowingSampleContent() ? (
@@ -133,15 +135,15 @@ export default async function HomePage() {
                   <SampleContentNotice />
                 </div>
               ) : null}
-              <DesignRail designs={designs} />
+              <SignatureGrid designs={designs} />
             </>
           ) : (
             <EmptyState
               title="Our portfolio is on its way"
               body="We are putting the design gallery together. In the meantime, tell us about your celebration and we will share relevant work with you directly."
               action={
-                <ButtonLink href={routes.quote} variant="primary" size="md">
-                  Get a Quote
+                <ButtonLink href={routes.contact} variant="primary" size="md">
+                  Tell us about your celebration
                 </ButtonLink>
               }
             />
@@ -151,27 +153,32 @@ export default async function HomePage() {
 
       <ValueBand />
 
-      <Section tone="panel" width="wide" aria-labelledby="occasions">
-        <SectionHeading
-          id="occasions"
-          align="center"
-          rule
-          title="Perfect for"
-          accent="every occasion"
-          lead="Weddings and receptions through to family ceremonies, birthdays and corporate events."
-        />
+      <Section tone="panel-bloom" width="wide" aria-labelledby="occasions">
+        <Reveal>
+          <SectionHeading
+            id="occasions"
+            align="center"
+            rule
+            tone="tint"
+            eyebrow="Occasions"
+            title="Perfect for"
+            accent="every occasion"
+            lead="Weddings and receptions through to family ceremonies, birthdays and corporate events."
+          />
+        </Reveal>
         <div className="mt-10">
           <OccasionGrid occasions={featuredOccasions} />
         </div>
-        <div className="mt-8 flex justify-center">
-          <ButtonLink href={routes.occasions} variant="outline" size="md">
-            See all occasions
+        <Reveal className="mt-8 flex justify-center">
+          <ButtonLink href={`${routes.services}#occasions`} variant="deep" size="md">
+            See every occasion we decorate
+            <ArrowRightIcon className="size-4" />
           </ButtonLink>
-        </div>
+        </Reveal>
       </Section>
 
       <Section tone="panel" width="wide" aria-labelledby="services">
-        <div className="flex flex-wrap items-end justify-between gap-4">
+        <Reveal className="flex flex-wrap items-end justify-between gap-4">
           <SectionHeading
             id="services"
             eyebrow="Services"
@@ -179,60 +186,76 @@ export default async function HomePage() {
             accent="solutions"
             lead={positioning.brandRole}
           />
-          <ButtonLink href={routes.services} variant="glass" size="sm">
+          <ButtonLink href={routes.services} variant="outline" size="sm">
             See all services
             <ArrowRightIcon className="size-4" />
           </ButtonLink>
-        </div>
+        </Reveal>
 
         <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {featuredServices.map((service, index) => {
             const ServiceIcon = serviceIcon(service.slug);
             return (
-              <Reveal key={service.slug} as="li" delay={Math.min(index * 60, 240)}>
-                <Card tone="surface" interactive className="h-full">
-                  <CardBody>
-                    <IconChip tone="brand" size="sm">
-                      <ServiceIcon className="size-4" />
-                    </IconChip>
-                    <CardTitle as="h3" className="mt-1">
-                      {service.name}
-                    </CardTitle>
-                    {service.description ? (
-                      <CardMeta>{service.description}</CardMeta>
-                    ) : null}
-                    {service.deliveryModel === 'partner_vendor' ? (
-                      <div>
-                        <Badge tone="neutral">{PARTNER_VENDOR_LABEL}</Badge>
-                      </div>
-                    ) : null}
-                  </CardBody>
-                </Card>
+              <Reveal
+                as="li"
+                key={service.slug}
+                delay={index * 90}
+                className="group border-line-soft lift shine shadow-card flex flex-col gap-3 rounded-2xl border bg-white p-5 sm:p-6"
+              >
+                <IconChip tone="deep" size="md">
+                  <ServiceIcon className="size-6" />
+                </IconChip>
+                <h3 className="font-display mt-1 text-xl font-medium">
+                  {service.name}
+                </h3>
+                {service.description ? (
+                  <p className="text-ink-muted text-sm leading-relaxed">
+                    {service.description}
+                  </p>
+                ) : null}
+                {service.deliveryModel === 'partner_vendor' ? (
+                  <div>
+                    <Badge tone="neutral">{PARTNER_VENDOR_LABEL}</Badge>
+                  </div>
+                ) : null}
               </Reveal>
             );
           })}
         </ul>
       </Section>
 
-      <Section tone="panel" width="wide" aria-labelledby="how-it-works">
-        <SectionHeading
-          id="how-it-works"
-          align="center"
-          rule
-          eyebrow="How it works"
-          title="From first look to"
-          accent="your celebration"
-        />
-        <ol className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <Section tone="panel-bloom" width="wide" aria-labelledby="how-it-works">
+        <Reveal>
+          <SectionHeading
+            id="how-it-works"
+            align="center"
+            rule
+            tone="tint"
+            eyebrow="How it works"
+            title="From first look to"
+            accent="your celebration"
+          />
+        </Reveal>
+        <ol className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {howItWorks.map((step, index) => (
-            <Reveal key={step.title} as="li" delay={Math.min(index * 70, 240)}>
-              <div className="border-line-soft bg-canvas/60 hover:border-brand-300/70 hover:shadow-card flex h-full flex-col gap-2 rounded-2xl border p-5 transition-[border-color,box-shadow] duration-300">
-                <span className="bg-brand-700 flex size-9 items-center justify-center rounded-full text-sm font-semibold text-white">
-                  {index + 1}
-                </span>
-                <h3 className="font-display mt-1 text-lg font-medium">{step.title}</h3>
-                <p className="text-ink-muted text-sm leading-relaxed">{step.body}</p>
-              </div>
+            <Reveal
+              as="li"
+              key={step.title}
+              delay={index * 110}
+              effect="scale"
+              className="group border-brand-200/70 lift shine shadow-card relative flex flex-col gap-2 overflow-hidden rounded-2xl border bg-white/85 p-5"
+            >
+              <span
+                aria-hidden="true"
+                className="font-display text-brand-200/70 pointer-events-none absolute -top-3 -right-1 text-7xl font-medium select-none"
+              >
+                {index + 1}
+              </span>
+              <span className="bg-brand-900 text-accent-300 ring-accent-500/40 flex size-10 items-center justify-center rounded-full text-sm font-semibold ring-1">
+                {index + 1}
+              </span>
+              <h3 className="font-display mt-1 text-lg font-medium">{step.title}</h3>
+              <p className="text-ink-soft text-sm leading-relaxed">{step.body}</p>
             </Reveal>
           ))}
         </ol>
@@ -240,56 +263,61 @@ export default async function HomePage() {
 
       <Section tone="panel" width="wide" aria-labelledby="styles">
         <div className="grid gap-8 lg:grid-cols-[1fr_1.15fr] lg:items-center lg:gap-12">
-          <SectionHeading
-            id="styles"
-            eyebrow="Browse by style"
-            title="Find the look"
-            accent="you have in mind"
-            lead="Traditional, royal, floral, minimal or contemporary. Filter the portfolio by the style you want and see what it looks like in a real venue."
-          />
-          <ul className="flex flex-wrap gap-2">
-            {styles.map((style) => (
-              <li key={style.slug}>
+          <Reveal effect="left">
+            <SectionHeading
+              id="styles"
+              eyebrow="Browse by style"
+              title="Find the look"
+              accent="you have in mind"
+              lead="Traditional, royal, floral, minimal or contemporary. Filter the portfolio by the style you want and see what it looks like in a real venue."
+            />
+          </Reveal>
+          <ul className="flex flex-wrap gap-2.5">
+            {styles.map((style, index) => (
+              <Reveal as="li" key={style.slug} delay={index * 50} effect="scale">
                 <Link
                   href={`${routes.work}?style=${encodeURIComponent(style.slug)}`}
-                  className="border-line-soft bg-surface text-ink hover:border-brand-300 hover:bg-brand-50 inline-flex min-h-10 items-center rounded-full border px-4 text-sm transition-colors"
+                  className="border-brand-200 bg-brand-50 text-brand-900 hover:border-accent-500 hover:bg-brand-900 hover:text-accent-200 inline-flex min-h-11 items-center rounded-full border px-4.5 text-sm font-medium transition-[background-color,color,border-color,transform] duration-300 motion-safe:hover:-translate-y-0.5"
                 >
                   {style.name}
                 </Link>
-              </li>
+              </Reveal>
             ))}
           </ul>
         </div>
       </Section>
 
       <Section tone="panel" width="wide" aria-labelledby="testimonials">
-        <SectionHeading
-          id="testimonials"
-          align="center"
-          rule
-          eyebrow="Testimonials"
-          title="What our"
-          accent="customers say"
-        />
+        <Reveal>
+          <SectionHeading
+            id="testimonials"
+            align="center"
+            rule
+            eyebrow="Testimonials"
+            title="What our"
+            accent="customers say"
+          />
+        </Reveal>
         <div className="mt-10">
           {testimonials.length > 0 ? (
             <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {testimonials.map((testimonial, index) => (
-                <Reveal key={testimonial.id} as="li" delay={Math.min(index * 70, 240)}>
-                  <Card tone="tint" className="h-full">
-                    <CardBody>
-                      <IconChip tone="tint" size="sm">
-                        <StarIcon className="size-4" />
-                      </IconChip>
-                      <blockquote className="text-ink mt-1 leading-relaxed">
-                        {testimonial.body}
-                      </blockquote>
-                      <CardMeta className="text-ink-soft">
-                        {testimonial.name}
-                        {testimonial.eventType ? ` · ${testimonial.eventType}` : ''}
-                      </CardMeta>
-                    </CardBody>
-                  </Card>
+                <Reveal
+                  as="li"
+                  key={testimonial.id}
+                  delay={index * 100}
+                  className="surface-bloom border-brand-200/60 lift shadow-card flex flex-col gap-3 rounded-2xl border p-5 sm:p-6"
+                >
+                  <IconChip tone="lime" size="sm">
+                    <StarIcon className="size-4" />
+                  </IconChip>
+                  <blockquote className="text-ink mt-1 leading-relaxed">
+                    {testimonial.body}
+                  </blockquote>
+                  <p className="text-ink-soft text-sm">
+                    {testimonial.name}
+                    {testimonial.eventType ? ` · ${testimonial.eventType}` : ''}
+                  </p>
                 </Reveal>
               ))}
             </ul>
@@ -302,23 +330,9 @@ export default async function HomePage() {
         </div>
       </Section>
 
-      <CtaBand />
+      <ServiceArea tone="bloom" action="about" />
 
-      <Section tone="canvas" spacing="compact" width="wide" aria-labelledby="coverage">
-        <h2 id="coverage" className="sr-only">
-          Areas we serve
-        </h2>
-        <p className="text-ink-muted text-sm">
-          We work across {coverage.primaryAreas.join(', ')} and anywhere in Tamil Nadu
-          depending on what your event needs.{' '}
-          <Link
-            className="text-brand-700 underline underline-offset-4"
-            href={routes.about}
-          >
-            About VRK Decor
-          </Link>
-        </p>
-      </Section>
+      <CtaBand />
     </div>
   );
 }

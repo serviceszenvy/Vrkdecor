@@ -1,6 +1,6 @@
-import { Container, IconChip, Reveal } from '@/components/ui';
+import type { CSSProperties } from 'react';
+import { Container, IconChip, LeafRule, Reveal } from '@/components/ui';
 import { FlowerIcon, LeafIcon, SparkIcon, TeamIcon } from '@/components/layout/icons';
-import { LeafRule } from '@/components/ui';
 import { whyChooseUs } from '@/lib/content';
 import { LeafDecor } from './leaf-decor';
 
@@ -13,45 +13,56 @@ const VALUE_ICONS = [FlowerIcon, TeamIcon, LeafIcon, SparkIcon] as const;
  * No claim about ranking, price or a guarantee is made here, because none is
  * approved.
  *
- * A soft green panel with botanical corners rather than four separate cards:
- * the four points belong together, and one surface reads calmer than four.
+ * The band is the first dark moment after the hero: the same olive stage, lit
+ * by lime, with four glass cards that rise one after another as the section
+ * scrolls into view.
  */
 export function ValueBand() {
   return (
     <section className="px-3 sm:px-5 lg:px-6" aria-labelledby="why-vrk">
-      <div className="from-brand-50 via-surface-tint to-accent-50 border-brand-200/50 relative isolate mx-auto w-full max-w-[86rem] overflow-hidden rounded-3xl border bg-gradient-to-br">
-        <LeafDecor className="text-brand-500/25 motion-safe:animate-drift-slow -top-6 -left-10 size-56" />
-        <LeafDecor
-          className="text-brand-500/25 motion-safe:animate-drift-slower -right-10 -bottom-8 size-56"
-          flip
+      <div className="surface-aurora on-deep shadow-deep relative isolate mx-auto w-full max-w-[86rem] overflow-hidden rounded-3xl border border-white/10 text-white">
+        <span
+          className="ambient-blob bg-accent-500/35 -top-24 right-[10%] size-80"
+          aria-hidden="true"
         />
+        <span
+          className="ambient-blob ambient-blob-slow bg-brand-400/40 -bottom-32 -left-16 size-96"
+          aria-hidden="true"
+        />
+        <LeafDecor className="text-accent-200/20 -top-6 -left-10 size-56" />
+        <LeafDecor className="text-accent-200/20 -right-10 -bottom-8 size-56" flip />
 
         <Container width="wide">
           <div className="py-12 sm:py-16">
-            <div className="mx-auto flex max-w-2xl flex-col items-center gap-3 text-center">
+            <Reveal className="mx-auto flex max-w-2xl flex-col items-center gap-3 text-center">
+              <p className="text-accent-300 text-2xs font-semibold tracking-[0.24em] uppercase">
+                Why families choose us
+              </p>
               <h2 id="why-vrk" className="text-3xl font-medium sm:text-4xl">
-                Why choose <span className="text-brand-800">VRK Decor</span>
+                Why choose <span className="text-gradient-lime">VRK Decor</span>
               </h2>
               <LeafRule />
-            </div>
+            </Reveal>
 
-            <ul className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 lg:gap-0">
+            <ul className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
               {whyChooseUs.map((reason, index) => {
                 const ValueIcon = VALUE_ICONS[index] ?? FlowerIcon;
                 return (
                   <Reveal
-                    key={reason.title}
                     as="li"
-                    delay={Math.min(index * 80, 240)}
-                    className="bg-surface/70 border-brand-200/50 lg:not-first:border-l-brand-300/50 group flex h-full flex-col items-center gap-2.5 rounded-2xl border px-3 py-6 text-center lg:rounded-none lg:border-transparent lg:bg-transparent lg:px-6 lg:py-2"
+                    key={reason.title}
+                    delay={index * 110}
+                    effect="scale"
+                    className="group glass-surface-deep glass-edge lift shine flex h-full flex-col gap-3 rounded-2xl p-5 sm:p-6"
+                    style={{ '--i': index } as CSSProperties}
                   >
-                    <IconChip tone="tint" size="lg">
+                    <IconChip tone="deep" size="lg">
                       <ValueIcon className="size-6" />
                     </IconChip>
-                    <h3 className="text-ink text-sm font-semibold text-pretty sm:text-base lg:text-lg">
+                    <h3 className="text-base font-semibold text-pretty text-white sm:text-lg">
                       {reason.title}
                     </h3>
-                    <p className="text-ink-soft text-xs leading-relaxed text-pretty sm:text-sm">
+                    <p className="text-ink-on-deep text-sm leading-relaxed text-pretty">
                       {reason.body}
                     </p>
                   </Reveal>

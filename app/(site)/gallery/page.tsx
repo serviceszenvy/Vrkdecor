@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { CtaBand, EmptyState, Hero } from '@/components/page';
-import { ButtonLink, Section } from '@/components/ui';
+import { ButtonLink, Reveal, Section } from '@/components/ui';
 import { PhotoGallery, SampleContentNotice } from '@/features/portfolio/components';
 import { isShowingSampleContent, listDesigns, toPhotos } from '@/features/portfolio';
 import { routes } from '@/lib/navigation';
@@ -15,6 +15,11 @@ export const metadata: Metadata = pageMetadata({
 
 /**
  * Gallery — every published photograph across the portfolio.
+ *
+ * A visual wall rather than a catalogue: photographs at their own proportions
+ * in a masonry layout on the deep olive surface, with no caption printed under
+ * any of them. The design's name appears on hover and in the lightbox, where
+ * "Get a Quote" carries both the design and the exact photograph.
  *
  * Each photograph carries its parent Design, so opening one gives both a link
  * to that Design and a quote CTA for it. There is no separate Design record per
@@ -32,15 +37,30 @@ export default async function GalleryPage() {
         eyebrow="Gallery"
         title="Photographs from"
         accent="our celebrations"
-        lead="Open any photograph to see the design it belongs to and ask for a quote for it."
+        lead="A wall of recent work. Open any photograph to see it large, then ask for a quote for that design without leaving it."
         actions={
-          <ButtonLink href={routes.work} variant="primary" size="lg">
+          <ButtonLink href={routes.work} variant="glass-deep" size="lg">
             Browse by design
           </ButtonLink>
         }
       />
 
-      <Section tone="panel" width="wide" aria-labelledby="photos">
+      <Section
+        tone="panel-deep"
+        width="wide"
+        spacing="compact"
+        aria-labelledby="photos"
+        panelClassName="pattern-dots"
+      >
+        <span
+          aria-hidden="true"
+          className="ambient-blob bg-accent-500/25 -top-40 right-[15%] size-[30rem]"
+        />
+        <span
+          aria-hidden="true"
+          className="ambient-blob ambient-blob-slow bg-brand-400/30 -bottom-48 -left-24 size-[28rem]"
+        />
+
         <h2 id="photos" className="sr-only">
           Photographs
         </h2>
@@ -53,18 +73,23 @@ export default async function GalleryPage() {
 
         {photos.length > 0 ? (
           <>
-            <p className="text-ink-muted mb-6 text-sm">
-              {photos.length} photographs from {designs.length}{' '}
-              {designs.length === 1 ? 'design' : 'designs'}.
-            </p>
-            <PhotoGallery photos={photos} columns={4} showDesignName />
+            <Reveal className="mb-6 flex flex-wrap items-center justify-between gap-3">
+              <p className="text-ink-on-deep text-sm">
+                {photos.length} photographs from {designs.length}{' '}
+                {designs.length === 1 ? 'design' : 'designs'}.
+              </p>
+              <p className="text-ink-on-deep/80 hidden text-xs sm:block">
+                Hover for the design, click to open.
+              </p>
+            </Reveal>
+            <PhotoGallery photos={photos} layout="masonry" />
           </>
         ) : (
           <EmptyState
             title="Photographs are on their way"
             body="We are putting the gallery together. In the meantime, browse the designs or tell us about your celebration."
             action={
-              <ButtonLink href={routes.work} variant="primary" size="md">
+              <ButtonLink href={routes.work} variant="lime" size="md">
                 Explore Our Work
               </ButtonLink>
             }
@@ -72,7 +97,12 @@ export default async function GalleryPage() {
         )}
       </Section>
 
-      <CtaBand />
+      <CtaBand
+        eyebrow="Seen something you like?"
+        title="Tell us which design caught your eye."
+        accent="We will quote for it."
+        lead="Open the photograph and use Get a Quote, and the design comes with your request. Or simply message us on WhatsApp."
+      />
     </div>
   );
 }

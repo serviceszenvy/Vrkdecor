@@ -2,19 +2,21 @@ import type { ComponentType, SVGProps } from 'react';
 import Link from 'next/link';
 import { IconChip, Reveal } from '@/components/ui';
 import {
+  ArchIcon,
+  BalloonIcon,
   BuildingIcon,
-  CakeIcon,
   CalendarIcon,
-  FlowerIcon,
+  ConfettiIcon,
   GiftIcon,
   HeartIcon,
   HomeIcon,
-  LampIcon,
-  LeafIcon,
+  RattleIcon,
   RingsIcon,
   SparkIcon,
+  StageIcon,
   StarIcon,
   TeamIcon,
+  ToastIcon,
 } from '@/components/layout/icons';
 import { routes } from '@/lib/navigation';
 
@@ -26,20 +28,20 @@ type Icon = ComponentType<SVGProps<SVGSVGElement>>;
  * the calendar glyph rather than breaking the grid.
  */
 const OCCASION_ICONS: Record<string, Icon> = {
-  wedding: FlowerIcon,
-  reception: LampIcon,
+  wedding: ArchIcon,
+  reception: StageIcon,
   engagement: RingsIcon,
   'seer-varisai': GiftIcon,
   'puberty-ceremony': SparkIcon,
   'ear-piercing': StarIcon,
-  'holy-communion': LeafIcon,
-  'baby-shower': HeartIcon,
+  'holy-communion': HeartIcon,
+  'baby-shower': RattleIcon,
   housewarming: HomeIcon,
-  birthday: CakeIcon,
-  anniversary: HeartIcon,
+  birthday: BalloonIcon,
+  anniversary: ToastIcon,
   'corporate-events': BuildingIcon,
   'college-events': TeamIcon,
-  'other-celebrations': CalendarIcon,
+  'other-celebrations': ConfettiIcon,
 };
 
 export type OccasionTile = {
@@ -65,16 +67,12 @@ export function OccasionGrid({ occasions }: { occasions: readonly OccasionTile[]
       {occasions.map((occasion, index) => {
         const OccasionIcon = OCCASION_ICONS[occasion.slug] ?? CalendarIcon;
         return (
-          <Reveal key={occasion.slug} as="li" delay={Math.min(index * 40, 240)}>
+          <Reveal as="li" key={occasion.slug} delay={index * 70} effect="scale">
             <Link
               href={`${routes.work}?occasion=${encodeURIComponent(occasion.slug)}`}
-              className="border-line-soft bg-surface hover:border-brand-300 hover:bg-brand-50/60 hover:shadow-card group flex h-full min-h-[7.5rem] flex-col items-center justify-center gap-2 overflow-hidden rounded-2xl border px-1.5 py-5 text-center transition-[background-color,border-color,box-shadow] duration-300 sm:px-3"
+              className="border-brand-200/70 hover:border-accent-500/70 lift shine group shadow-card flex h-full min-h-[7.5rem] flex-col items-center justify-center gap-2 overflow-hidden rounded-2xl border bg-white/85 px-1.5 py-5 text-center transition-colors sm:px-3"
             >
-              <IconChip
-                tone="brand"
-                size="md"
-                className="group-hover:bg-brand-100 transition-colors"
-              >
+              <IconChip tone="deep" size="md">
                 <OccasionIcon className="size-6" />
               </IconChip>
               <span className="text-ink w-full text-xs leading-tight font-medium text-balance wrap-anywhere sm:text-sm">

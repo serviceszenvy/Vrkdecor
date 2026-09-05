@@ -10,14 +10,6 @@ const tones: Record<CardTone, string> = {
   plain: 'border border-transparent',
 };
 
-/** Hover border tint per tone, so the lift reads as intentional, not generic. */
-const interactiveBorders: Record<CardTone, string> = {
-  surface: 'hover:border-brand-300/70 focus-within:border-brand-300/70',
-  glass: '',
-  tint: 'hover:border-brand-300 focus-within:border-brand-300',
-  plain: '',
-};
-
 /**
  * Surface container for portfolio designs, services, packages and testimonials.
  *
@@ -45,9 +37,8 @@ export function Card({
         tones[tone],
         interactive &&
           cn(
-            'group shadow-card hover:shadow-glow focus-within:shadow-glow',
-            interactiveBorders[tone],
-            'transition-[box-shadow,transform,border-color] duration-300 ease-out',
+            'shadow-card hover:shadow-raised focus-within:shadow-raised',
+            'transition-[box-shadow,transform] duration-300',
             'motion-safe:focus-within:-translate-y-1 motion-safe:hover:-translate-y-1',
           ),
         className,

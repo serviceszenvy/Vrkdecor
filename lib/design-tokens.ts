@@ -93,8 +93,16 @@ export const semanticColors = {
   surfaceSubtle: palette.sand[50],
   /** Inset panels and image placeholders. */
   surfaceMuted: palette.sand[100],
-  /** Dark surface used for the footer and full-bleed feature bands. */
+  /** Near-black surface, kept for the lightbox and admin contrasts. */
   surfaceInverse: palette.sand[950],
+  /**
+   * The deep surface: the logo's own dark olive. The hero, the value band, the
+   * closing call to action, the founder section and the footer sit on it, so
+   * the light site has a clearly visible dark layer that is still the brand.
+   */
+  surfaceDeep: palette.brand[900],
+  /** One step deeper, for the footer's lower strip and dark glass fallbacks. */
+  surfaceDeeper: palette.brand[950],
   /** Primary body and heading text. */
   ink: palette.sand[950],
   /** Secondary text, captions and metadata on white or canvas. */
@@ -106,6 +114,8 @@ export const semanticColors = {
   inkSoft: palette.sand[700],
   /** Text on dark surfaces. */
   inkInverse: '#FFFFFF',
+  /** Secondary text on the deep surface. 8.5:1 on `surfaceDeep`. */
+  inkOnDeep: '#E4EAD8',
   /** Hairlines and dividers. */
   border: palette.sand[200],
   /** Hairline on the canvas ground, where `border` reads as a hard edge. */
@@ -266,6 +276,42 @@ export const contrastContract = [
     bg: semanticColors.canvas,
     min: 3,
   },
+  {
+    name: 'inverse text on deep surface',
+    fg: semanticColors.inkInverse,
+    bg: semanticColors.surfaceDeep,
+    min: 4.5,
+  },
+  {
+    name: 'soft text on deep surface',
+    fg: semanticColors.inkOnDeep,
+    bg: semanticColors.surfaceDeep,
+    min: 4.5,
+  },
+  {
+    name: 'accent text on deep surface',
+    fg: palette.accent[300],
+    bg: semanticColors.surfaceDeep,
+    min: 4.5,
+  },
+  {
+    name: 'lime accent as large text on deep surface',
+    fg: palette.accent[500],
+    bg: semanticColors.surfaceDeep,
+    min: 3,
+  },
+  {
+    name: 'inverse text on deeper surface',
+    fg: semanticColors.inkInverse,
+    bg: semanticColors.surfaceDeeper,
+    min: 4.5,
+  },
+  {
+    name: 'focus ring on deep surface',
+    fg: palette.accent[400],
+    bg: semanticColors.surfaceDeep,
+    min: 3,
+  },
 ] as const;
 
 /**
@@ -286,12 +332,13 @@ export const glass = {
   surfaceStrong: 'rgb(255 255 255 / 0.86)',
   /** Green-tinted glass for brand moments such as the closing call to action. */
   surfaceTint: 'rgb(236 242 230 / 0.74)',
-  /** Warmer, more saturated glass for a small number of highlight moments. */
-  surfaceVivid: 'rgb(221 240 196 / 0.8)',
   /** Dark glass for chips and controls sitting on light photography. */
   surfaceInverse: 'rgb(37 37 34 / 0.42)',
+  /** Dark olive glass for cards and controls on the deep surfaces. */
+  surfaceDeep: 'rgb(36 44 28 / 0.52)',
   border: 'rgb(255 255 255 / 0.55)',
   borderSoft: 'rgb(97 118 75 / 0.16)',
+  borderDeep: 'rgb(255 255 255 / 0.16)',
   highlight: 'rgb(255 255 255 / 0.65)',
   blur: '16px',
   blurStrong: '24px',

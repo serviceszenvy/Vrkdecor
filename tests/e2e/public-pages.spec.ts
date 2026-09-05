@@ -19,11 +19,10 @@ const PAGES = [
   { path: '/', heading: /Your celebration, exactly as you pictured it/i },
   { path: '/our-work', heading: /Celebrations we have designed and set up/i },
   { path: '/services', heading: /Complete celebration solutions/i },
-  { path: '/occasions', heading: /Perfect for every occasion/i },
   { path: '/packages', heading: /Celebration packages/i },
   { path: '/gallery', heading: /Photographs from our celebrations/i },
   { path: '/about', heading: /Premium Event Design/i },
-  { path: '/contact', heading: /Talk to the VRK Decor team/i },
+  { path: '/contact', heading: /Let's plan your celebration/i },
   { path: '/privacy-policy', heading: /Privacy Policy/i },
   { path: '/terms', heading: /Terms & Conditions/i },
 ] as const;
@@ -117,14 +116,11 @@ test.describe('approved content', () => {
     await page.goto('/services');
 
     await expect(
-      page.getByRole('heading', { name: 'Delivered with trusted partner vendors' }),
+      page.getByRole('heading', { name: 'Specialists, arranged for you' }),
     ).toBeVisible();
 
-    const partnerSection = page.locator('section', {
-      has: page.getByRole('heading', {
-        name: 'Delivered with trusted partner vendors',
-      }),
-    });
+    // Every partner-delivered service carries the partner badge, and no
+    // in-house service does.
     for (const name of [
       'Makeup & Styling',
       'Sounds & Lightings',
@@ -132,22 +128,45 @@ test.describe('approved content', () => {
       'Food & Catering',
       'LED / Display Solutions',
     ]) {
-      await expect(partnerSection.getByRole('heading', { name }), name).toBeVisible();
+      const card = page.locator('li', { has: page.getByRole('heading', { name }) });
+      await expect(
+        card.getByText('With partner vendors', { exact: true }),
+        name,
+      ).toBeVisible();
     }
+    const inHouse = page.locator('li', {
+      has: page.getByRole('heading', { name: 'Floral Decoration' }),
+    });
+    await expect(
+      inHouse.getByText('With partner vendors', { exact: true }),
+    ).toHaveCount(0);
   });
 
-  test('occasions page lists all fourteen approved occasions with Tamil terms', async ({
+  test('services page carries every approved occasion with its Tamil term', async ({
     page,
   }) => {
-    await page.goto('/occasions');
+    await page.goto('/services#occasions');
 
-    const items = page.locator('ul > li');
     await expect(
-      page.getByRole('heading', { name: 'Wedding', exact: true }),
+      page.getByRole('heading', { name: /Perfect for every occasion/i }),
     ).toBeVisible();
-    await expect(page.getByText('Nichayathartham')).toBeVisible();
-    await expect(page.getByText('Valaikappu')).toBeVisible();
-    await expect(items).not.toHaveCount(0);
+    const filters = page.locator('ul[aria-labelledby="occasion-filters"] > li');
+    await expect(filters).toHaveCount(14);
+    await expect(filters.getByText('Nichayathartham')).toBeVisible();
+    await expect(filters.getByText('Valaikappu')).toBeVisible();
+    await expect(filters.getByText('Manjal Neerattu Vizha')).toBeVisible();
+  });
+
+  test('the retired Occasions page redirects permanently to Services', async ({
+    page,
+    request,
+  }) => {
+    const response = await request.get('/occasions', { maxRedirects: 0 });
+    expect(response.status()).toBe(308);
+    expect(response.headers()['location']).toContain('/services');
+
+    await page.goto('/occasions');
+    await expect(page).toHaveURL(/\/services/);
   });
 
   test('contact page exposes the approved phone, WhatsApp and email', async ({

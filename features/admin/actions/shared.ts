@@ -52,8 +52,8 @@ export function revalidatePublicPortfolio(slug?: string | null) {
 /** Refreshes the public pages that render admin-managed page content. */
 export function revalidatePublicContent() {
   revalidatePath('/');
+  // Occasions are rendered on the Services page; there is no /occasions route.
   revalidatePath('/services');
-  revalidatePath('/occasions');
   revalidatePath('/packages');
 }
 

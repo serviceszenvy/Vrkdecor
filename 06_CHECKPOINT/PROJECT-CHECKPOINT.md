@@ -1,17 +1,53 @@
 # VRK Decor — Project Checkpoint
 
 Version: 0.8.2
-Status: VISUAL REDESIGN COMPLETE, plus a public-site-only polish pass
-(glassmorphism balance, brand-coloured ambient motion, scroll-reveal, hover/
-press micro-interactions). P8 remains the last functional phase; the Admin
-Panel was intentionally not touched by the polish pass.
-Current phase: Redesign of P8 (complete) + public-site polish (complete).
-Next functional phase: P9.
-Completed phases: P1, P2, P3, P4, P5, P6, P7, P8, plus the redesign and this
-polish pass
-Last updated: 2026-09-03
+Status: UI/UX REFINEMENT V2 COMPLETE — the public website has been refined per
+the client's refinement brief (2026-09-05) on top of the 0.8.1 redesign. P8
+remains the last functional phase.
+Current phase: Refinement v2 of the public website (complete). Next functional phase: P9.
+Completed phases: P1, P2, P3, P4, P5, P6, P7, P8, the visual redesign, and this refinement
+Last updated: 2026-09-05
 
-## What this release is
+## What 0.8.2 is (read this first)
+
+The client's "Complete UI/UX, Content & Experience Refinement" brief, applied
+to the public website. The brief assumed a fully dark site; the client
+clarified that the light theme stays but must be noticeably more colourful with
+clearly visible dark sections in the logo's colours, which is what was built.
+Full detail: `06_CHECKPOINT/CHANGELOG.md` (0.8.2) and the "UI/UX refinement v2"
+section of `09_DECISIONS/DECISIONS.md`. In brief:
+
+| Brief section                         | Where it landed                                                                                               |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| 1 Hero above the fold                 | `components/page/home-hero.tsx` (`100svh` minus header, capped/floored), tighter `site-header.tsx`            |
+| 2 Four signature cards incl. birthday | `features/portfolio/components/signature-grid.tsx`; sample birthday design featured                           |
+| 3 Accordion occasion filters          | `features/portfolio/components/filter-bar.tsx`; `listFilterOptions` returns counts                            |
+| 4 Previous / Next work                | `features/portfolio/components/work-nav.tsx`, used by `app/(site)/our-work/[slug]/page.tsx`                   |
+| 5 Services revamp, stronger icons     | `app/(site)/services/page.tsx`, `lib/content/services-page.ts`, `.icon-deep`, 17 new icons                    |
+| 6 Occasions page removed              | page deleted; `/occasions` → 308 → `/services#occasions` (`next.config.ts`); nav and admin revalidate updated |
+| 7 Image-first gallery + viewer        | `photo-gallery.tsx` (masonry), `lightbox.tsx`                                                                 |
+| 8 Image-specific quote + WhatsApp URL | `captured-design.tsx`, `designEnquiryMessage(name, url)`, `absoluteDesignUrl`                                 |
+| 9 / 10 Three options, simplified form | `enquiry-options.tsx`, `quote-form.tsx`; `venue` optional and services may be empty in the validator          |
+| 11 Fewer quote CTAs                   | inner heroes point at the work; `CtaBand` is the one body-level quote action (plus page-specific ones)        |
+| 12 Contact consolidated               | `app/(site)/contact/page.tsx` embeds the quote engine; rendered per request                                   |
+| 13 / 14 / 15 About + founder          | `app/(site)/about/page.tsx`, `lib/content/founder.ts`, `components/page/founder-portrait.tsx`                 |
+| 16 Service-area section               | `components/page/service-area.tsx` on Home, About and Contact                                                 |
+| 17 Motion                             | `components/ui/reveal.tsx`, `app/(site)/template.tsx`, the motion layer in `app/globals.css`                  |
+| 18 Colour direction                   | `surface-deep` and the aurora/bloom surfaces; light ground kept per the client                                |
+| 21 Zenvy link                         | `components/layout/site-footer.tsx` (`ZENVY_URL`)                                                             |
+
+**The one business-rule adjustment.** `lib/validation/enquiry.ts` no longer
+requires a venue or at least one service, because the simplified form does not
+ask for them. `enquiries.venue` was already nullable and
+`enquiries.required_services` already defaulted to an empty array, so there is
+no migration and nothing downstream breaks (the confirmation email prints
+"Location" instead of "Venue" when there is no venue). Everything else about
+the quote engine is untouched.
+
+**Replacement points added.** `lib/content/founder.ts` (`portrait`) for the
+founder photograph, alongside the existing `lib/content/hero-media.ts`.
+
+## What the 0.8.1 release was
 
 A design-only release on top of the verified Prompt 8 codebase. It changed how
 the application looks and what it says to a customer. It changed nothing about
@@ -226,19 +262,26 @@ run. They have **not** been applied to any Supabase project.
 | `20260901090000_enquiry_source_image.sql` | `enquiries.selected_image_id` and its trigger |
 | `20260901120000_admin_media_ordering.sql` | `set_design_cover`, `move_design_image`       |
 
-## Tests and results (run 2026-09-01 in this repository)
+## Tests and results (run 2026-09-05 in this repository, 0.8.2)
 
-| Command                        | Result                                                |
-| ------------------------------ | ----------------------------------------------------- |
-| `npm run format:check`         | PASS                                                  |
-| `npm run lint`                 | PASS — 0 errors, 0 warnings                           |
-| `npm run typecheck`            | PASS — 0 errors                                       |
-| `npm test`                     | PASS — 27 files, 364 tests (was 350)                  |
-| `npm run test:db`              | PASS — 7 files, 125 tests, against real PostgreSQL 16 |
-| `npm run test:e2e`             | PASS — 238 tests, 2 projects (desktop and mobile)     |
-| `npm run build`                | PASS — 24 routes + 6 design pages + proxy             |
-| `npm run verify:bundle`        | PASS — no server-only secret in client assets         |
-| `npm audit --audit-level=high` | PASS — 0 vulnerabilities                              |
+| Command                        | Result                                                                        |
+| ------------------------------ | ----------------------------------------------------------------------------- |
+| `npm run format:check`         | PASS                                                                          |
+| `npm run lint`                 | PASS — 0 errors, 0 warnings                                                   |
+| `npm run typecheck`            | PASS — 0 errors                                                               |
+| `npm test`                     | PASS — 27 files, 373 tests (was 364)                                          |
+| `npm run test:db`              | NOT RUN this session (no PostgreSQL available); no migration or query changed |
+| `npm run test:e2e`             | PASS — 240 tests, 2 projects (desktop and mobile Chrome)                      |
+| `npm run build`                | PASS — 23 routes + 6 design pages + proxy (Occasions removed)                 |
+| `npm run verify:bundle`        | PASS — no server-only secret in client assets                                 |
+| `npm audit --audit-level=high` | PASS — 0 vulnerabilities                                                      |
+
+Visual verification was done against the production build at 1440×900,
+1366×768, 820×1180 and 390×844: the home hero ends at 878px on a 900px
+viewport and 746px on a 768px viewport, no page has horizontal overflow at any
+width, every reveal is visible with reduced motion and with JavaScript
+disabled, the filter accordion opens from the keyboard and its hidden chips are
+inert while closed, and the lightbox returns focus to its thumbnail.
 
 Fourteen unit tests were added, all of them about the design system: token
 parity for the new surfaces, radii and glass values, the blur ceiling, the
@@ -267,16 +310,22 @@ regression: private reference images are still rendered with a plain `<img>` and
 
 ## Known issues
 
-**Pre-existing, discovered during the 0.8.2 polish pass, unrelated to it:**
-`tests/unit/admin-authorization.test.ts` fails against the current
-`features/admin/actions/auth.ts` and `shared.ts` (`signInAction` and the
-`shared.ts` exports are not recognised as guarded/exported the way the test
-expects). Confirmed by stashing every 0.8.2 change and re-running the suite —
-the failure reproduces identically on the unmodified 0.8.1 code, so it predates
-this pass. Not investigated further because the Admin Panel was out of scope
-for 0.8.2. Needs a look before the next Admin Panel phase.
+Refinement-specific (0.8.2):
 
-Redesign-specific:
+- **The founder portrait is a placeholder** (a designed silhouette). Replace it
+  in `lib/content/founder.ts`.
+- **The celebration categories on Services** (haldi, destination and beach
+  weddings, church decor, openings, car decor, Kerala weddings, temple-style
+  ceremonies) were requested in the brief and are presentation only, each
+  linked to an approved occasion. They need the client's confirmation.
+- **Venue and services are no longer asked on the form.** The team collects
+  them on the follow-up call. If the client wants them back, restore the two
+  fields in `quote-form.tsx` and the two rules in `lib/validation/enquiry.ts`.
+- **`DesignRail` is unused** on the home page and kept for possible reuse.
+- **The database test suite was not run** in this session (no PostgreSQL). No
+  migration, query or storage helper changed.
+
+Redesign-specific (0.8.1):
 
 - **The hero and portfolio images are generated placeholders.** They read as
   green foliage and blossom, which suits the brand, but they are not
@@ -359,6 +408,11 @@ Carried over from P8 and earlier, all unchanged:
 ## Next action
 
 Execute `05_PROMPTS/09-SEO-ANALYTICS.md` (P9 — SEO and analytics).
+
+Note for P9 from this refinement: `/occasions` is a permanent redirect and
+must not appear in the sitemap; `/services#occasions` is the canonical home of
+the occasions content. `/contact` is now a dynamic route (it embeds the quote
+form).
 
 **Do not start it automatically.**
 

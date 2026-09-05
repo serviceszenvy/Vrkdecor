@@ -5,4 +5,6 @@ export { FilterBar } from './filter-bar';
 export { Lightbox } from './lightbox';
 export { PhotoGallery } from './photo-gallery';
 export { SampleContentNotice } from './sample-content-notice';
+export { SignatureGrid } from './signature-grid';
 export { VideoEmbed } from './video-embed';
+export { WorkNav } from './work-nav';

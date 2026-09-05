@@ -37,7 +37,7 @@ export type ConfirmationDetails = {
   email: string;
   eventType: string;
   eventDate: string;
-  venue: string;
+  venue: string | null;
   city: string;
   requiredServices: string[];
   designName: string | null;
@@ -90,7 +90,10 @@ function summaryRows(details: ConfirmationDetails): [string, string][] {
   if (details.designName) rows.push(['Design you chose', details.designName]);
   rows.push(['Occasion', occasionNames.get(details.eventType) ?? details.eventType]);
   rows.push(['Date', formatEventDate(details.eventDate)]);
-  rows.push(['Venue', `${details.venue}, ${details.city}`]);
+  rows.push([
+    details.venue ? 'Venue' : 'Location',
+    details.venue ? `${details.venue}, ${details.city}` : details.city,
+  ]);
   rows.push([
     'Services',
     details.requiredServices.map((slug) => serviceNames.get(slug) ?? slug).join(', ') ||

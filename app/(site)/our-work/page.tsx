@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { CtaBand, EmptyState, Hero } from '@/components/page';
-import { ButtonLink, Section } from '@/components/ui';
+import { ButtonLink, Reveal, Section } from '@/components/ui';
 import {
   DesignGrid,
   FilterBar,
@@ -27,6 +27,9 @@ export const metadata: Metadata = pageMetadata({
  * Filters are query parameters, so each filtered view is linkable and works
  * without JavaScript. Only published Designs are ever listed; Row Level
  * Security is the boundary and the query filter is defence in depth.
+ *
+ * The page body carries one quote action, the closing band. The hero points
+ * at the gallery instead, because on this page the work is the point.
  */
 export default async function OurWorkPage({
   searchParams,
@@ -59,8 +62,8 @@ export default async function OurWorkPage({
         accent="designed and set up"
         lead="Browse by occasion, style or service. When you find a setting you like, ask for a quote and the design comes with your request."
         actions={
-          <ButtonLink href={routes.quote} variant="primary" size="lg">
-            Get a Quote
+          <ButtonLink href={routes.gallery} variant="glass-deep" size="lg">
+            Open the photo gallery
           </ButtonLink>
         }
       />
@@ -76,7 +79,9 @@ export default async function OurWorkPage({
           </div>
         ) : null}
 
-        <FilterBar options={options} filters={filters} resultCount={designs.length} />
+        <Reveal>
+          <FilterBar options={options} filters={filters} resultCount={designs.length} />
+        </Reveal>
 
         <div className="mt-8">
           {designs.length > 0 ? (
@@ -96,8 +101,8 @@ export default async function OurWorkPage({
               title="The portfolio is being prepared"
               body="We are adding our designs and photographs. Tell us about your celebration and we will share relevant work with you directly."
               action={
-                <ButtonLink href={routes.quote} variant="primary" size="md">
-                  Get a Quote
+                <ButtonLink href={routes.contact} variant="primary" size="md">
+                  Tell us about your celebration
                 </ButtonLink>
               }
             />

@@ -13,9 +13,12 @@ const DISPLAY_PHONE = '+91 99940 72435';
  * Site header.
  *
  * A floating glass container rather than a full-width bar: it hovers over the
- * hero photography, so the picture starts at the top of the page instead of
- * below a band of interface. It stays sticky, so "Get a Quote" is reachable
- * from anywhere on a long portfolio page.
+ * hero, so the picture starts at the top of the page instead of below a band
+ * of interface. It stays sticky, so "Get a Quote" is reachable from anywhere
+ * on a long portfolio page.
+ *
+ * Its height is deliberately tight (`--header-height` in globals.css) because
+ * the home hero is sized to fit the first desktop viewport underneath it.
  *
  * The container carries `backdrop-filter`, which makes it a containing block
  * for fixed descendants and its own stacking context. That is why the mobile
@@ -24,10 +27,10 @@ const DISPLAY_PHONE = '+91 99940 72435';
  */
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-50 pt-2 sm:pt-3 lg:pt-4">
+    <header className="sticky top-0 z-50 pt-2 sm:pt-2.5 lg:pt-3">
       <Container width="wide">
-        <div className="glass-surface-strong glass-edge rounded-[1.6rem] px-3 py-2 sm:px-4 lg:rounded-[1.75rem] lg:px-5">
-          <div className="flex min-h-14 items-center justify-between gap-3 sm:min-h-16">
+        <div className="glass-surface-strong glass-edge rounded-[1.6rem] px-3 py-1.5 sm:px-4 lg:rounded-[1.75rem] lg:px-5">
+          <div className="flex min-h-13 items-center justify-between gap-3 lg:min-h-14">
             <Logo priority />
 
             <NavLinks />
@@ -56,7 +59,7 @@ export function SiteHeader() {
               <a
                 href={telHref}
                 aria-label={`Call ${siteConfig.name} on ${DISPLAY_PHONE}`}
-                className="glass-surface text-brand-700 hover:text-brand-800 inline-flex size-11 items-center justify-center rounded-full transition-[background-color,color,transform] duration-200 hover:bg-white motion-safe:active:scale-90 xl:hidden"
+                className="glass-surface text-brand-700 hover:text-brand-900 inline-flex size-11 items-center justify-center rounded-full transition-[color,background-color,transform] duration-300 hover:bg-white motion-safe:hover:scale-105 xl:hidden"
               >
                 <PhoneIcon />
               </a>

@@ -3,16 +3,19 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { CtaBand } from '@/components/page';
-import { Badge, ButtonLink, ImageFrame, Section } from '@/components/ui';
+import { Badge, ButtonLink, Reveal, Section } from '@/components/ui';
+import { ArrowLeftIcon, ArrowRightIcon } from '@/components/layout/icons';
 import {
   PhotoGallery,
   SampleContentNotice,
   VideoEmbed,
+  WorkNav,
 } from '@/features/portfolio/components';
 import {
   designQuoteHref,
   getDesignBySlug,
   isShowingSampleContent,
+  listDesigns,
   listDesignSlugs,
   toPhotos,
 } from '@/features/portfolio';
@@ -62,17 +65,29 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
  * all of that context; only alt text can be overridden per image. There is no
  * separate record for a related photograph.
  *
+ * Previous / Next navigation lets a visitor move through the whole collection
+ * without returning to Our Work. The order is the listing order, so it is the
+ * same sequence they were browsing.
+ *
  * A draft, archived or unknown slug produces a 404 that reveals nothing about
  * whether the Design exists.
  */
 export default async function DesignDetailPage({ params }: Params) {
   const { slug } = await params;
-  const design = await getDesignBySlug(slug);
+  const [design, collection] = await Promise.all([
+    getDesignBySlug(slug),
+    listDesigns(),
+  ]);
 
   if (!design) notFound();
 
   const photos = toPhotos([design]);
   const [cover, ...related] = photos;
+  const index = collection.findIndex((entry) => entry.slug === design.slug);
+  const position =
+    index >= 0
+      ? `${String(index + 1).padStart(2, '0')} / ${String(collection.length).padStart(2, '0')}`
+      : null;
 
   return (
     <div className="flex flex-col gap-4 pb-4 sm:gap-6 sm:pb-6">
@@ -81,6 +96,7 @@ export default async function DesignDetailPage({ params }: Params) {
         spacing="compact"
         width="wide"
         aria-labelledby="design-title"
+        className="pt-2 sm:pt-2.5 lg:pt-3"
       >
         {isShowingSampleContent() ? (
           <div className="mb-8">
@@ -88,13 +104,23 @@ export default async function DesignDetailPage({ params }: Params) {
           </div>
         ) : null}
 
-        <nav aria-label="Breadcrumb" className="mb-6">
+        <nav
+          aria-label="Breadcrumb"
+          className="mb-6 flex flex-wrap items-center justify-between gap-3"
+        >
           <Link
             href={routes.work}
-            className="text-brand-700 inline-flex min-h-9 items-center text-sm underline underline-offset-4"
+            className="text-brand-800 hover:text-brand-900 inline-flex min-h-9 items-center gap-1.5 text-sm font-medium underline-offset-4 hover:underline"
           >
-            &larr; All designs
+            <ArrowLeftIcon className="size-4" />
+            All designs
           </Link>
+          {position ? (
+            <span className="text-ink-muted text-sm tabular-nums">
+              <span className="sr-only">Design </span>
+              {position}
+            </span>
+          ) : null}
         </nav>
 
         {/*
@@ -104,27 +130,40 @@ export default async function DesignDetailPage({ params }: Params) {
           `priority`.
         */}
         {cover ? (
-          <ImageFrame ratio="wide" radius="2xl" className="mb-10">
-            <Image
-              src={cover.image.url}
-              alt={cover.image.alt}
-              fill
-              priority
-              sizes="(min-width: 1024px) 80vw, 100vw"
-              className="object-cover"
-            />
-          </ImageFrame>
+          <Reveal effect="mask" className="mb-8 sm:mb-10">
+            <div className="bg-surface-muted shadow-deep relative isolate aspect-[4/3] w-full overflow-hidden rounded-[1.75rem] sm:aspect-[16/9] lg:aspect-[21/9]">
+              <Image
+                src={cover.image.url}
+                alt={cover.image.alt}
+                fill
+                priority
+                sizes="(min-width: 1024px) 80vw, 100vw"
+                className="object-cover"
+              />
+              <div
+                aria-hidden="true"
+                className="from-brand-950/60 absolute inset-0 bg-gradient-to-t via-transparent to-transparent"
+              />
+              <div className="absolute inset-x-0 bottom-0 flex flex-wrap items-end justify-between gap-3 p-5 sm:p-7">
+                <div className="flex flex-wrap gap-2">
+                  {design.occasion ? (
+                    <Badge tone="lime">{design.occasion.name}</Badge>
+                  ) : null}
+                  {design.featured ? <Badge tone="glass">Featured</Badge> : null}
+                </div>
+                {design.location ? (
+                  <p className="text-sm font-medium text-white/90">{design.location}</p>
+                ) : null}
+              </div>
+            </div>
+          </Reveal>
         ) : null}
 
         <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr] lg:gap-14">
-          <div className="flex flex-col gap-5">
+          <Reveal effect="left" className="flex flex-col gap-5">
             <div className="flex flex-wrap gap-2">
-              {design.occasion ? (
-                <Badge tone="brand">{design.occasion.name}</Badge>
-              ) : null}
-              {design.featured ? <Badge tone="accent">Featured</Badge> : null}
               {design.styles.map((style) => (
-                <Badge key={style.slug} tone="neutral">
+                <Badge key={style.slug} tone="brand">
                   {style.name}
                 </Badge>
               ))}
@@ -134,12 +173,10 @@ export default async function DesignDetailPage({ params }: Params) {
               {design.name}
             </h1>
 
-            {design.location ? (
-              <p className="text-ink-muted text-lg">{design.location}</p>
-            ) : null}
-
             {design.description ? (
-              <p className="text-ink-muted text-lg">{design.description}</p>
+              <p className="text-ink-muted text-lg leading-relaxed">
+                {design.description}
+              </p>
             ) : null}
 
             <div className="mt-2 flex flex-wrap gap-3">
@@ -150,68 +187,87 @@ export default async function DesignDetailPage({ params }: Params) {
                 data-testid="design-quote-cta"
               >
                 Get Quote for This Design
+                <ArrowRightIcon className="size-4" />
               </ButtonLink>
             </div>
-          </div>
+          </Reveal>
 
-          <dl className="border-brand-200/60 from-brand-50 to-surface-tint shadow-card flex flex-col gap-4 rounded-3xl border bg-gradient-to-br p-6 sm:p-7">
-            {design.occasion ? (
-              <div>
-                <dt className="text-ink-muted text-2xs tracking-[0.16em] uppercase">
-                  Occasion
-                </dt>
-                <dd className="text-ink">{design.occasion.name}</dd>
-              </div>
-            ) : null}
+          <Reveal
+            effect="right"
+            delay={120}
+            as="div"
+            className="surface-bloom border-brand-200/60 shadow-card flex flex-col gap-4 rounded-3xl border p-6 sm:p-7"
+          >
+            <dl className="flex flex-col gap-4">
+              {design.occasion ? (
+                <div>
+                  <dt className="text-brand-800 text-2xs font-semibold tracking-[0.16em] uppercase">
+                    Occasion
+                  </dt>
+                  <dd className="text-ink mt-0.5">{design.occasion.name}</dd>
+                </div>
+              ) : null}
 
-            {design.styles.length > 0 ? (
+              {design.location ? (
+                <div>
+                  <dt className="text-brand-800 text-2xs font-semibold tracking-[0.16em] uppercase">
+                    Location
+                  </dt>
+                  <dd className="text-ink mt-0.5">{design.location}</dd>
+                </div>
+              ) : null}
+
+              {design.styles.length > 0 ? (
+                <div>
+                  <dt className="text-brand-800 text-2xs font-semibold tracking-[0.16em] uppercase">
+                    Style
+                  </dt>
+                  <dd className="text-ink mt-0.5">
+                    {design.styles.map((style) => style.name).join(', ')}
+                  </dd>
+                </div>
+              ) : null}
+
+              {design.services.length > 0 ? (
+                <div>
+                  <dt className="text-brand-800 text-2xs font-semibold tracking-[0.16em] uppercase">
+                    Services
+                  </dt>
+                  <dd className="text-ink mt-0.5">
+                    {design.services.map((service) => service.name).join(', ')}
+                  </dd>
+                </div>
+              ) : null}
+
               <div>
-                <dt className="text-ink-muted text-2xs tracking-[0.16em] uppercase">
-                  Style
+                <dt className="text-brand-800 text-2xs font-semibold tracking-[0.16em] uppercase">
+                  Pricing
                 </dt>
-                <dd className="text-ink">
-                  {design.styles.map((style) => style.name).join(', ')}
+                <dd className="text-ink mt-0.5">
+                  {design.quoteMode === 'starting_from' && design.startingPrice !== null
+                    ? `Starting from ${new Intl.NumberFormat('en-IN', {
+                        style: 'currency',
+                        currency: 'INR',
+                        maximumFractionDigits: 0,
+                      }).format(design.startingPrice / 100)}`
+                    : 'Custom quote'}
                 </dd>
               </div>
-            ) : null}
-
-            {design.services.length > 0 ? (
-              <div>
-                <dt className="text-ink-muted text-2xs tracking-[0.16em] uppercase">
-                  Services
-                </dt>
-                <dd className="text-ink">
-                  {design.services.map((service) => service.name).join(', ')}
-                </dd>
-              </div>
-            ) : null}
-
-            <div>
-              <dt className="text-ink-muted text-2xs tracking-[0.16em] uppercase">
-                Pricing
-              </dt>
-              <dd className="text-ink">
-                {design.quoteMode === 'starting_from' && design.startingPrice !== null
-                  ? `Starting from ${new Intl.NumberFormat('en-IN', {
-                      style: 'currency',
-                      currency: 'INR',
-                      maximumFractionDigits: 0,
-                    }).format(design.startingPrice / 100)}`
-                  : 'Custom quote'}
-              </dd>
-            </div>
-          </dl>
+            </dl>
+          </Reveal>
         </div>
       </Section>
 
       <Section tone="panel" width="wide" aria-labelledby="gallery">
-        <h2 id="gallery" className="font-display text-3xl font-medium">
-          Gallery
-        </h2>
-        <p className="text-ink-muted mt-2">
-          {photos.length} {photos.length === 1 ? 'photograph' : 'photographs'} from this
-          design. Open any one of them to ask for a quote.
-        </p>
+        <Reveal>
+          <h2 id="gallery" className="font-display text-3xl font-medium">
+            Gallery
+          </h2>
+          <p className="text-ink-muted mt-2">
+            {photos.length} {photos.length === 1 ? 'photograph' : 'photographs'} from
+            this design. Open any one of them to ask for a quote.
+          </p>
+        </Reveal>
 
         <div className="mt-8">
           {photos.length > 0 ? (
@@ -245,7 +301,11 @@ export default async function DesignDetailPage({ params }: Params) {
         </Section>
       ) : null}
 
+      <WorkNav designs={collection} current={design} />
+
       <CtaBand
+        eyebrow="Like this design?"
+        quoteHref={designQuoteHref(design.slug)}
         title={`Interested in ${design.name}?`}
         accent="Let us know your date."
         lead="Send a quote request and we will come back to you on the phone or on WhatsApp. The design you picked comes with it, so there is nothing to describe again."
