@@ -315,7 +315,7 @@ export function QuoteForm({
             defaultChecked={value('consent') === 'on'}
             aria-invalid={state.errors.consent ? true : undefined}
             aria-describedby={state.errors.consent ? 'error-consent' : undefined}
-            className="accent-brand-700 mt-0.5 size-5 shrink-0"
+            className="accent-brand-700 mt-0.5 size-6 shrink-0 sm:size-5"
           />
           <span className="text-sm">
             I agree that VRK Decor may contact me by phone, WhatsApp or email about this

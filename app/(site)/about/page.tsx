@@ -8,7 +8,14 @@ import {
   StatBar,
   type Stat,
 } from '@/components/page';
-import { ButtonLink, IconChip, Reveal, Section, SectionHeading } from '@/components/ui';
+import {
+  ButtonLink,
+  IconChip,
+  Parallax,
+  Reveal,
+  Section,
+  SectionHeading,
+} from '@/components/ui';
 import {
   ArrowRightIcon,
   CalendarIcon,
@@ -69,7 +76,7 @@ export default function AboutPage() {
   ];
 
   return (
-    <div className="flex flex-col gap-4 pb-4 sm:gap-6 sm:pb-6">
+    <div className="flex flex-col gap-3 pb-3 sm:gap-6 sm:pb-6">
       <Hero
         eyebrow="About VRK Decor"
         title={positioning.headline}
@@ -90,17 +97,19 @@ export default function AboutPage() {
       <StatBar stats={stats} />
 
       <Section tone="panel" width="wide" aria-labelledby="our-story">
-        <div className="grid gap-10 lg:grid-cols-[1fr_1.05fr] lg:items-center lg:gap-16">
+        <div className="grid gap-7 sm:gap-10 lg:grid-cols-[1fr_1.05fr] lg:items-center lg:gap-16">
           <Reveal effect="mask" className="order-last lg:order-first">
-            <div className="from-brand-700 via-brand-800 to-brand-950 shadow-deep relative aspect-[4/5] w-full overflow-hidden rounded-[2rem] bg-gradient-to-br sm:aspect-[5/4] lg:aspect-[4/5]">
+            <div className="from-brand-700 via-brand-800 to-brand-950 shadow-deep relative aspect-[4/5] w-full overflow-hidden rounded-[1.75rem] bg-gradient-to-br sm:aspect-[5/4] sm:rounded-[2rem] lg:aspect-[4/5]">
               {heroImage.src ? (
-                <Image
-                  src={heroImage.src}
-                  alt={heroImage.alt}
-                  fill
-                  sizes="(min-width: 1024px) 40vw, 100vw"
-                  className="object-cover"
-                />
+                <Parallax strength={18} className="absolute inset-x-0 -inset-y-[7%]">
+                  <Image
+                    src={heroImage.src}
+                    alt={heroImage.alt}
+                    fill
+                    sizes="(min-width: 1024px) 40vw, 100vw"
+                    className="object-cover"
+                  />
+                </Parallax>
               ) : null}
               <div
                 aria-hidden="true"
@@ -117,7 +126,7 @@ export default function AboutPage() {
             </div>
           </Reveal>
 
-          <Reveal effect="right" className="flex flex-col gap-5">
+          <Reveal effect="right" className="flex flex-col gap-4 sm:gap-5">
             <SectionHeading
               id="our-story"
               eyebrow="Our story"
@@ -157,7 +166,7 @@ export default function AboutPage() {
             accent="your day"
           />
         </Reveal>
-        <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <ul className="mt-7 grid gap-3 sm:mt-10 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
           {whyChooseUs.map((point, index) => {
             const PointIcon = VALUE_ICONS[index] ?? FlowerIcon;
             return (
@@ -166,7 +175,7 @@ export default function AboutPage() {
                 key={point.title}
                 delay={index * 100}
                 effect="scale"
-                className="group border-brand-200/70 lift shine shadow-card flex flex-col gap-3 rounded-2xl border bg-white/90 p-5 sm:p-6"
+                className="group border-brand-200/70 lift shine press shadow-card flex flex-row items-start gap-3.5 rounded-2xl border bg-white/90 p-4 sm:flex-col sm:gap-3 sm:p-6"
               >
                 <IconChip tone="deep" size="lg">
                   <PointIcon className="size-6" />
@@ -195,7 +204,7 @@ export default function AboutPage() {
           className="ambient-blob ambient-blob-slow bg-brand-400/35 -bottom-40 -left-24 size-[24rem]"
         />
 
-        <div className="grid gap-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-center lg:gap-16">
+        <div className="grid gap-7 sm:gap-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-center lg:gap-16">
           <Reveal effect="scale" className="pb-6">
             <FounderPortrait
               portrait={founder.portrait}
@@ -204,12 +213,12 @@ export default function AboutPage() {
             />
           </Reveal>
 
-          <Reveal effect="right" delay={120} className="flex flex-col gap-5">
+          <Reveal effect="right" delay={120} className="flex flex-col gap-4 sm:gap-5">
             <p className="text-accent-300 text-2xs inline-flex items-center gap-2.5 font-semibold tracking-[0.24em] uppercase">
               <span className="bg-accent-400 inline-block size-2 rounded-full shadow-[0_0_0_4px_rgb(142_200_64/0.25)]" />
               {founder.role}
             </p>
-            <h2 id="founder-heading" className="text-4xl font-medium sm:text-5xl">
+            <h2 id="founder-heading" className="text-3xl font-medium sm:text-5xl">
               <span className="text-gradient-lime">{founder.name}</span>
             </h2>
             <p className="text-lg leading-relaxed text-white">{founder.intro}</p>
@@ -238,7 +247,7 @@ export default function AboutPage() {
       </Section>
 
       <Section tone="panel" width="wide" aria-labelledby="how-we-work">
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
+        <div className="grid gap-7 sm:gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
           <Reveal effect="left" className="lg:sticky lg:top-28 lg:self-start">
             <SectionHeading
               id="how-we-work"
@@ -260,12 +269,12 @@ export default function AboutPage() {
                 key={step.title}
                 delay={index * 120}
                 effect="left"
-                className="group relative flex gap-5 py-3 pl-1"
+                className="group relative flex gap-4 py-2.5 pl-1 sm:gap-5 sm:py-3"
               >
                 <span className="bg-brand-900 text-accent-300 ring-accent-500/40 relative z-10 flex size-9 shrink-0 items-center justify-center rounded-full text-sm font-semibold ring-4 ring-offset-2 ring-offset-white transition-transform duration-500 group-hover:scale-110">
                   {index + 1}
                 </span>
-                <div className="border-line-soft lift shadow-card flex flex-1 flex-col gap-1.5 rounded-2xl border bg-white p-5">
+                <div className="border-line-soft lift shadow-card flex flex-1 flex-col gap-1.5 rounded-2xl border bg-white p-4 sm:p-5">
                   <h3 className="font-display text-xl font-medium">{step.title}</h3>
                   <p className="text-ink-muted text-sm leading-relaxed">{step.body}</p>
                 </div>

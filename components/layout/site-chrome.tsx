@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { SkipLink } from '@/components/ui';
+import { ScrollProgress } from './scroll-progress';
 import { SiteFooter } from './site-footer';
 import { SiteHeader } from './site-header';
 import { StickyMobileCta } from './sticky-mobile-cta';
@@ -26,6 +27,7 @@ export function SiteChrome({ children }: { children: ReactNode }) {
   return (
     <div className="canvas-wash flex flex-1 flex-col">
       <SkipLink />
+      <ScrollProgress />
       <SiteHeader />
       <main id="main" tabIndex={-1} className="pb-mobile-cta flex-1">
         {children}

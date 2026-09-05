@@ -1,6 +1,7 @@
 export { Logo } from './logo';
 export { MobileNav } from './mobile-nav';
 export { NavLinks } from './nav-links';
+export { ScrollProgress } from './scroll-progress';
 export { SiteChrome } from './site-chrome';
 export { SiteFooter } from './site-footer';
 export { SiteHeader } from './site-header';

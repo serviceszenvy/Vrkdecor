@@ -70,7 +70,7 @@ export function PhotoGallery({
               }}
               onClick={() => setOpenIndex(index)}
               data-testid="gallery-thumb"
-              className="group shadow-card hover:shadow-deep relative block w-full cursor-zoom-in overflow-hidden rounded-2xl text-left transition-shadow duration-500"
+              className="group press shadow-card hover:shadow-deep relative block w-full cursor-zoom-in overflow-hidden rounded-xl text-left transition-shadow duration-500 sm:rounded-2xl"
             >
               {layout === 'masonry' ? (
                 <span

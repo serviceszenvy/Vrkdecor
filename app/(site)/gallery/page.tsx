@@ -31,7 +31,7 @@ export default async function GalleryPage() {
   const photos = toPhotos(designs);
 
   return (
-    <div className="flex flex-col gap-4 pb-4 sm:gap-6 sm:pb-6">
+    <div className="flex flex-col gap-3 pb-3 sm:gap-6 sm:pb-6">
       <Hero
         compact
         eyebrow="Gallery"

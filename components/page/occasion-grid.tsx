@@ -63,23 +63,31 @@ export type OccasionTile = {
  */
 export function OccasionGrid({ occasions }: { occasions: readonly OccasionTile[] }) {
   return (
-    <ul className="grid grid-cols-3 gap-3 sm:gap-4 lg:grid-cols-6">
+    <ul className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-4 lg:grid-cols-6">
       {occasions.map((occasion, index) => {
         const OccasionIcon = OCCASION_ICONS[occasion.slug] ?? CalendarIcon;
         return (
           <Reveal as="li" key={occasion.slug} delay={index * 70} effect="scale">
             <Link
               href={`${routes.work}?occasion=${encodeURIComponent(occasion.slug)}`}
-              className="border-brand-200/70 hover:border-accent-500/70 lift shine group shadow-card flex h-full min-h-[7.5rem] flex-col items-center justify-center gap-2 overflow-hidden rounded-2xl border bg-white/85 px-1.5 py-5 text-center transition-colors sm:px-3"
+              className="border-brand-200/70 hover:border-accent-500/70 lift shine press group shadow-card flex h-full min-h-[7.25rem] flex-col items-center justify-center gap-2 overflow-hidden rounded-2xl border bg-white/85 px-2.5 py-4 text-center transition-colors sm:min-h-[7.5rem] sm:px-3 sm:py-5"
             >
               <IconChip tone="deep" size="md">
                 <OccasionIcon className="size-6" />
               </IconChip>
-              <span className="text-ink w-full text-xs leading-tight font-medium text-balance wrap-anywhere sm:text-sm">
+              {/*
+                `wrap-anywhere` used to be on both of these. At three tiles
+                across a 393px screen it was splitting the Tamil terms through
+                the middle of a word — "Nichayathartha / m" — which is worse
+                than a tile that is a line taller. Two across gives every term
+                room to break at a space, and `hyphens: auto` handles the one
+                that still cannot.
+              */}
+              <span className="text-ink w-full text-xs leading-tight font-medium text-pretty hyphens-auto sm:text-sm">
                 {occasion.name}
               </span>
               {occasion.secondaryTerm ? (
-                <span className="text-ink-muted w-full text-[0.66rem] leading-tight text-balance wrap-anywhere">
+                <span className="text-ink-muted w-full text-[0.75rem] leading-tight text-pretty hyphens-auto">
                   {occasion.secondaryTerm}
                 </span>
               ) : null}

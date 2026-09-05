@@ -67,8 +67,27 @@ export function Lightbox({
   useEffect(() => {
     if (!isOpen) return;
 
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    /*
+     * `overflow: hidden` on the body does not hold the page still on iOS
+     * Safari; pinning it at its current offset does. See `MobileNav`, which
+     * locks the page the same way for the navigation sheet.
+     */
+    const { body } = document;
+    const lockedScrollY = window.scrollY;
+    const previousBodyStyle = {
+      position: body.style.position,
+      top: body.style.top,
+      left: body.style.left,
+      right: body.style.right,
+      width: body.style.width,
+      overflow: body.style.overflow,
+    };
+    body.style.position = 'fixed';
+    body.style.top = `-${lockedScrollY}px`;
+    body.style.left = '0';
+    body.style.right = '0';
+    body.style.width = '100%';
+    body.style.overflow = 'hidden';
 
     const focusable = dialogRef.current?.querySelectorAll<HTMLElement>(
       'a[href], button:not([disabled])',
@@ -109,7 +128,13 @@ export function Lightbox({
     document.addEventListener('keydown', onKeyDown);
     return () => {
       document.removeEventListener('keydown', onKeyDown);
-      document.body.style.overflow = previousOverflow;
+      body.style.position = previousBodyStyle.position;
+      body.style.top = previousBodyStyle.top;
+      body.style.left = previousBodyStyle.left;
+      body.style.right = previousBodyStyle.right;
+      body.style.width = previousBodyStyle.width;
+      body.style.overflow = previousBodyStyle.overflow;
+      window.scrollTo({ top: lockedScrollY, behavior: 'instant' as ScrollBehavior });
     };
   }, [isOpen, goTo, onClose]);
 
@@ -127,6 +152,12 @@ export function Lightbox({
       data-testid="lightbox"
       ref={dialogRef}
       className="on-deep bg-brand-950/92 motion-safe:animate-fade-in fixed inset-0 z-50 flex flex-col text-white backdrop-blur-md"
+      style={{
+        paddingTop: 'var(--safe-top)',
+        paddingBottom: 'var(--safe-bottom)',
+        paddingLeft: 'var(--safe-left)',
+        paddingRight: 'var(--safe-right)',
+      }}
       onTouchStart={(event) => {
         const touch = event.changedTouches[0];
         if (touch) touchStart.current = { x: touch.clientX, y: touch.clientY };
@@ -157,7 +188,7 @@ export function Lightbox({
         <div className="from-brand-950/70 to-brand-950/90 absolute inset-0 bg-gradient-to-b via-transparent" />
       </div>
 
-      <div className="flex items-center justify-between gap-4 px-4 py-3 sm:px-6">
+      <div className="flex shrink-0 items-center justify-between gap-4 px-3 py-2.5 sm:px-6 sm:py-3">
         <p
           className="glass-surface-deep inline-flex min-h-9 items-center rounded-full px-3 text-sm tabular-nums"
           aria-live="polite"
@@ -168,7 +199,7 @@ export function Lightbox({
           type="button"
           onClick={onClose}
           data-testid="lightbox-close"
-          className="glass-surface-deep hover:border-accent-400/60 inline-flex size-11 items-center justify-center rounded-full transition-[border-color,transform] duration-300 motion-safe:hover:rotate-90"
+          className="glass-surface-deep press hover:border-accent-400/60 inline-flex size-11 items-center justify-center rounded-full transition-[border-color,transform] duration-300 motion-safe:hover:rotate-90"
         >
           <CloseIcon />
           <span className="sr-only">Close gallery</span>

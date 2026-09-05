@@ -1,6 +1,6 @@
 import type { CSSProperties, ReactNode } from 'react';
 import Image from 'next/image';
-import { Container, GlassPanel, IconChip } from '@/components/ui';
+import { Container, GlassPanel, IconChip, Parallax } from '@/components/ui';
 import { cn } from '@/lib/cn';
 import { GemIcon, ShieldIcon, SparkIcon, StarIcon } from '@/components/layout/icons';
 import { credentials, heroAssurances, heroCopy, heroImage } from '@/lib/content';
@@ -33,12 +33,16 @@ const EVENTS_FIGURE = credentials.find((c) => c.label === 'Events delivered');
 export function HomeHero({ actions }: { actions: ReactNode }) {
   return (
     <section
-      className="px-3 pt-2 sm:px-5 sm:pt-2.5 lg:px-6 lg:pt-3"
+      className="pt-2 sm:pt-2.5 lg:pt-3"
+      style={{
+        paddingLeft: 'calc(0.625rem + var(--safe-left))',
+        paddingRight: 'calc(0.625rem + var(--safe-right))',
+      }}
       aria-labelledby="hero-title"
     >
       <div
         className={cn(
-          'surface-aurora on-deep relative isolate mx-auto flex w-full max-w-[86rem] overflow-hidden rounded-[2rem] text-white',
+          'surface-aurora on-deep relative isolate mx-auto flex w-full max-w-[86rem] overflow-hidden rounded-[1.75rem] text-white sm:rounded-[2rem]',
           'lg:max-h-[54rem] lg:min-h-[calc(100svh-var(--header-height)-2.25rem)]',
         )}
       >
@@ -49,10 +53,10 @@ export function HomeHero({ actions }: { actions: ReactNode }) {
         />
 
         <Container width="wide" className="flex">
-          <div className="grid w-full items-center gap-8 py-8 sm:gap-10 sm:py-10 lg:grid-cols-[minmax(0,1.02fr)_minmax(0,0.98fr)] lg:gap-12 lg:py-8">
-            <div className="stagger flex max-w-2xl flex-col gap-4 sm:gap-5">
+          <div className="grid w-full items-center gap-6 py-7 sm:gap-10 sm:py-10 lg:grid-cols-[minmax(0,1.02fr)_minmax(0,0.98fr)] lg:gap-12 lg:py-8">
+            <div className="stagger flex max-w-2xl flex-col gap-3.5 sm:gap-5">
               <p
-                className="text-accent-300 text-2xs inline-flex items-center gap-2.5 font-semibold tracking-[0.24em] uppercase"
+                className="text-accent-300 text-2xs inline-flex items-center gap-2 font-semibold tracking-[0.16em] uppercase sm:gap-2.5 sm:tracking-[0.24em]"
                 style={{ '--i': 0 } as CSSProperties}
               >
                 <span className="bg-accent-400 inline-block size-2 rounded-full shadow-[0_0_0_4px_rgb(142_200_64/0.25)]" />
@@ -61,7 +65,7 @@ export function HomeHero({ actions }: { actions: ReactNode }) {
 
               <h1
                 id="hero-title"
-                className="text-5xl leading-[1.02] font-medium sm:text-6xl"
+                className="text-4xl leading-[1.06] font-medium sm:text-6xl sm:leading-[1.02]"
                 style={{ '--i': 1 } as CSSProperties}
               >
                 {heroCopy.title}{' '}
@@ -71,14 +75,20 @@ export function HomeHero({ actions }: { actions: ReactNode }) {
               </h1>
 
               <p
-                className="text-ink-on-deep max-w-xl text-base leading-relaxed sm:text-lg"
+                className="text-ink-on-deep max-w-xl text-[0.95rem] leading-relaxed sm:text-lg"
                 style={{ '--i': 2 } as CSSProperties}
               >
                 {heroCopy.lead}
               </p>
 
+              {/*
+                Stacked and full width on a phone. Two pills of different
+                lengths sitting on one ragged line is the single thing that
+                made the hero look unfinished at 393px; from `sm` up there is
+                room for them to sit side by side and they do.
+              */}
               <div
-                className="mt-1 flex flex-wrap gap-3"
+                className="mt-0.5 flex flex-col items-stretch gap-2.5 sm:mt-1 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3"
                 style={{ '--i': 3 } as CSSProperties}
               >
                 {actions}
@@ -90,13 +100,13 @@ export function HomeHero({ actions }: { actions: ReactNode }) {
                 hero still tells the whole story.
               */}
               <ul
-                className="mt-2 flex flex-wrap gap-x-5 gap-y-2 sm:hidden"
+                className="mt-1 flex flex-wrap gap-x-4 gap-y-1.5 sm:hidden"
                 style={{ '--i': 4 } as CSSProperties}
               >
                 {heroAssurances.map((assurance) => (
                   <li
                     key={assurance.title}
-                    className="text-ink-on-deep inline-flex items-center gap-2 text-sm"
+                    className="text-ink-on-deep inline-flex items-center gap-2 text-[0.8rem]"
                   >
                     <span className="bg-accent-400 size-1.5 rounded-full" />
                     {assurance.title}
@@ -110,20 +120,30 @@ export function HomeHero({ actions }: { actions: ReactNode }) {
               style={{ '--stagger-base': '220ms' } as CSSProperties}
             >
               <div
-                className="shadow-deep relative aspect-[4/3] w-full overflow-hidden rounded-[1.75rem] ring-1 ring-white/15 sm:aspect-[16/10] lg:aspect-auto lg:h-[clamp(24rem,58svh,36rem)]"
+                className="shadow-deep relative aspect-[5/4] w-full overflow-hidden rounded-[1.5rem] ring-1 ring-white/15 sm:aspect-[16/10] sm:rounded-[1.75rem] lg:aspect-auto lg:h-[clamp(24rem,58svh,36rem)]"
                 style={{ '--i': 0 } as CSSProperties}
               >
                 <div className="from-brand-700 via-brand-800 to-brand-950 absolute inset-0 bg-gradient-to-br" />
                 {heroImage.src ? (
-                  <Image
-                    src={heroImage.src}
-                    alt={heroImage.alt}
-                    width={heroImage.width}
-                    height={heroImage.height}
-                    priority
-                    sizes="(min-width: 1024px) 44vw, 100vw"
-                    className="absolute inset-0 h-full w-full object-cover motion-safe:animate-[scale-in_1.4s_var(--ease-out-soft)_both]"
-                  />
+                  /*
+                    Two independent movements on one photograph: the frame's
+                    contents drift very slowly on their own (`ken-burns`), and
+                    the whole layer leans a little against the scroll
+                    (`Parallax`). The layer is taller than the frame so the
+                    lean never uncovers an edge, and both stop completely
+                    under `prefers-reduced-motion`.
+                  */
+                  <Parallax strength={16} className="absolute inset-x-0 -inset-y-[7%]">
+                    <Image
+                      src={heroImage.src}
+                      alt={heroImage.alt}
+                      width={heroImage.width}
+                      height={heroImage.height}
+                      priority
+                      sizes="(min-width: 1024px) 44vw, 100vw"
+                      className="ken-burns absolute inset-0 h-full w-full object-cover"
+                    />
+                  </Parallax>
                 ) : null}
                 <div
                   aria-hidden="true"
@@ -131,9 +151,9 @@ export function HomeHero({ actions }: { actions: ReactNode }) {
                 />
 
                 {EVENTS_FIGURE ? (
-                  <div className="motion-safe:animate-float absolute top-4 right-4 hidden sm:block">
-                    <span className="bg-accent-500 text-brand-950 inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-sm font-semibold shadow-[0_12px_30px_-10px_rgb(142_200_64/0.9)]">
-                      <StarIcon className="size-4" />
+                  <div className="motion-safe:animate-float absolute top-3 right-3 sm:top-4 sm:right-4">
+                    <span className="bg-accent-500 text-brand-950 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[0.7rem] font-semibold shadow-[0_12px_30px_-10px_rgb(142_200_64/0.9)] sm:gap-2 sm:px-3.5 sm:py-2 sm:text-sm">
+                      <StarIcon className="size-3.5 sm:size-4" />
                       {EVENTS_FIGURE.value} {EVENTS_FIGURE.label.toLowerCase()}
                     </span>
                   </div>

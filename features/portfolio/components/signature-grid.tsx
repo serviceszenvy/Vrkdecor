@@ -44,7 +44,7 @@ export function SignatureGrid({ designs }: { designs: readonly PortfolioDesign[]
           >
             <article
               className={cn(
-                'group shine relative isolate overflow-hidden rounded-[1.75rem]',
+                'group shine press relative isolate overflow-hidden rounded-[1.5rem] sm:rounded-[1.75rem]',
                 'shadow-card hover:shadow-deep transition-[box-shadow,transform] duration-500',
                 'motion-safe:focus-within:-translate-y-1.5 motion-safe:hover:-translate-y-1.5',
               )}

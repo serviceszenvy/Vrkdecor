@@ -15,11 +15,20 @@ type Tone =
   | 'panel-deep'
   | 'panel-bloom';
 
+/**
+ * Vertical rhythm.
+ *
+ * The mobile step is deliberately much tighter than the desktop one. A phone
+ * shows roughly a third of the width, so the same padding that reads as
+ * generous on a monitor reads as a scroll through empty space on a handset —
+ * the home page was over 11,000px tall before this was tuned. The desktop
+ * values are unchanged.
+ */
 const spacings: Record<Spacing, string> = {
-  compact: 'py-10 sm:py-12',
-  default: 'py-14 sm:py-20',
-  spacious: 'py-20 sm:py-28',
-  panel: 'py-12 sm:py-16',
+  compact: 'py-8 sm:py-12',
+  default: 'py-10 sm:py-20',
+  spacious: 'py-12 sm:py-28',
+  panel: 'py-9 sm:py-16',
 };
 
 const tones: Record<Tone, string> = {
@@ -76,12 +85,17 @@ export function Section({
       <section
         id={id}
         aria-labelledby={ariaLabelledBy}
-        className={cn('px-3 sm:px-5 lg:px-6', className)}
+        className={cn(
+          'px-2.5 sm:px-5 lg:px-6',
+          'pr-[calc(0.625rem+var(--safe-right))] pl-[calc(0.625rem+var(--safe-left))]',
+          'sm:pr-[calc(1.25rem+var(--safe-right))] sm:pl-[calc(1.25rem+var(--safe-left))]',
+          className,
+        )}
       >
         <div
           className={cn(
             'relative isolate mx-auto w-full max-w-[86rem]',
-            'overflow-hidden rounded-3xl border',
+            'overflow-hidden rounded-[1.75rem] border sm:rounded-3xl',
             panelSurfaces[tone],
             spacings[spacing],
             panelClassName,
@@ -145,7 +159,7 @@ export function SectionHeading({
   const sizes = {
     1: 'text-4xl sm:text-5xl',
     2: 'text-3xl sm:text-4xl',
-    3: 'text-2xl',
+    3: 'text-xl sm:text-2xl',
   } as const;
 
   const eyebrowTone = {
@@ -169,7 +183,7 @@ export function SectionHeading({
   return (
     <div
       className={cn(
-        'flex flex-col gap-3',
+        'flex flex-col gap-2.5 sm:gap-3',
         align === 'center' ? 'mx-auto max-w-2xl items-center text-center' : 'max-w-2xl',
       )}
     >
@@ -192,7 +206,9 @@ export function SectionHeading({
 
       {rule ? <LeafRule className="mt-1" /> : null}
 
-      {lead ? <p className={cn('text-lg', leadTone[tone])}>{lead}</p> : null}
+      {lead ? (
+        <p className={cn('text-base sm:text-lg', leadTone[tone])}>{lead}</p>
+      ) : null}
     </div>
   );
 }

@@ -42,7 +42,7 @@ function buildHref(
 
 function chipClass(isActive: boolean, deep = false) {
   return cn(
-    'inline-flex min-h-11 items-center gap-1.5 rounded-full border px-4 text-sm font-medium',
+    'press inline-flex min-h-11 items-center gap-1.5 rounded-full border px-3.5 text-[0.8rem] font-medium sm:px-4 sm:text-sm',
     'transition-[background-color,color,border-color,transform,box-shadow] duration-300 motion-safe:hover:-translate-y-0.5',
     isActive
       ? 'border-transparent bg-brand-900 text-accent-200 shadow-[0_10px_24px_-12px_rgb(36_44_28/0.8)]'
@@ -101,7 +101,12 @@ function FilterRow({
         A horizontal rail on a phone, so ten style chips do not push the
         designs off the screen; wrapped from `sm` up.
       */}
-      <ul className="rail flex gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible sm:pb-0">
+      {/*
+        The rail fades at both edges on a phone, so it is visible that there
+        are more chips past the one at the screen edge. The mask is dropped
+        from `sm` up, where the row wraps instead of scrolling.
+      */}
+      <ul className="rail rail-fade -mx-1 flex gap-2 overflow-x-auto px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
         <FilterChip
           href={buildHref(filters, paramKey, undefined)}
           isActive={!active}
@@ -175,7 +180,7 @@ export function FilterBar({
     <section
       aria-labelledby="filters"
       data-testid="filter-bar"
-      className="surface-bloom border-brand-200/60 shadow-card flex flex-col gap-4 rounded-3xl border p-4 sm:p-5"
+      className="surface-bloom border-brand-200/60 shadow-card flex flex-col gap-3.5 rounded-2xl border p-3.5 sm:gap-4 sm:rounded-3xl sm:p-5"
     >
       <h2 id="filters" className="sr-only">
         Filter designs
@@ -239,7 +244,7 @@ export function FilterBar({
                 aria-controls={panelId}
                 data-testid="filter-more"
                 className={cn(
-                  'inline-flex min-h-11 items-center gap-1.5 rounded-full border border-dashed px-4 text-sm font-medium transition-[background-color,color,border-color] duration-300',
+                  'press inline-flex min-h-11 items-center gap-1.5 rounded-full border border-dashed px-3.5 text-[0.8rem] font-medium transition-[background-color,color,border-color] duration-300 sm:px-4 sm:text-sm',
                   open
                     ? 'border-brand-700 bg-brand-900 text-accent-200'
                     : 'border-brand-400 text-brand-900 hover:border-brand-700 hover:bg-white',

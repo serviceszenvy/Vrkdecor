@@ -55,7 +55,7 @@ export default function ContactPage() {
   const maxEventDate = `${Number(today.slice(0, 4)) + MAX_EVENT_YEARS_AHEAD}${today.slice(4)}`;
 
   return (
-    <div className="flex flex-col gap-4 pb-4 sm:gap-6 sm:pb-6">
+    <div className="flex flex-col gap-3 pb-3 sm:gap-6 sm:pb-6">
       <Hero
         compact
         eyebrow="Contact"
@@ -65,7 +65,7 @@ export default function ContactPage() {
       />
 
       <Section tone="panel" width="wide" aria-labelledby="enquiry-options">
-        <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-6 sm:gap-8">
           {isUsingLocalEnquiryStore() ? <LocalStoreNotice /> : null}
           <EnquiryOptions
             whatsAppHref={whatsAppHrefWithMessage(designEnquiryMessage())}
@@ -93,7 +93,7 @@ export default function ContactPage() {
               icon: PhoneIcon,
               content: (
                 <a
-                  className="text-brand-900 hover:text-brand-700 text-sm font-medium"
+                  className="text-brand-900 hover:text-brand-700 inline-flex min-h-11 items-center text-sm font-medium"
                   href={telHref}
                 >
                   {displayPhone}
@@ -106,7 +106,7 @@ export default function ContactPage() {
               icon: WhatsAppIcon,
               content: (
                 <a
-                  className="text-brand-900 hover:text-brand-700 text-sm font-medium"
+                  className="text-brand-900 hover:text-brand-700 inline-flex min-h-11 items-center text-sm font-medium"
                   href={whatsAppHref}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -121,7 +121,7 @@ export default function ContactPage() {
               icon: MailIcon,
               content: (
                 <a
-                  className="text-brand-900 hover:text-brand-700 text-sm font-medium break-all"
+                  className="text-brand-900 hover:text-brand-700 inline-flex min-h-11 items-center text-sm font-medium break-all"
                   href={mailHref}
                 >
                   {email}
@@ -148,7 +148,7 @@ export default function ContactPage() {
                 key={item.key}
                 delay={index * 90}
                 effect="scale"
-                className="group border-brand-200/70 lift shine shadow-card flex gap-4 rounded-2xl border bg-white/90 p-5"
+                className="group border-brand-200/70 lift shine press shadow-card flex gap-3.5 rounded-2xl border bg-white/90 p-4 sm:gap-4 sm:p-5"
               >
                 <span className="icon-deep size-12 shrink-0">
                   <ItemIcon className="size-5" />

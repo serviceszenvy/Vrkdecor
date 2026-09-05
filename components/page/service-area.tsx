@@ -31,10 +31,10 @@ export function ServiceArea({
       : { href: routes.about, label: 'About VRK Decor' };
 
   return (
-    <section className="px-3 sm:px-5 lg:px-6" aria-labelledby={id}>
+    <section className="px-2.5 sm:px-5 lg:px-6" aria-labelledby={id}>
       <div
         className={cn(
-          'relative isolate mx-auto w-full max-w-[86rem] overflow-hidden rounded-3xl border',
+          'relative isolate mx-auto w-full max-w-[86rem] overflow-hidden rounded-[1.75rem] border sm:rounded-3xl',
           deep
             ? 'surface-aurora on-deep shadow-deep border-white/10 text-white'
             : 'surface-bloom border-brand-200/60 shadow-panel',
@@ -56,8 +56,8 @@ export function ServiceArea({
         />
 
         <Container width="wide">
-          <div className="grid gap-10 py-12 sm:py-16 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-14">
-            <Reveal effect="left" className="flex flex-col gap-5">
+          <div className="grid gap-7 py-9 sm:gap-10 sm:py-16 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-14">
+            <Reveal effect="left" className="flex flex-col gap-4 sm:gap-5">
               <p
                 className={cn(
                   'text-2xs font-semibold tracking-[0.24em] uppercase',
@@ -66,7 +66,7 @@ export function ServiceArea({
               >
                 Where we create
               </p>
-              <h2 id={id} className="text-3xl font-medium sm:text-4xl">
+              <h2 id={id} className="text-2xl font-medium sm:text-4xl">
                 Serving across{' '}
                 <span className={deep ? 'text-gradient-lime' : 'text-gradient-sage'}>
                   Tamil Nadu
@@ -74,7 +74,7 @@ export function ServiceArea({
               </h2>
               <p
                 className={cn(
-                  'max-w-xl leading-relaxed',
+                  'max-w-xl text-[0.95rem] leading-relaxed sm:text-base',
                   deep ? 'text-ink-on-deep' : 'text-ink-soft',
                 )}
               >
@@ -91,7 +91,7 @@ export function ServiceArea({
                     delay={index * 70}
                     effect="scale"
                     className={cn(
-                      'inline-flex min-h-11 items-center gap-2 rounded-full border px-4 text-sm font-medium transition-[transform,box-shadow,border-color] duration-300 motion-safe:hover:-translate-y-0.5',
+                      'press inline-flex min-h-11 items-center gap-2 rounded-full border px-3.5 text-[0.8rem] font-medium transition-[transform,box-shadow,border-color] duration-300 motion-safe:hover:-translate-y-0.5 sm:px-4 sm:text-sm',
                       deep
                         ? 'glass-surface-deep hover:border-accent-400/60 border-white/15 text-white'
                         : 'border-brand-200 hover:border-brand-400 text-ink shadow-card bg-white/85',

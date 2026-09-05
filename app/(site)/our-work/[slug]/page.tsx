@@ -90,7 +90,7 @@ export default async function DesignDetailPage({ params }: Params) {
       : null;
 
   return (
-    <div className="flex flex-col gap-4 pb-4 sm:gap-6 sm:pb-6">
+    <div className="flex flex-col gap-3 pb-3 sm:gap-6 sm:pb-6">
       <Section
         tone="panel"
         spacing="compact"
@@ -144,7 +144,7 @@ export default async function DesignDetailPage({ params }: Params) {
                 aria-hidden="true"
                 className="from-brand-950/60 absolute inset-0 bg-gradient-to-t via-transparent to-transparent"
               />
-              <div className="absolute inset-x-0 bottom-0 flex flex-wrap items-end justify-between gap-3 p-5 sm:p-7">
+              <div className="absolute inset-x-0 bottom-0 flex flex-wrap items-end justify-between gap-3 p-4 sm:p-7">
                 <div className="flex flex-wrap gap-2">
                   {design.occasion ? (
                     <Badge tone="lime">{design.occasion.name}</Badge>
@@ -159,8 +159,8 @@ export default async function DesignDetailPage({ params }: Params) {
           </Reveal>
         ) : null}
 
-        <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr] lg:gap-14">
-          <Reveal effect="left" className="flex flex-col gap-5">
+        <div className="grid gap-7 sm:gap-10 lg:grid-cols-[1.4fr_1fr] lg:gap-14">
+          <Reveal effect="left" className="flex flex-col gap-4 sm:gap-5">
             <div className="flex flex-wrap gap-2">
               {design.styles.map((style) => (
                 <Badge key={style.slug} tone="brand">
@@ -169,7 +169,7 @@ export default async function DesignDetailPage({ params }: Params) {
               ))}
             </div>
 
-            <h1 id="design-title" className="text-4xl font-medium sm:text-5xl">
+            <h1 id="design-title" className="text-3xl font-medium sm:text-5xl">
               {design.name}
             </h1>
 
@@ -196,7 +196,7 @@ export default async function DesignDetailPage({ params }: Params) {
             effect="right"
             delay={120}
             as="div"
-            className="surface-bloom border-brand-200/60 shadow-card flex flex-col gap-4 rounded-3xl border p-6 sm:p-7"
+            className="surface-bloom border-brand-200/60 shadow-card flex flex-col gap-4 rounded-2xl border p-5 sm:rounded-3xl sm:p-7"
           >
             <dl className="flex flex-col gap-4">
               {design.occasion ? (
@@ -260,7 +260,7 @@ export default async function DesignDetailPage({ params }: Params) {
 
       <Section tone="panel" width="wide" aria-labelledby="gallery">
         <Reveal>
-          <h2 id="gallery" className="font-display text-3xl font-medium">
+          <h2 id="gallery" className="font-display text-2xl font-medium sm:text-3xl">
             Gallery
           </h2>
           <p className="text-ink-muted mt-2">
@@ -269,7 +269,7 @@ export default async function DesignDetailPage({ params }: Params) {
           </p>
         </Reveal>
 
-        <div className="mt-8">
+        <div className="mt-6 sm:mt-8">
           {photos.length > 0 ? (
             <PhotoGallery photos={photos} columns={3} />
           ) : (
@@ -290,10 +290,10 @@ export default async function DesignDetailPage({ params }: Params) {
 
       {design.videos.length > 0 ? (
         <Section tone="panel" width="wide" aria-labelledby="video">
-          <h2 id="video" className="font-display text-3xl font-medium">
+          <h2 id="video" className="font-display text-2xl font-medium sm:text-3xl">
             Video
           </h2>
-          <div className="mt-8 grid gap-8 lg:grid-cols-2">
+          <div className="mt-6 grid gap-6 sm:mt-8 sm:gap-8 lg:grid-cols-2">
             {design.videos.map((video) => (
               <VideoEmbed key={video.id} video={video} />
             ))}

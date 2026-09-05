@@ -46,7 +46,7 @@ export default async function ServicesPage() {
   const bySlug = new Map(services.map((service) => [service.slug, service]));
 
   return (
-    <div className="flex flex-col gap-4 pb-4 sm:gap-6 sm:pb-6">
+    <div className="flex flex-col gap-3 pb-3 sm:gap-6 sm:pb-6">
       <Hero
         compact
         eyebrow="Services and occasions"
@@ -77,7 +77,7 @@ export default async function ServicesPage() {
           />
         </Reveal>
 
-        <div className="mt-10 flex flex-col gap-12 sm:mt-12 sm:gap-14">
+        <div className="mt-7 flex flex-col gap-9 sm:mt-12 sm:gap-14">
           {serviceGroups.map((group, groupIndex) => {
             const entries = group.serviceSlugs
               .map((slug) => bySlug.get(slug))
@@ -87,11 +87,11 @@ export default async function ServicesPage() {
             return (
               <div
                 key={group.id}
-                className="grid gap-6 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,2fr)] lg:gap-10"
+                className="grid gap-5 sm:gap-6 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,2fr)] lg:gap-10"
               >
                 <Reveal
                   effect="left"
-                  className="flex flex-col gap-3 lg:sticky lg:top-28 lg:self-start"
+                  className="flex flex-col gap-2.5 sm:gap-3 lg:sticky lg:top-28 lg:self-start"
                 >
                   <span className="text-accent-700 text-2xs inline-flex items-center gap-2 font-semibold tracking-[0.22em] uppercase">
                     <span className="bg-brand-900 text-accent-300 inline-flex size-7 items-center justify-center rounded-full text-xs tabular-nums">
@@ -103,10 +103,12 @@ export default async function ServicesPage() {
                     {group.title}{' '}
                     <span className="text-gradient-sage">{group.accent}</span>
                   </h3>
-                  <p className="text-ink-muted leading-relaxed">{group.lead}</p>
+                  <p className="text-ink-muted text-[0.95rem] leading-relaxed sm:text-base">
+                    {group.lead}
+                  </p>
                 </Reveal>
 
-                <ul className="grid gap-4 sm:grid-cols-2">
+                <ul className="grid gap-3 sm:grid-cols-2 sm:gap-4">
                   {entries.map((service, index) => {
                     const ServiceIcon = serviceIcon(service.slug);
                     const partner = service.deliveryModel === 'partner_vendor';
@@ -118,24 +120,27 @@ export default async function ServicesPage() {
                         effect="scale"
                         className={
                           partner
-                            ? 'group surface-bloom border-brand-200/60 lift shine shadow-card flex flex-col gap-3 rounded-2xl border p-5 sm:p-6'
-                            : 'group border-line-soft lift shine shadow-card flex flex-col gap-3 rounded-2xl border bg-white p-5 sm:p-6'
+                            ? 'group surface-bloom border-brand-200/60 lift shine press shadow-card flex flex-row items-start gap-3.5 rounded-2xl border p-4 sm:flex-col sm:gap-3 sm:p-6'
+                            : 'group border-line-soft lift shine press shadow-card flex flex-row items-start gap-3.5 rounded-2xl border bg-white p-4 sm:flex-col sm:gap-3 sm:p-6'
                         }
                       >
-                        <IconChip tone="deep" size="lg">
+                        <IconChip tone="deep" size="md" className="sm:size-14">
                           <ServiceIcon className="size-6" />
                         </IconChip>
-                        <h4 className="font-display mt-1 text-xl font-medium">
-                          {service.name}
-                        </h4>
-                        <p className="text-ink-soft text-sm leading-relaxed">
-                          {service.description ?? serviceBlurbs[service.slug]}
-                        </p>
-                        {partner ? (
-                          <div className="mt-auto pt-1">
-                            <Badge tone="deep">{PARTNER_VENDOR_LABEL}</Badge>
-                          </div>
-                        ) : null}
+                        {/* A row on a phone, a stack from `sm` up. */}
+                        <div className="flex min-w-0 flex-col gap-1.5 sm:contents">
+                          <h4 className="font-display text-lg font-medium sm:mt-1 sm:text-xl">
+                            {service.name}
+                          </h4>
+                          <p className="text-ink-soft text-sm leading-relaxed">
+                            {service.description ?? serviceBlurbs[service.slug]}
+                          </p>
+                          {partner ? (
+                            <div className="pt-0.5 sm:mt-auto sm:pt-1">
+                              <Badge tone="deep">{PARTNER_VENDOR_LABEL}</Badge>
+                            </div>
+                          ) : null}
+                        </div>
                       </Reveal>
                     );
                   })}
@@ -165,20 +170,22 @@ export default async function ServicesPage() {
           />
         </Reveal>
 
-        <div className="mt-12 flex flex-col gap-14">
+        <div className="mt-8 flex flex-col gap-9 sm:mt-12 sm:gap-14">
           {celebrationGroups.map((group) => (
             <div
               key={group.id}
-              className="grid gap-6 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,2fr)] lg:gap-10"
+              className="grid gap-5 sm:gap-6 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,2fr)] lg:gap-10"
             >
               <Reveal
                 effect="left"
-                className="flex flex-col gap-3 lg:sticky lg:top-28 lg:self-start"
+                className="flex flex-col gap-2.5 sm:gap-3 lg:sticky lg:top-28 lg:self-start"
               >
                 <h3 className="font-display text-2xl font-medium sm:text-3xl">
                   {group.title} <span className="text-brand-800">{group.accent}</span>
                 </h3>
-                <p className="text-ink-soft leading-relaxed">{group.lead}</p>
+                <p className="text-ink-soft text-[0.95rem] leading-relaxed sm:text-base">
+                  {group.lead}
+                </p>
               </Reveal>
 
               <ul className="grid gap-3 sm:grid-cols-2 sm:gap-4">
@@ -188,7 +195,7 @@ export default async function ServicesPage() {
                     <Reveal as="li" key={item.name} delay={index * 80} effect="scale">
                       <Link
                         href={`${routes.work}?occasion=${encodeURIComponent(item.occasionSlug)}`}
-                        className="group border-brand-200/70 hover:border-accent-500/70 lift shine shadow-card flex h-full gap-4 rounded-2xl border bg-white/90 p-4 transition-colors sm:p-5"
+                        className="group border-brand-200/70 hover:border-accent-500/70 lift shine press shadow-card flex h-full gap-3.5 rounded-2xl border bg-white/90 p-3.5 transition-colors sm:gap-4 sm:p-5"
                       >
                         <IconChip tone="deep" size="md">
                           <ItemIcon className="size-6" />
@@ -219,7 +226,7 @@ export default async function ServicesPage() {
           ))}
         </div>
 
-        <Reveal className="border-brand-200/70 mt-14 flex flex-col gap-4 border-t pt-8">
+        <Reveal className="border-brand-200/70 mt-9 flex flex-col gap-4 border-t pt-7 sm:mt-14 sm:pt-8">
           <h3
             id="occasion-filters"
             className="text-brand-800 text-2xs font-semibold tracking-[0.22em] uppercase"
@@ -231,7 +238,7 @@ export default async function ServicesPage() {
               <li key={occasion.slug}>
                 <Link
                   href={`${routes.work}?occasion=${encodeURIComponent(occasion.slug)}`}
-                  className="border-brand-200 hover:border-accent-500 hover:bg-brand-900 hover:text-accent-200 inline-flex min-h-11 items-center gap-1.5 rounded-full border bg-white px-4 text-sm font-medium transition-[background-color,color,border-color,transform] duration-300 motion-safe:hover:-translate-y-0.5"
+                  className="border-brand-200 hover:border-accent-500 hover:bg-brand-900 hover:text-accent-200 press inline-flex min-h-11 items-center gap-1.5 rounded-full border bg-white px-3.5 text-[0.8rem] font-medium transition-[background-color,color,border-color,transform] duration-300 motion-safe:hover:-translate-y-0.5 sm:px-4 sm:text-sm"
                 >
                   {occasion.name}
                   {occasion.secondaryTerm ? (

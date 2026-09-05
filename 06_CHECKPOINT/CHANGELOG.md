@@ -1,5 +1,118 @@
 # VRK Decor — Changelog
 
+## 0.8.3 — 2026-09-05 — Mobile responsiveness and motion pass
+
+A presentation-only release on top of 0.8.2, from the client's report that the
+site read badly on an iPhone 15. No database change, no dependency added, no
+business rule or security control altered. Every unit test, the full Playwright
+suite and the production build pass unchanged.
+
+Verified on an emulated iPhone 15 (393 x 852), Android (360 x 800), a 320px
+handset, iPhone Pro Max (430 x 932) and a phone in landscape (852 x 393). No
+page scrolls horizontally at any of them, no text renders below 12px, and no
+console error is raised.
+
+### Fixed — the iPhone-specific defects
+
+- **`viewport-fit=cover` was never opted into** (`app/layout.tsx`), so every
+  `env(safe-area-inset-*)` in the codebase resolved to zero. The sticky action
+  bar's home-indicator allowance and the floating WhatsApp button's offset were
+  therefore doing nothing on the device they were written for. The document now
+  opts in, `app/globals.css` reads the four insets once into `--safe-*`, and
+  every edge-anchored element spends them: the header (notch), the page gutter
+  and the rounded panels (landscape notch, left and right), the action bar and
+  the floating button (home indicator), and the lightbox.
+- **`--mobile-cta-height` now includes the home-indicator inset**, so the last
+  line of every page clears the action bar instead of sitting behind it.
+- **`--header-height` was 4.5rem against a header that measures ~4.75rem**, so
+  an anchored heading (`/services#occasions`) landed underneath it. It is now
+  measured, and carries the notch inset.
+- **Background scroll under the mobile menu and the lightbox.** `overflow:
+hidden` on the body does not hold on iOS Safari; both now pin the body at its
+  current offset and restore the scroll position on close.
+- **Form fields are at least 16px on a phone**, which is what stops iOS zooming
+  in on focus and never zooming back out. Zoom itself is deliberately not
+  capped (WCAG 1.4.4).
+- **`overflow-x: clip` on the root as well as the body**, so a decorative blob
+  or a reveal that starts outside the viewport can never widen the document.
+- **`next/image` with `fill` inside `ImageFrame`** had no positioned wrapper,
+  which Next warns about and which leaves the image resolving against whatever
+  ancestor happens to be positioned.
+
+### Changed — the mobile layout
+
+- **Vertical rhythm retuned for a handset.** The desktop steps are unchanged;
+  the mobile ones are much tighter. Section padding, grid gaps, card padding
+  and heading sizes all step up at `sm` rather than starting at desktop values.
+  The home page is about 1,300px shorter and Our Work is 2,000px shorter.
+- **Fluid type scale rebased.** `--text-3xl` through `--text-6xl` had mobile
+  minimums drawn for a desktop; the hero headline rendered at 45px on a 393px
+  screen. The desktop maximums are unchanged.
+- **Hero actions stack full width on a phone** instead of sitting as two pills
+  of different lengths on one ragged line.
+- **The occasion grid is two across on a phone**, not three. At three the Tamil
+  terms were breaking through the middle of a word ("Nichayathartha / m");
+  `wrap-anywhere` has been replaced with ordinary wrapping and `hyphens: auto`.
+- **The portfolio grid is two across on a phone.** A single column of 5:6 cards
+  gave each design most of a screen. The card's type, chips and padding step
+  down to match, and the "Featured" chip becomes the star it already means so
+  it no longer pushes the occasion chip onto a second line.
+- **The figures band stacks each cell** (plate above, figure and label below) on
+  a phone, so the four cells are the same height and the longest label no
+  longer wraps onto three lines.
+- **Service, value and about cards are a row on a phone** — plate beside the
+  copy rather than above it — so a list of six is not a screen of plates.
+- **Touch targets.** Every footer link, the footer contact and legal rows, the
+  developer credit and the contact-page channel links are now at least 44px
+  tall. The consent checkbox is 24px on a phone.
+- **Filter rails fade at their edges** on a phone, so it is visible that there
+  are more chips past the screen edge.
+
+### Added — motion
+
+Everything below is disabled by `prefers-reduced-motion` and none of it is
+required to read or use the page.
+
+- **Reading progress and a header state** (`components/layout/scroll-progress.tsx`):
+  one passive scroll listener drives a composited `scaleX` rail under the top
+  edge and stamps `data-scrolled` on the document, which condenses the floating
+  header. The rail is not rendered at all under reduced motion.
+- **Scroll parallax** (`components/ui/parallax.tsx`) on the home and about
+  photographs: transform only, coalesced into one animation frame per scroll
+  burst, and stopped entirely by an `IntersectionObserver` while off screen.
+- **Ken Burns** on the hero photograph, so the picture is never quite still.
+- **Counting figures** (`components/ui/count-up.tsx`) in the figures band and
+  the footer. The approved string is what renders on the server and
+  `role="img"` with `aria-label` fixes the accessible name to it, so the
+  animation can never change what the figure says.
+- **Press feedback** (`.press`): a fast scale-down on coarse pointers only,
+  because hover is a desktop idea and the press is the only moment a touch
+  screen can answer back. Applied to every card, chip, tile and floating action.
+- **A breathing ring** behind the WhatsApp action, painted behind the button's
+  own background so it only shows once it has grown past the edge.
+- **Menu choreography**: the trigger rotates, the sheet rises from the header
+  edge, and the items still stagger in.
+
+### Changed — motion, for phones
+
+- **The reveal blur is a desktop refinement.** On a phone it forced a
+  full-size offscreen buffer for every revealing section and nobody could see
+  it at 393px, so below `sm` the reveal is opacity and a shorter travel only.
+- **The sideways reveals collapse to the ordinary rise below `sm`.** 36px of
+  horizontal travel inside a 393px viewport is a wasted gesture and a chance
+  for the document to grow sideways mid-animation.
+- **`touch-action: manipulation`** on every control, which removes Safari's
+  300ms double-tap-to-zoom delay, and the default grey tap highlight is
+  replaced by the deliberate press state.
+
+### Not changed
+
+- No migration, no schema change, no seed change.
+- No Server Action, query, validator, storage helper or business rule.
+- No dependency added or upgraded.
+- No security control, authorization rule, RLS policy or upload check.
+- No approved business fact, figure or claim.
+
 ## 0.8.2 — 2026-09-05 — UI/UX refinement v2 (public website)
 
 A presentation and content release on top of 0.8.1, from the client's

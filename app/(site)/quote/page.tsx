@@ -72,7 +72,7 @@ export default async function QuotePage({
   );
 
   return (
-    <div className="flex flex-col gap-4 pb-4 sm:gap-6 sm:pb-6">
+    <div className="flex flex-col gap-3 pb-3 sm:gap-6 sm:pb-6">
       <Hero
         compact
         eyebrow="Get a Quote"
@@ -89,7 +89,7 @@ export default async function QuotePage({
       />
 
       <Section tone="panel" width="default" aria-labelledby="enquiry-options">
-        <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-6 sm:gap-8">
           {isUsingLocalEnquiryStore() ? <LocalStoreNotice /> : null}
           {context.requestedDesignUnavailable ? <UnavailableDesignNotice /> : null}
           {context.design ? (

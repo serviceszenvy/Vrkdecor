@@ -27,15 +27,18 @@ const DISPLAY_PHONE = '+91 99940 72435';
  */
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-50 pt-2 sm:pt-2.5 lg:pt-3">
+    <header
+      className="sticky top-0 z-50 pt-2 sm:pt-2.5 lg:pt-3"
+      style={{ paddingTop: 'calc(0.5rem + var(--safe-top))' }}
+    >
       <Container width="wide">
-        <div className="glass-surface-strong glass-edge rounded-[1.6rem] px-3 py-1.5 sm:px-4 lg:rounded-[1.75rem] lg:px-5">
-          <div className="flex min-h-13 items-center justify-between gap-3 lg:min-h-14">
+        <div className="header-shell glass-surface-strong glass-edge rounded-[1.4rem] px-2 py-1.5 sm:rounded-[1.6rem] sm:px-4 lg:rounded-[1.75rem] lg:px-5">
+          <div className="flex min-h-13 items-center justify-between gap-1.5 sm:gap-3 lg:min-h-14">
             <Logo priority />
 
             <NavLinks />
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               {/*
                 Responsive visibility is applied to a wrapper, never to the
                 ButtonLink itself: the button base sets `inline-flex`, which
@@ -59,7 +62,7 @@ export function SiteHeader() {
               <a
                 href={telHref}
                 aria-label={`Call ${siteConfig.name} on ${DISPLAY_PHONE}`}
-                className="glass-surface text-brand-700 hover:text-brand-900 inline-flex size-11 items-center justify-center rounded-full transition-[color,background-color,transform] duration-300 hover:bg-white motion-safe:hover:scale-105 xl:hidden"
+                className="glass-surface press text-brand-700 hover:text-brand-900 inline-flex size-11 items-center justify-center rounded-full transition-[color,background-color,transform] duration-300 hover:bg-white motion-safe:hover:scale-105 xl:hidden"
               >
                 <PhoneIcon />
               </a>

@@ -60,9 +60,15 @@ export function ImageFrame({
         className,
       )}
     >
+      {/*
+        `relative` is required, not cosmetic: a `next/image` with `fill` inside
+        this wrapper is absolutely positioned, and without a positioned wrapper
+        it resolves against whatever ancestor happens to be positioned. Next
+        warns about exactly this.
+      */}
       <div
         className={cn(
-          'h-full w-full',
+          'relative h-full w-full',
           zoomOnHover &&
             'motion-safe:transition-transform motion-safe:duration-700 motion-safe:group-hover:scale-[1.06]',
         )}

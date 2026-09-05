@@ -1,12 +1,53 @@
 # VRK Decor — Project Checkpoint
 
-Version: 0.8.2
-Status: UI/UX REFINEMENT V2 COMPLETE — the public website has been refined per
-the client's refinement brief (2026-09-05) on top of the 0.8.1 redesign. P8
-remains the last functional phase.
-Current phase: Refinement v2 of the public website (complete). Next functional phase: P9.
-Completed phases: P1, P2, P3, P4, P5, P6, P7, P8, the visual redesign, and this refinement
+Version: 0.8.3
+Status: MOBILE RESPONSIVENESS AND MOTION PASS COMPLETE — presentation-only work
+on top of 0.8.2, from the client's report that the site read badly on an
+iPhone 15. P8 remains the last functional phase.
+Current phase: Mobile responsiveness and motion (complete). Next functional phase: P9.
+Completed phases: P1, P2, P3, P4, P5, P6, P7, P8, the visual redesign, refinement v2, and this mobile pass
 Last updated: 2026-09-05
+
+## What 0.8.3 is (read this first)
+
+The public website only ever looked finished on a desktop. This release makes
+it look finished on a phone, and extends the motion layer that 0.8.2 introduced.
+Nothing about what the application _does_ changed: no migration, no Server
+Action, no validator, no storage helper, no security control, no dependency and
+no approved business fact. Full detail: `06_CHECKPOINT/CHANGELOG.md` (0.8.3).
+
+**The root cause of the iPhone complaint.** `viewport-fit=cover` was never set,
+so every `env(safe-area-inset-*)` in the codebase resolved to zero and the
+safe-area handling that had been written for the notch and the home indicator
+was inert. That is fixed at the document level, the four insets are read once
+into `--safe-*` in `app/globals.css`, and every edge-anchored element now spends
+them.
+
+**The second cause was density.** The vertical rhythm, type scale, grids and
+card padding were all drawn for a monitor and applied unchanged to a 393px
+screen, which made the home page over 11,000px tall and left the portfolio one
+card per screen. The desktop values are untouched; the mobile ones now step up
+at `sm`.
+
+| Area                            | Where it landed                                                                                         |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Safe areas, insets, type scale  | `app/layout.tsx`, `app/globals.css`, `components/ui/container.tsx`                                      |
+| Vertical rhythm and headings    | `components/ui/section.tsx`, every page under `app/(site)/`                                             |
+| Hero (home and inner)           | `components/page/home-hero.tsx`, `components/page/hero.tsx`                                             |
+| Figures band, counters          | `components/page/stat-bar.tsx`, `components/ui/count-up.tsx`                                            |
+| Occasion grid, portfolio grid   | `components/page/occasion-grid.tsx`, `features/portfolio/components/design-grid.tsx`, `design-card.tsx` |
+| Chrome (header, bar, FAB, menu) | `components/layout/*`                                                                                   |
+| iOS scroll lock                 | `components/layout/mobile-nav.tsx`, `features/portfolio/components/lightbox.tsx`                        |
+| Progress rail and header state  | `components/layout/scroll-progress.tsx`                                                                 |
+| Parallax and Ken Burns          | `components/ui/parallax.tsx`, `.ken-burns` in `app/globals.css`                                         |
+| Press feedback, rail fades      | `.press`, `.rail-fade` in `app/globals.css`                                                             |
+
+**Verification for this release.** Every public page was rendered and measured
+in headless Chromium at 393x852 (iPhone 15), 360x800, 320x690, 430x932 and
+852x393 (landscape). At all five: `scrollWidth === clientWidth` on every page,
+no rendered text below 12px, and no console error. `npm run lint`,
+`npm run typecheck`, 373 unit tests, the full Playwright suite (240 tests,
+chromium and mobile-chrome) and `npm run build` all pass.
 
 ## What 0.8.2 is (read this first)
 

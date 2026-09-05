@@ -33,11 +33,17 @@ export function Hero({
   compact?: boolean;
 }) {
   return (
-    <section className="px-3 pt-2 sm:px-5 sm:pt-2.5 lg:px-6 lg:pt-3">
+    <section
+      className="pt-2 sm:pt-2.5 lg:pt-3"
+      style={{
+        paddingLeft: 'calc(0.625rem + var(--safe-left))',
+        paddingRight: 'calc(0.625rem + var(--safe-right))',
+      }}
+    >
       <div
         className={cn(
           'surface-aurora on-deep relative isolate mx-auto w-full max-w-[86rem] text-white',
-          'shadow-deep overflow-hidden rounded-[2rem] border border-white/10',
+          'shadow-deep overflow-hidden rounded-[1.75rem] border border-white/10 sm:rounded-[2rem]',
         )}
       >
         <span
@@ -67,17 +73,17 @@ export function Hero({
         <Container width="wide">
           <div
             className={cn(
-              'grid items-center gap-10 lg:gap-16',
+              'grid items-center gap-7 sm:gap-10 lg:gap-16',
               media ? 'lg:grid-cols-2' : '',
               compact
-                ? 'pt-12 pb-10 sm:pt-14 sm:pb-12 lg:pt-16 lg:pb-16'
-                : 'pt-14 pb-12 sm:pt-20 sm:pb-16 lg:pt-24 lg:pb-24',
+                ? 'pt-9 pb-8 sm:pt-14 sm:pb-12 lg:pt-16 lg:pb-16'
+                : 'pt-10 pb-9 sm:pt-20 sm:pb-16 lg:pt-24 lg:pb-24',
             )}
           >
-            <div className="stagger flex max-w-2xl flex-col gap-4">
+            <div className="stagger flex max-w-2xl flex-col gap-3.5 sm:gap-4">
               {eyebrow ? (
                 <p
-                  className="text-accent-300 text-2xs inline-flex items-center gap-2.5 font-semibold tracking-[0.24em] uppercase"
+                  className="text-accent-300 text-2xs inline-flex items-center gap-2 font-semibold tracking-[0.16em] uppercase sm:gap-2.5 sm:tracking-[0.24em]"
                   style={{ '--i': 0 } as CSSProperties}
                 >
                   <span className="bg-accent-400 inline-block size-2 rounded-full shadow-[0_0_0_4px_rgb(142_200_64/0.25)]" />
@@ -88,7 +94,7 @@ export function Hero({
               <h1
                 className={cn(
                   'font-medium',
-                  compact ? 'text-4xl sm:text-5xl' : 'text-5xl sm:text-6xl',
+                  compact ? 'text-3xl sm:text-5xl' : 'text-4xl sm:text-6xl',
                 )}
                 style={{ '--i': 1 } as CSSProperties}
               >
@@ -98,7 +104,7 @@ export function Hero({
 
               {lead ? (
                 <p
-                  className="text-ink-on-deep max-w-xl text-base leading-relaxed sm:text-lg"
+                  className="text-ink-on-deep max-w-xl text-[0.95rem] leading-relaxed sm:text-lg"
                   style={{ '--i': 2 } as CSSProperties}
                 >
                   {lead}
@@ -107,7 +113,7 @@ export function Hero({
 
               {actions ? (
                 <div
-                  className="mt-2 flex flex-wrap gap-3"
+                  className="mt-1 flex flex-col items-stretch gap-2.5 sm:mt-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3"
                   style={{ '--i': 3 } as CSSProperties}
                 >
                   {actions}

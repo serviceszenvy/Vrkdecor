@@ -50,8 +50,30 @@ export function MobileNav() {
   useEffect(() => {
     if (!open) return;
 
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    /*
+     * Scroll lock.
+     *
+     * `overflow: hidden` on the body does not hold on iOS Safari — the page
+     * behind the sheet keeps scrolling under the finger. Pinning the body at
+     * its current offset does hold, on every browser, at the cost of having to
+     * restore the scroll position when the sheet closes.
+     */
+    const { body } = document;
+    const scrollY = window.scrollY;
+    const previous = {
+      position: body.style.position,
+      top: body.style.top,
+      left: body.style.left,
+      right: body.style.right,
+      width: body.style.width,
+      overflow: body.style.overflow,
+    };
+    body.style.position = 'fixed';
+    body.style.top = `-${scrollY}px`;
+    body.style.left = '0';
+    body.style.right = '0';
+    body.style.width = '100%';
+    body.style.overflow = 'hidden';
 
     const panel = panelRef.current;
     const focusable = panel?.querySelectorAll<HTMLElement>(
@@ -84,7 +106,15 @@ export function MobileNav() {
     document.addEventListener('keydown', onKeyDown);
     return () => {
       document.removeEventListener('keydown', onKeyDown);
-      document.body.style.overflow = previousOverflow;
+      body.style.position = previous.position;
+      body.style.top = previous.top;
+      body.style.left = previous.left;
+      body.style.right = previous.right;
+      body.style.width = previous.width;
+      body.style.overflow = previous.overflow;
+      // `scroll-behavior: smooth` on the root would animate this restore into
+      // a visible jump back up the page, so it is done instantly.
+      window.scrollTo({ top: scrollY, behavior: 'instant' as ScrollBehavior });
     };
   }, [open]);
 
@@ -99,9 +129,16 @@ export function MobileNav() {
         aria-expanded={open}
         aria-controls={panelId}
         data-testid="mobile-nav-trigger"
-        className="glass-surface text-ink hover:text-brand-800 inline-flex size-11 items-center justify-center rounded-full transition-colors hover:bg-white lg:hidden"
+        className="glass-surface press text-ink hover:text-brand-800 inline-flex size-11 items-center justify-center rounded-full transition-colors hover:bg-white lg:hidden"
       >
-        {open ? <CloseIcon /> : <MenuIcon />}
+        <span
+          className={cn(
+            'inline-flex transition-transform duration-300',
+            open ? 'motion-safe:rotate-90' : 'motion-safe:rotate-0',
+          )}
+        >
+          {open ? <CloseIcon /> : <MenuIcon />}
+        </span>
         <span className="sr-only">{open ? 'Close menu' : 'Open menu'}</span>
       </button>
 
@@ -114,7 +151,7 @@ export function MobileNav() {
         ? createPortal(
             <>
               <div
-                className="bg-brand-950/55 motion-safe:animate-fade-in fixed inset-0 z-40 backdrop-blur-[3px] lg:hidden"
+                className="bg-brand-950/60 motion-safe:animate-fade-in fixed inset-0 z-40 backdrop-blur-[3px] lg:hidden"
                 onClick={() => setOpen(false)}
                 aria-hidden="true"
               />
@@ -125,11 +162,22 @@ export function MobileNav() {
                 data-testid="mobile-nav-panel"
                 className={cn(
                   // Sits below the floating header so the close control stays
-                  // visible and usable while the panel is open.
-                  'fixed inset-x-3 top-[4.75rem] z-40 sm:inset-x-4 sm:top-[5.5rem] lg:hidden',
-                  'glass-surface-strong glass-edge motion-safe:animate-slide-down rounded-3xl',
-                  'flex max-h-[calc(100dvh-6.5rem)] flex-col overflow-y-auto p-3',
+                  // visible and usable while the panel is open. The offset is
+                  // the measured header height rather than a magic number, so
+                  // it stays correct once the notch inset is added to it.
+                  'fixed z-40 lg:hidden',
+                  'glass-surface-strong glass-edge motion-safe:animate-sheet-up rounded-3xl',
+                  // `100svh` rather than `100dvh`: the sheet must not resize
+                  // under the visitor's finger as the Safari toolbar collapses.
+                  'flex flex-col overflow-y-auto overscroll-contain p-3',
                 )}
+                style={{
+                  top: 'calc(var(--header-height) + 0.5rem)',
+                  left: 'calc(0.75rem + var(--safe-left))',
+                  right: 'calc(0.75rem + var(--safe-right))',
+                  maxHeight:
+                    'calc(100svh - var(--header-height) - 1.25rem - var(--safe-bottom))',
+                }}
               >
                 <nav aria-label="Mobile">
                   <ul
@@ -144,7 +192,7 @@ export function MobileNav() {
                             href={item.href}
                             aria-current={active ? 'page' : undefined}
                             className={cn(
-                              'flex min-h-12 items-center justify-between gap-3 rounded-2xl px-4 text-base transition-colors',
+                              'press flex min-h-12 items-center justify-between gap-3 rounded-2xl px-4 text-base transition-colors',
                               active
                                 ? 'bg-brand-900 text-accent-200 font-semibold'
                                 : 'text-ink hover:bg-brand-50',

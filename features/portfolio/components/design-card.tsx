@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Badge, ImageFrame, ImageScrim } from '@/components/ui';
+import { StarIcon } from '@/components/layout/icons';
 import { cn } from '@/lib/cn';
 import { designHref } from '../quote-link';
 import { coverImage, type PortfolioDesign } from '../types';
@@ -43,7 +44,7 @@ export function DesignCard({
     */
     <article
       className={cn(
-        'group shadow-card hover:shadow-raised relative overflow-hidden rounded-3xl',
+        'group press shadow-card hover:shadow-raised relative overflow-hidden rounded-2xl sm:rounded-3xl',
         'transition-[box-shadow,transform] duration-300',
         'motion-safe:focus-within:-translate-y-1 motion-safe:hover:-translate-y-1',
         className,
@@ -66,17 +67,32 @@ export function DesignCard({
 
       <ImageScrim strength="strong" />
 
-      <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-3">
+      <div className="absolute inset-x-0 top-0 flex flex-wrap items-start justify-between gap-1.5 p-2 sm:gap-2 sm:p-3">
         {design.occasion ? (
           <Badge tone="glass">{design.occasion.name}</Badge>
         ) : (
           <span />
         )}
-        {showFeatured && design.featured ? <Badge tone="glass">Featured</Badge> : null}
+        {/*
+          At half width the word "Featured" pushed the occasion chip onto a
+          second line, so on a phone it becomes the star it already means. The
+          accessible name is unchanged.
+        */}
+        {showFeatured && design.featured ? (
+          <>
+            <Badge tone="glass" className="hidden sm:inline-flex">
+              Featured
+            </Badge>
+            <span className="glass-surface-strong text-brand-800 inline-flex size-6 items-center justify-center rounded-full sm:hidden">
+              <StarIcon className="size-3.5" />
+              <span className="sr-only">Featured</span>
+            </span>
+          </>
+        ) : null}
       </div>
 
-      <div className="absolute inset-x-0 bottom-0 flex flex-col gap-0.5 p-4 sm:p-5">
-        <h3 className="font-display text-lg leading-snug font-medium text-white sm:text-xl">
+      <div className="absolute inset-x-0 bottom-0 flex flex-col gap-0.5 p-3 sm:p-5">
+        <h3 className="font-display text-[0.95rem] leading-snug font-medium text-balance text-white sm:text-xl">
           <Link
             href={designHref(design.slug)}
             className="rounded-sm after:absolute after:inset-0 hover:underline"
@@ -84,7 +100,9 @@ export function DesignCard({
             {design.name}
           </Link>
         </h3>
-        {meta ? <p className="text-sm text-white/80">{meta}</p> : null}
+        {meta ? (
+          <p className="text-[0.75rem] text-white/80 sm:text-sm">{meta}</p>
+        ) : null}
       </div>
     </article>
   );

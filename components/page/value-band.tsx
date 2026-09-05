@@ -19,8 +19,8 @@ const VALUE_ICONS = [FlowerIcon, TeamIcon, LeafIcon, SparkIcon] as const;
  */
 export function ValueBand() {
   return (
-    <section className="px-3 sm:px-5 lg:px-6" aria-labelledby="why-vrk">
-      <div className="surface-aurora on-deep shadow-deep relative isolate mx-auto w-full max-w-[86rem] overflow-hidden rounded-3xl border border-white/10 text-white">
+    <section className="px-2.5 sm:px-5 lg:px-6" aria-labelledby="why-vrk">
+      <div className="surface-aurora on-deep shadow-deep relative isolate mx-auto w-full max-w-[86rem] overflow-hidden rounded-[1.75rem] border border-white/10 text-white sm:rounded-3xl">
         <span
           className="ambient-blob bg-accent-500/35 -top-24 right-[10%] size-80"
           aria-hidden="true"
@@ -33,7 +33,7 @@ export function ValueBand() {
         <LeafDecor className="text-accent-200/20 -right-10 -bottom-8 size-56" flip />
 
         <Container width="wide">
-          <div className="py-12 sm:py-16">
+          <div className="py-9 sm:py-16">
             <Reveal className="mx-auto flex max-w-2xl flex-col items-center gap-3 text-center">
               <p className="text-accent-300 text-2xs font-semibold tracking-[0.24em] uppercase">
                 Why families choose us
@@ -44,7 +44,7 @@ export function ValueBand() {
               <LeafRule />
             </Reveal>
 
-            <ul className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
+            <ul className="mt-7 grid grid-cols-1 gap-2.5 sm:mt-10 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
               {whyChooseUs.map((reason, index) => {
                 const ValueIcon = VALUE_ICONS[index] ?? FlowerIcon;
                 return (
@@ -53,18 +53,26 @@ export function ValueBand() {
                     key={reason.title}
                     delay={index * 110}
                     effect="scale"
-                    className="group glass-surface-deep glass-edge lift shine flex h-full flex-col gap-3 rounded-2xl p-5 sm:p-6"
+                    className="group glass-surface-deep glass-edge lift shine press flex h-full flex-row items-start gap-3.5 rounded-2xl p-4 sm:flex-col sm:gap-3 sm:p-6"
                     style={{ '--i': index } as CSSProperties}
                   >
-                    <IconChip tone="deep" size="lg">
+                    <IconChip tone="deep" size="md" className="sm:size-14">
                       <ValueIcon className="size-6" />
                     </IconChip>
-                    <h3 className="text-base font-semibold text-pretty text-white sm:text-lg">
-                      {reason.title}
-                    </h3>
-                    <p className="text-ink-on-deep text-sm leading-relaxed text-pretty">
-                      {reason.body}
-                    </p>
+                    {/*
+                      On a phone the four cards sit one under another, so the
+                      plate moves beside the copy rather than above it. Four
+                      stacked cards each with a 56px plate on its own line was
+                      most of a screen of nothing but plates.
+                    */}
+                    <div className="flex min-w-0 flex-col gap-1.5 sm:contents">
+                      <h3 className="text-base font-semibold text-pretty text-white sm:text-lg">
+                        {reason.title}
+                      </h3>
+                      <p className="text-ink-on-deep text-sm leading-relaxed text-pretty">
+                        {reason.body}
+                      </p>
+                    </div>
                   </Reveal>
                 );
               })}

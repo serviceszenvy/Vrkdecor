@@ -54,7 +54,7 @@ export default async function OurWorkPage({
   const hasFilters = Boolean(filters.occasion || filters.style || filters.service);
 
   return (
-    <div className="flex flex-col gap-4 pb-4 sm:gap-6 sm:pb-6">
+    <div className="flex flex-col gap-3 pb-3 sm:gap-6 sm:pb-6">
       <Hero
         compact
         eyebrow="Our work"
@@ -83,7 +83,7 @@ export default async function OurWorkPage({
           <FilterBar options={options} filters={filters} resultCount={designs.length} />
         </Reveal>
 
-        <div className="mt-8">
+        <div className="mt-6 sm:mt-8">
           {designs.length > 0 ? (
             <DesignGrid designs={designs} />
           ) : hasFilters ? (

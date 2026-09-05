@@ -630,6 +630,62 @@ sections in the logo's own colours. That is what was built.
   signature cards include a birthday celebration. Real data: whatever the admin
   marks featured, four of them.
 
+## Mobile responsiveness and motion (2026-09-05)
+
+**`viewport-fit=cover` rather than the browser's default inset.** The site is
+built out of full-bleed rounded panels and edge-anchored floating controls, so
+letting the browser inset the whole page inside the safe area would leave a
+band of ground above the notch and below the home indicator. Opting into cover
+means the layout owns those insets, which is also what makes
+`env(safe-area-inset-*)` report a real value — under the default it is always
+zero, which is why the safe-area handling already in the codebase had no
+effect. The four insets are read once into `--safe-*` in `app/globals.css`
+rather than being spelled out at each use site, because `env()` is only
+meaningful inside the property that consumes it and the 0px fallback has to be
+written every time.
+
+**Zoom is not capped.** `maximumScale` or `userScalable: false` would stop iOS
+zooming the page on field focus, and would also stop a visitor enlarging the
+type, which fails WCAG 1.4.4. The 16px floor on form fields on a phone is what
+prevents the automatic zoom instead.
+
+**Mobile values step UP at `sm`, desktop values are unchanged.** Every spacing,
+type and grid change in this release adds a smaller mobile value below the
+existing one rather than editing the desktop value. Nothing about the approved
+desktop composition moves.
+
+**Two across, not one, for the occasion tiles and the portfolio.** Three
+occasion tiles across 393px was splitting the Tamil terms through the middle of
+a word; one portfolio card across gave each design most of a screen. Both are
+now two, with the card's own type and chips stepped down to match.
+
+**Counting figures use `role="img"` with `aria-label`.** The figures are
+approved business facts and must be rendered exactly as approved. The approved
+string is what renders on the server, so a crawler, a printed page and a
+visitor without JavaScript all get the real figure; `role="img"` makes the
+ticking digits presentational and fixes the accessible name to the approved
+string, so the animation can never change what the figure says. A visible copy
+plus a screen-reader copy was rejected because it puts the same figure in the
+page twice.
+
+**Press feedback, not hover, on a touch screen.** `hover` is a desktop idea.
+`.press` is scoped to `@media (hover: none)` so the two never fight, and the
+default grey tap highlight is turned off because the page now has a press
+state of its own.
+
+**The reveal blur is a desktop-only refinement.** A blur on a revealing section
+forces a full-size offscreen buffer every frame, which is the most expensive
+thing this effect can ask of a mid-range phone, and at 393px nobody sees it.
+Below `sm` the reveal is opacity and a shorter travel. The sideways reveals
+collapse to the ordinary rise there for the same reason, and because 36px of
+horizontal travel inside a 393px viewport is a chance for the document to grow
+sideways mid-animation.
+
+**The body is pinned, not `overflow: hidden`, while the menu or lightbox is
+open.** `overflow: hidden` on the body does not hold the page still on iOS
+Safari. Pinning it at its current offset does, at the cost of restoring the
+scroll position on close, which both components now do.
+
 ## Pending
 
 - Exact Hostinger plan
@@ -649,3 +705,7 @@ sections in the logo's own colours. That is what was built.
 - The founder's photograph for the About page (`lib/content/founder.ts`)
 - Confirmation of the celebration categories and wording on the Services page
 - Confirmation that venue and services may be left to the follow-up call (the simplified quote form)
+- Testing on physical iOS and Android handsets. The mobile pass was verified in
+  emulated viewports (iPhone 15, iPhone Pro Max, a 360px and a 320px Android,
+  and landscape); the safe-area behaviour in particular can only be confirmed
+  on a real notched device.

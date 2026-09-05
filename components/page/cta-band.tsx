@@ -30,8 +30,8 @@ export function CtaBand({
   quoteHref?: string;
 }) {
   return (
-    <section className="px-3 sm:px-5 lg:px-6" aria-labelledby="final-cta">
-      <div className="surface-aurora on-deep shadow-deep relative isolate mx-auto w-full max-w-[86rem] overflow-hidden rounded-3xl border border-white/10 text-white">
+    <section className="px-2.5 sm:px-5 lg:px-6" aria-labelledby="final-cta">
+      <div className="surface-aurora on-deep shadow-deep relative isolate mx-auto w-full max-w-[86rem] overflow-hidden rounded-[1.75rem] border border-white/10 text-white sm:rounded-3xl">
         <span
           className="ambient-blob bg-accent-500/40 -top-28 -right-16 size-96"
           aria-hidden="true"
@@ -48,21 +48,23 @@ export function CtaBand({
         <LeafDecor className="text-accent-200/20 -right-12 -bottom-10 size-64" flip />
 
         <Container width="wide">
-          <div className="grid gap-8 py-12 sm:py-16 lg:grid-cols-[1.35fr_1fr] lg:items-center lg:gap-12">
-            <Reveal effect="left" className="flex flex-col gap-4">
+          <div className="grid gap-6 py-9 sm:gap-8 sm:py-16 lg:grid-cols-[1.35fr_1fr] lg:items-center lg:gap-12">
+            <Reveal effect="left" className="flex flex-col gap-3 sm:gap-4">
               <p className="text-accent-300 text-2xs font-semibold tracking-[0.24em] uppercase">
                 {eyebrow}
               </p>
               <h2
                 id="final-cta"
-                className="text-3xl font-medium sm:text-4xl lg:text-5xl"
+                className="text-2xl font-medium sm:text-4xl lg:text-5xl"
               >
                 {title}{' '}
                 {accent ? (
                   <span className="text-gradient-lime block pb-1">{accent}</span>
                 ) : null}
               </h2>
-              <p className="text-ink-on-deep max-w-xl leading-relaxed">{lead}</p>
+              <p className="text-ink-on-deep max-w-xl text-[0.95rem] leading-relaxed sm:text-base">
+                {lead}
+              </p>
             </Reveal>
 
             <Reveal
@@ -70,7 +72,13 @@ export function CtaBand({
               delay={120}
               className="flex flex-col gap-3 lg:items-stretch"
             >
-              <ButtonLink href={quoteHref} variant="lime" size="lg" fullWidth>
+              <ButtonLink
+                href={quoteHref}
+                variant="lime"
+                size="lg"
+                fullWidth
+                className="press"
+              >
                 Get a Quote
                 <ArrowRightIcon className="size-4" />
               </ButtonLink>

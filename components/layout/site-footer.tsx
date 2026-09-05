@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Container } from '@/components/ui';
+import { Container, CountUp } from '@/components/ui';
 import {
   legalNav,
   mailHref,
@@ -58,7 +58,7 @@ export function SiteFooter() {
       />
 
       <Container width="wide">
-        <div className="grid gap-10 py-14 sm:py-16 lg:grid-cols-12 lg:gap-8">
+        <div className="grid gap-8 py-10 sm:gap-10 sm:py-16 lg:grid-cols-12 lg:gap-8">
           <div className="flex flex-col gap-5 lg:col-span-4">
             <span className="inline-flex self-start rounded-2xl bg-white px-3.5 py-2 shadow-[0_10px_30px_-12px_rgb(0_0_0/0.5)]">
               <Image
@@ -74,12 +74,14 @@ export function SiteFooter() {
               the way you pictured it.
             </p>
 
-            <dl className="grid grid-cols-3 gap-4 border-t border-white/10 pt-5">
+            <dl className="grid grid-cols-3 gap-3 border-t border-white/10 pt-5 sm:gap-4">
               {credentials.map((credential) => (
                 <div key={credential.label} className="flex flex-col-reverse">
-                  <dt className="text-ink-on-deep/80 text-xs">{credential.label}</dt>
-                  <dd className="font-display text-gradient-lime text-2xl font-medium">
-                    {credential.value}
+                  <dt className="text-ink-on-deep/80 text-[0.75rem] leading-tight text-pretty sm:text-xs">
+                    {credential.label}
+                  </dt>
+                  <dd className="font-display text-gradient-lime text-xl font-medium tabular-nums sm:text-2xl">
+                    <CountUp value={credential.value} />
                   </dd>
                 </div>
               ))}
@@ -109,7 +111,7 @@ export function SiteFooter() {
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="text-ink-on-deep group inline-flex min-h-9 items-center gap-1.5 text-sm transition-colors hover:text-white"
+                    className="text-ink-on-deep group inline-flex min-h-11 items-center gap-1.5 text-sm transition-colors hover:text-white"
                   >
                     {item.label}
                     <ChevronRightIcon className="text-accent-400 size-3.5 -translate-x-1 opacity-0 transition-[opacity,transform] group-hover:translate-x-0 group-hover:opacity-100" />
@@ -134,7 +136,7 @@ export function SiteFooter() {
                 <li key={service.slug}>
                   <Link
                     href={routes.services}
-                    className="text-ink-on-deep inline-flex min-h-9 items-center text-sm transition-colors hover:text-white"
+                    className="text-ink-on-deep inline-flex min-h-11 items-center text-sm transition-colors hover:text-white"
                   >
                     {service.name}
                   </Link>
@@ -156,31 +158,31 @@ export function SiteFooter() {
                   {address.city}, {address.state} {address.postalCode}
                 </address>
               </li>
-              <li className="flex gap-3">
-                <PhoneIcon className="text-accent-400 mt-0.5 size-4 shrink-0" />
+              <li className="flex items-center gap-3">
+                <PhoneIcon className="text-accent-400 size-4 shrink-0" />
                 <a
                   href={telHref}
-                  className="text-ink-on-deep transition-colors hover:text-white"
+                  className="text-ink-on-deep inline-flex min-h-11 items-center transition-colors hover:text-white"
                 >
                   {siteConfig.contact.phone}
                 </a>
               </li>
-              <li className="flex gap-3">
-                <WhatsAppIcon className="text-accent-400 mt-0.5 size-4 shrink-0" />
+              <li className="flex items-center gap-3">
+                <WhatsAppIcon className="text-accent-400 size-4 shrink-0" />
                 <a
                   href={whatsAppHref}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-ink-on-deep transition-colors hover:text-white"
+                  className="text-ink-on-deep inline-flex min-h-11 items-center transition-colors hover:text-white"
                 >
                   WhatsApp
                 </a>
               </li>
-              <li className="flex gap-3">
-                <MailIcon className="text-accent-400 mt-0.5 size-4 shrink-0" />
+              <li className="flex items-center gap-3">
+                <MailIcon className="text-accent-400 size-4 shrink-0" />
                 <a
                   href={mailHref}
-                  className="text-ink-on-deep break-all transition-colors hover:text-white"
+                  className="text-ink-on-deep inline-flex min-h-11 items-center break-all transition-colors hover:text-white"
                 >
                   {siteConfig.contact.email}
                 </a>
@@ -197,12 +199,12 @@ export function SiteFooter() {
             &copy; {year} {siteConfig.name}. All rights reserved.
           </p>
 
-          <ul className="flex flex-wrap gap-4">
+          <ul className="flex flex-wrap gap-x-5 gap-y-1">
             {legalNav.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className="text-ink-on-deep/80 text-xs transition-colors hover:text-white"
+                  className="text-ink-on-deep/80 inline-flex min-h-11 items-center text-xs transition-colors hover:text-white"
                 >
                   {item.label}
                 </Link>
@@ -222,7 +224,7 @@ export function SiteFooter() {
               target="_blank"
               rel="noopener noreferrer"
               data-testid="zenvy-link"
-              className="text-white underline decoration-white/30 underline-offset-4 transition-colors hover:decoration-white"
+              className="inline-flex min-h-11 items-center text-white underline decoration-white/30 underline-offset-4 transition-colors hover:decoration-white"
             >
               Zenvy
             </a>
