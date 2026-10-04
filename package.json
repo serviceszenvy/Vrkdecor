@@ -3,6 +3,9 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build --outDir dist/client && vite build --ssr src/entry-server.jsx --outDir dist/server && node scripts/prerender.mjs"
