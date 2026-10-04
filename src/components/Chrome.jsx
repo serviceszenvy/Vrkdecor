@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, createContext, useContext } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { I } from './Icons.jsx'
 import { STRINGS, localePath, stripLang } from '../i18n.js'
-import { PHONE_DISPLAY, PHONE_TEL, EMAIL, ADDRESS, MAPS, IG, IG_HANDLE, FB, ZENVY, waLink, composeWa } from '../site.js'
+import { PHONE_DISPLAY, PHONE_TEL, EMAIL, ADDRESS, MAPS, IG, IG_HANDLE, FB, ZENVY, waLink, composeWa, composeWaText } from '../site.js'
 
 export const LangContext = createContext('en')
 export const useT = () => STRINGS[useContext(LangContext)]
@@ -125,11 +125,16 @@ export function Floaters() {
 }
 
 /* ---------- Quote modal ---------- */
+const IMG_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+const IMG_MAX = 2 * 1024 * 1024
 export function QuoteModal({ state, close }) {
   const t = useT()
   const panelRef = useRef(null)
+  const [img, setImg] = useState(null)
+  const [imgErr, setImgErr] = useState('')
+  const clearImg = () => { setImg(prev => { if (prev) URL.revokeObjectURL(prev.url); return null }); setImgErr('') }
   useEffect(() => {
-    if (!state.open) return
+    if (!state.open) { clearImg(); return }
     const onKey = e => { if (e.key === 'Escape') close() }
     document.addEventListener('keydown', onKey)
     const first = panelRef.current && panelRef.current.querySelector('input')
@@ -137,10 +142,27 @@ export function QuoteModal({ state, close }) {
     return () => document.removeEventListener('keydown', onKey)
   }, [state.open])
   if (!state.open) return null
-  const submit = e => {
+  const onFile = e => {
+    const f = e.target.files && e.target.files[0]
+    e.target.value = ''
+    if (!f) return
+    const extOk = /\.(jpe?g|png|webp)$/i.test(f.name)
+    if (!IMG_TYPES.includes(f.type) || !extOk) { setImgErr(t.upErrType); return }
+    if (f.size > IMG_MAX) { setImgErr(t.upErrSize); return }
+    setImg(prev => { if (prev) URL.revokeObjectURL(prev.url); return { file: f, url: URL.createObjectURL(f) } })
+    setImgErr('')
+  }
+  const submit = async e => {
     e.preventDefault()
-    const f = Object.fromEntries(new FormData(e.target).entries())
-    window.open(composeWa(f, state.ref, t), '_blank', 'noopener')
+    let text = composeWaText(Object.fromEntries(new FormData(e.target).entries()), state.ref, t)
+    if (img) {
+      // where the browser can share a file (most phones), hand WhatsApp the photo directly
+      if (navigator.canShare && navigator.canShare({ files: [img.file] })) {
+        try { await navigator.share({ files: [img.file], text }); return } catch (err) { if (err && err.name === 'AbortError') return }
+      }
+      text += `\n${t.waRefImg}`
+    }
+    window.open(waLink(text), '_blank', 'noopener')
   }
   return (
     <div className="modal is-open" role="dialog" aria-modal="true" aria-labelledby="quote-title">
@@ -158,6 +180,28 @@ export function QuoteModal({ state, close }) {
           <div><label htmlFor="qm-date">{t.fDate}</label><input id="qm-date" name="date" type="date" /></div>
           <div className="full"><label htmlFor="qm-loc">{t.fLocation}</label><input id="qm-loc" name="location" placeholder={t.fLocPH} /></div>
           <div className="full"><label htmlFor="qm-notes">{t.fNotes}</label><textarea id="qm-notes" name="notes" placeholder={t.fNotesPH}></textarea></div>
+          {!state.ref && (
+            <div className="full upload-field">
+              <label htmlFor="qm-photo">{t.upLabel}</label>
+              {!img ? (
+                <>
+                  <input id="qm-photo" type="file" accept="image/jpeg,image/png,image/webp" onChange={onFile} />
+                  <p className="form-note" style={{ marginTop: '.35rem' }}>{t.upHint}</p>
+                </>
+              ) : (
+                <div className="upload-preview">
+                  <img src={img.url} alt="" />
+                  <div>
+                    <b>{img.file.name}</b>
+                    <span>{img.file.size >= 1048576 ? `${(img.file.size / 1048576).toFixed(2)} MB` : `${Math.max(1, Math.round(img.file.size / 1024))} KB`}</span>
+                    <button type="button" className="upload-remove" onClick={clearImg}>{I.x} {t.upRemove}</button>
+                  </div>
+                </div>
+              )}
+              {imgErr && <p className="upload-err" role="alert">{imgErr}</p>}
+              {img && <p className="form-note" style={{ marginTop: '.4rem' }}>{t.upWaNote}</p>}
+            </div>
+          )}
           <div className="full"><button className="btn btn-wa" type="submit" style={{ width: '100%' }}>{I.wa} {t.continueWa}</button></div>
           <p className="form-note full">{t.formNote}</p>
         </form>

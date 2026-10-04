@@ -728,3 +728,48 @@ html[lang="ta"] .prop-badge{letter-spacing:.08em}
 .hero{min-height:calc(100svh - 64px)}
 @media (max-width:980px){.hero{min-height:calc(100svh - 64px)}}
 @media (max-height:620px){.hero{min-height:auto}}
+
+/* ================= V5 REFINEMENT PASS ================= */
+
+/* --- hero: keep the band inside the fold on SHORT desktop screens (720p/768p laptops) --- */
+@media (min-width:981px) and (max-height:800px){
+  .hero-inner{padding:5.6rem 0 2.2rem}
+  .hero h1{font-size:clamp(1.95rem,3.5vw,2.8rem)}
+  .hero-sub{font-size:1rem;margin-bottom:1rem}
+  .hero-eyebrow{margin-bottom:.85rem;padding:.45rem .95rem}
+  .hero-ctas{margin-bottom:1rem}
+  .hero-meta{font-size:.8rem}
+}
+/* the calc rule must win even on short screens; only give up below 500px height */
+@media (max-height:620px){.hero{min-height:calc(100svh - 64px)}}
+@media (max-height:500px){.hero{min-height:auto}}
+
+/* --- home proprietor intro: compact trust band --- */
+.prop-mini{display:grid;grid-template-columns:minmax(0,230px) minmax(0,1fr);gap:clamp(1.4rem,3vw,2.6rem);align-items:center;padding:clamp(1.3rem,2.6vw,2rem);border-radius:var(--r-l)}
+.prop-mini img{width:100%;height:auto;aspect-ratio:3/3.4;object-fit:cover;object-position:top;border-radius:18px;border:1px solid rgba(142,200,64,.3);box-shadow:var(--shadow-m)}
+.prop-mini-body .kicker{margin-bottom:.4rem}
+.prop-mini-body h2{font-size:clamp(1.5rem,2.4vw,2rem);margin:0 0 .45rem}
+.prop-mini-body .prop-badge{margin-bottom:.75rem}
+.prop-mini-body p:not(.kicker){font-size:.95rem;max-width:62ch;margin:0 0 1.1rem}
+@media (max-width:700px){
+  .prop-mini{grid-template-columns:1fr}
+  .prop-mini img{max-width:230px}
+}
+
+/* --- quote modal: reference photo upload --- */
+.upload-field label{display:block}
+.form-grid input[type="file"]{width:100%;padding:.6rem;border:1.5px dashed var(--line);border-radius:12px;background:var(--surface);font-size:.84rem;color:var(--ink-soft);cursor:pointer}
+.form-grid input[type="file"]::file-selector-button{border:0;border-radius:999px;padding:.5rem 1rem;margin-right:.7rem;font:inherit;font-size:.82rem;font-weight:600;background:rgba(142,200,64,.18);color:var(--green-deep);cursor:pointer}
+.upload-preview{display:flex;gap:.85rem;align-items:center;padding:.65rem;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.upload-preview img{width:70px;height:70px;object-fit:cover;border-radius:10px;flex:none}
+.upload-preview b{display:block;font-size:.84rem;max-width:26ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.upload-preview span{display:block;font-size:.76rem;color:var(--ink-soft);margin:.1rem 0 .35rem}
+.upload-remove{display:inline-flex;align-items:center;gap:.3rem;border:0;background:none;padding:0;font:inherit;font-size:.8rem;font-weight:600;color:var(--green-deep);cursor:pointer}
+.upload-remove svg{width:13px;height:13px}
+.upload-err{color:#A84A22;font-size:.82rem;margin:.45rem 0 0}
+.prop-mini{max-width:1000px;margin-inline:auto}
+
+/* home proprietor intro: small passport-size photo */
+.prop-mini{grid-template-columns:minmax(0,150px) minmax(0,1fr)}
+.prop-mini img{aspect-ratio:360/461;object-position:center top;border-radius:14px}
+@media (max-width:700px){.prop-mini img{max-width:150px}}

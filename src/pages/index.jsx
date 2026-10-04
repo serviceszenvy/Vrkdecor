@@ -99,6 +99,21 @@ export function Home() {
 
       <section className="section section-tight" style={{ paddingTop: 0 }}>
         <div className="wrap">
+          <div className="prop-mini glass reveal">
+            <img src="/assets/img/proprietor-chest.webp" alt={`${PROPRIETOR}, proprietor of VRK Decor`} width="360" height="461" loading="lazy" decoding="async" />
+            <div className="prop-mini-body">
+              <p className="kicker">{t.miniPropK}</p>
+              <h2>{PROPRIETOR}</h2>
+              <span className="prop-badge">{t.propTitle}</span>
+              <p>{t.miniPropP}</p>
+              <Link className="btn btn-ghost" to={p('/about')}>{t.miniPropCta} {I.arrow}</Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="section section-tight" style={{ paddingTop: 0 }}>
+        <div className="wrap">
           <div className="section-head center"><p className="kicker">{t.tK}</p><h2>{t.tH}</h2></div>
           <Testimonials />
         </div>
@@ -233,6 +248,7 @@ export function About() {
             <p className="prop-intro">{t.propIntro}</p>
             <p>{t.propP1}</p>
             <p>{t.propP2}</p>
+            <p>{t.propP3}</p>
             <blockquote className="pull" lang="en">{t.propQuote}<footer>{PROPRIETOR} &middot; Proprietor, VRK Decor</footer></blockquote>
             <div className="prop-meta">
               {t.propChips.map(c => <span className="chip" key={c}>{I.check} {c}</span>)}
@@ -351,7 +367,7 @@ export function Privacy() {
     <main id="main">
       <PageHero crumb="Privacy Policy" kicker="VRK Decor" title="Privacy Policy" lead="How this website handles the details you share with us" />
       <section className="section" style={{ paddingTop: 0 }}>
-        <div className="wrap prose">
+        <div className="wrap"><div className="prose">
           <p>VRK Decor (301 M.S Road, Vettunimadam, Nagercoil, Tamil Nadu 629003) respects your privacy. This website is a brochure site for our event decoration business. It runs no analytics trackers, sets no marketing cookies and stores no form submissions on any server</p>
           <h2>Information you share with us</h2>
           <p>The quote and contact forms on this site compose a WhatsApp message on your own device. The name, phone number, event details and requirements you type are sent to us only when you choose to send that message in WhatsApp. If you call, email or message us directly, those conversations are handled under the terms of your phone, email or WhatsApp provider</p>
@@ -365,7 +381,7 @@ export function Privacy() {
           <p>You may contact us at any time to ask what details of yours we hold from past enquiries or bookings, to correct them, or to ask us to delete them where we have no ongoing need to keep them</p>
           <h2>Contact</h2>
           <p>For any privacy question, write to <a href="mailto:vrk.groups@gmail.com">vrk.groups@gmail.com</a> or call +91 99940 72435</p>
-        </div>
+        </div></div>
       </section>
     </main>
   )
@@ -376,7 +392,7 @@ export function Terms() {
     <main id="main">
       <PageHero crumb="Terms" kicker="VRK Decor" title="Terms of Use" lead="The terms that apply to this website and to bookings made with VRK Decor" />
       <section className="section" style={{ paddingTop: 0 }}>
-        <div className="wrap prose">
+        <div className="wrap"><div className="prose">
           <h2>About this website</h2>
           <p>This website presents the services and past work of VRK Decor, an event decoration business based in Nagercoil, Tamil Nadu. Using the site or sending an enquiry does not by itself create a booking</p>
           <h2>Quotations</h2>
@@ -395,7 +411,7 @@ export function Terms() {
           <p>These terms are governed by the laws of India, and any dispute is subject to the courts at Nagercoil, Tamil Nadu</p>
           <h2>Contact</h2>
           <p>Questions about these terms can be sent to <a href="mailto:vrk.groups@gmail.com">vrk.groups@gmail.com</a> or +91 99940 72435</p>
-        </div>
+        </div></div>
       </section>
     </main>
   )

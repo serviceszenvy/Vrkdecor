@@ -14,10 +14,14 @@ export const ZENVY = 'https://zenvytech.vercel.app/'
 
 export const waLink = (msg) => `https://wa.me/${WA}?text=${encodeURIComponent(msg)}`
 
-export function composeWa(fields, ref, labels) {
+export function composeWaText(fields, ref, labels) {
   const lines = [labels.waIntro]
   if (ref) lines.push(`${labels.waRef}: ${ref}`)
   const map = [['name', labels.fName], ['phone', labels.fPhone], ['event', labels.fEvent], ['date', labels.fDate], ['location', labels.fLocation], ['notes', labels.fNotes]]
   map.forEach(([k, label]) => { if (fields[k]) lines.push(`${label}: ${fields[k]}`) })
-  return waLink(lines.join('\n'))
+  return lines.join('\n')
+}
+
+export function composeWa(fields, ref, labels) {
+  return waLink(composeWaText(fields, ref, labels))
 }
