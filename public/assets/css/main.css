@@ -91,10 +91,13 @@ p{margin:0 0 1em;color:var(--ink-soft)}
   transition:background .35s,box-shadow .35s,border-color .35s;
   border-bottom:1px solid transparent;
 }
-.site-header.is-scrolled{
+/* the glass layer sits on ::before: a backdrop-filter on the header itself would make it the
+   containing block for the fixed mobile menu, squeezing the menu into the 73px header strip */
+.site-header::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;transition:background .35s}
+.site-header.is-scrolled{border-bottom-color:rgba(20,26,18,.07);box-shadow:0 8px 30px rgba(20,26,18,.07)}
+.site-header.is-scrolled::before{
   background:var(--glass);
   -webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4);
-  border-bottom-color:rgba(20,26,18,.07);box-shadow:0 8px 30px rgba(20,26,18,.07);
 }
 .nav{display:flex;align-items:center;gap:1.5rem;min-height:72px}
 .brand{display:inline-flex;align-items:center;gap:.65rem;color:var(--ink)}
@@ -587,7 +590,13 @@ html[lang="ta"] .prop-badge{letter-spacing:.08em}
 /* v2 mobile hero polish */
 @media(max-width:560px){
   .hero-eyebrow{font-size:.6rem;letter-spacing:.14em;padding:.42rem .85rem}
-  .hero-ctas .btn{white-space:nowrap}
+}
+/* narrow phones: a label too long for one line (e.g. Tamil) wraps inside the button instead of leaving the screen */
+@media(max-width:420px){
+  .btn{white-space:normal;text-align:center;line-height:1.3;max-width:100%}
+  /* the hero buttons sit at the bottom of the first screen, beside the fixed Instagram/WhatsApp
+     buttons (44px at .75rem from the edge): keep them clear of each other */
+  .hero-ctas{padding-right:2.75rem}
 }
 
 /* ================= V3 ENHANCEMENT PASS ================= */
@@ -777,4 +786,8 @@ html[lang="ta"] .prop-badge{letter-spacing:.08em}
 /* home proprietor intro: small passport-size photo */
 .prop-mini{grid-template-columns:minmax(0,150px) minmax(0,1fr)}
 .prop-mini img{aspect-ratio:360/461;object-position:center top;border-radius:14px}
-@media (max-width:700px){.prop-mini img{max-width:150px}}
+/* phones: photo first, text below at full width (this must follow the two-column rule above) */
+@media (max-width:700px){
+  .prop-mini{grid-template-columns:minmax(0,1fr)}
+  .prop-mini img{max-width:170px;justify-self:start}
+}

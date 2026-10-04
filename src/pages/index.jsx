@@ -188,8 +188,7 @@ export function OurWork() {
   return (
     <main id="main">
       <PageHero crumb={t.nav.work}
-        title={<>{t.owH1a} <em className="serif-i">{t.owH1b}</em></>} lead={t.owLead}
-        aside={<div className="head-stat reveal" title={t.owCountSub}><b>49<i>+</i></b><span>{t.owCount}</span></div>} />
+        title={<>{t.owH1a} <em className="serif-i">{t.owH1b}</em></>} lead={t.owLead} />
       <Marquee />
       <section className="section section-tight">
         <div className="wrap">

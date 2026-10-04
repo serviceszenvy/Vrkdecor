@@ -15,10 +15,11 @@ function Layout({ lang, children }) {
   }
   useRevealEffect([loc.pathname])
   useEffect(() => {
-    // user-initiated navigation: go to the #section if the link names one, else the top of the new page
+    // user-initiated navigation: go to the #section if the link names one, else the top of the new page.
+    // 'instant' overrides html{scroll-behavior:smooth}, whose animation got cut short on page change
     const target = loc.hash && document.getElementById(decodeURIComponent(loc.hash.slice(1)))
-    if (target) target.scrollIntoView()
-    else window.scrollTo(0, 0)
+    if (target) target.scrollIntoView({ behavior: 'instant' })
+    else window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
     const m = metaFor(stripLang(loc.pathname), lang)
     document.title = m.title
     const d = document.querySelector('meta[name="description"]')

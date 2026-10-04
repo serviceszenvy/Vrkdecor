@@ -40,7 +40,6 @@ export const STRINGS = {
     upErrSize: 'That photo is over 2MB, please pick a smaller one',
     upWaNote: 'WhatsApp opens with your message, attach this photo in the chat before sending',
     waRefImg: 'I have a reference photo to share',
-    owCount: 'real designs', owCountSub: 'Every image on this page is VRK\u2019s own work, photographed at real celebrations',
     talkK: 'Talk to us', talkH: 'Planning a date already',
     talkP: 'Share the date and venue and we will tell you what is possible',
 
@@ -146,7 +145,6 @@ export const STRINGS = {
     upErrSize: 'இந்த படம் 2MB-ஐ விட பெரியது, சிறிய படத்தைத் தேர்வு செய்யவும்',
     upWaNote: 'WhatsApp திறந்ததும், அனுப்பும் முன் இந்த படத்தை சேட்டில் இணைக்கவும்',
     waRefImg: 'மாதிரி புகைப்படம் ஒன்று உள்ளது',
-    owCount: 'உண்மையான வடிவமைப்புகள்', owCountSub: 'இந்தப் பக்கத்தில் உள்ள ஒவ்வொரு படமும் VRK குழுவின் சொந்த வேலை',
     talkK: 'எங்களிடம் பேசுங்கள்', talkH: 'தேதி ஏற்கனவே முடிவு செய்துவிட்டீர்களா',
     talkP: 'தேதி மற்றும் மண்டபம் சொல்லுங்கள் · என்ன செய்ய முடியும் என்று சொல்கிறோம்',
 
