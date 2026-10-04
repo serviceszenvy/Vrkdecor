@@ -1,6 +1,7 @@
 // Prerender every route to static HTML so SEO/AEO content is crawlable without JS
 import fs from 'node:fs'
 import path from 'node:path'
+import crypto from 'node:crypto'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -10,7 +11,11 @@ const DOMAIN = (process.env.SITE_URL || 'https://www.vrkdecor.com').replace(/\/+
 
 const { render, metaFor } = await import(pathToFileURL(path.join(root, 'dist/server/entry-server.js')).href)
 
+// main.css lives in public/ so Vite does not hash its name: version the URL by content
+// so browsers holding an older copy fetch the new one after each deploy
+const cssVer = crypto.createHash('md5').update(fs.readFileSync(path.join(client, 'assets/css/main.css'))).digest('hex').slice(0, 10)
 const template = fs.readFileSync(path.join(client, 'index.html'), 'utf8')
+  .replace('href="/assets/css/main.css"', `href="/assets/css/main.css?v=${cssVer}"`)
 
 const ROUTES = [
   { url: '/', lang: 'en', base: '/' },
