@@ -560,7 +560,7 @@ html[lang="ta"] .serif-i,html[lang="ta"] .hero h1 em{color:var(--gold)}
 }
 
 /* --- PROPRIETOR editorial feature (About) --- */
-.prop-feature{position:relative}
+.prop-feature{position:relative;scroll-margin-top:96px}
 .prop-grid{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:clamp(2rem,4.5vw,4rem);align-items:center}
 @media (max-width:860px){.prop-grid{grid-template-columns:1fr}}
 .prop-media{position:relative;max-width:440px}
@@ -659,8 +659,10 @@ html[lang="ta"] .prop-badge{letter-spacing:.08em}
 @media (prefers-reduced-motion:no-preference){
   .svc-grid .reveal:nth-child(3n+2),.work-grid .reveal:nth-child(3n+2),.contact-grid .reveal:nth-child(3n+2){transition-delay:.08s}
   .svc-grid .reveal:nth-child(3n+3),.work-grid .reveal:nth-child(3n+3),.contact-grid .reveal:nth-child(3n+3){transition-delay:.16s}
-  .prop-media.reveal{clip-path:inset(0 100% 0 0 round 24px);transform:none;transition:clip-path 1.05s var(--ease),opacity .6s var(--ease)}
-  .prop-media.reveal.in{clip-path:inset(0 0 0 0 round 24px)}
+  /* clip the image, not the observed box: a fully clipped target reports 0% visible and never reveals */
+  .prop-media.reveal{transform:none;transition:opacity .6s var(--ease)}
+  .prop-media.reveal img{clip-path:inset(0 100% 0 0 round 24px);transition:clip-path 1.05s var(--ease)}
+  .prop-media.reveal.in img{clip-path:inset(0 0 0 0 round 24px)}
 }
 
 /* --- button + card interaction polish --- */

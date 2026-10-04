@@ -15,14 +15,16 @@ function Layout({ lang, children }) {
   }
   useRevealEffect([loc.pathname])
   useEffect(() => {
-    // user-initiated navigation: reset to top of the new page
-    window.scrollTo(0, 0)
+    // user-initiated navigation: go to the #section if the link names one, else the top of the new page
+    const target = loc.hash && document.getElementById(decodeURIComponent(loc.hash.slice(1)))
+    if (target) target.scrollIntoView()
+    else window.scrollTo(0, 0)
     const m = metaFor(stripLang(loc.pathname), lang)
     document.title = m.title
     const d = document.querySelector('meta[name="description"]')
     if (d) d.setAttribute('content', m.desc)
     document.documentElement.lang = lang
-  }, [loc.pathname, lang])
+  }, [loc.pathname, loc.hash, lang])
   const t = STRINGS[lang]
   return (
     <LangContext.Provider value={lang}>

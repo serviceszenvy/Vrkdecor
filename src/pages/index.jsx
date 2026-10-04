@@ -106,7 +106,7 @@ export function Home() {
               <h2>{PROPRIETOR}</h2>
               <span className="prop-badge">{t.propTitle}</span>
               <p>{t.miniPropP}</p>
-              <Link className="btn btn-ghost" to={p('/about')}>{t.miniPropCta} {I.arrow}</Link>
+              <Link className="btn btn-ghost" to={p('/about') + '#proprietor'}>{t.miniPropCta} {I.arrow}</Link>
             </div>
           </div>
         </div>
@@ -236,7 +236,7 @@ export function About() {
           </div>
         </div>
       </section>
-      <section className="section section-tight prop-feature" style={{ paddingTop: 0 }}>
+      <section id="proprietor" className="section section-tight prop-feature" style={{ paddingTop: 0 }}>
         <div className="wrap prop-grid">
           <div className="prop-media reveal">
             <img src="/assets/img/proprietor.webp" alt={`${PROPRIETOR}, proprietor of VRK Decor`} width="591" height="744" loading="lazy" decoding="async" />
