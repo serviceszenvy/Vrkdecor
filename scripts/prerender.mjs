@@ -1,14 +1,14 @@
 // Prerender every route to static HTML so SEO/AEO content is crawlable without JS
 import fs from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(__dirname, '..')
 const client = path.join(root, 'dist/client')
 const DOMAIN = (process.env.SITE_URL || 'https://www.vrkdecor.com').replace(/\/+$/, '')
 
-const { render, metaFor } = await import(path.join(root, 'dist/server/entry-server.js'))
+const { render, metaFor } = await import(pathToFileURL(path.join(root, 'dist/server/entry-server.js')).href)
 
 const template = fs.readFileSync(path.join(client, 'index.html'), 'utf8')
 
