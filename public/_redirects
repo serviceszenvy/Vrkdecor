@@ -1,0 +1,5 @@
+/gallery /our-work 301
+/gallery/* /our-work 301
+/packages /services 301
+/quote /contact 301
+/privacy /privacy-policy 301
