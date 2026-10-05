@@ -625,8 +625,6 @@ html[lang="ta"] .prop-badge{letter-spacing:.08em}
 .hero-copy{max-width:640px}
 .hero h1{font-size:clamp(2.5rem,5.4vw,4.35rem);max-width:14ch}
 @media (prefers-reduced-motion:no-preference){
-  .hero-video-full{animation:heroZoom 26s ease-in-out infinite alternate}
-  @keyframes heroZoom{from{transform:scale(1)}to{transform:scale(1.07)}}
   .hero-copy>*{opacity:0;animation:heroRise .9s var(--ease) both}
   .hero-copy>:nth-child(1){animation-delay:.12s}
   .hero-copy>:nth-child(2){animation-delay:.26s}
