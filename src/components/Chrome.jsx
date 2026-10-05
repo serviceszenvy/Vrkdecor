@@ -27,41 +27,41 @@ export function useRevealEffect(deps) {
   }, deps)
 }
 
-/* ---------- cinematic video loop: fade near end, fade back on restart ----------
-   Picks the desktop or mobile encode once at mount so only one file is downloaded */
-export function CinematicVideo({ className, poster, src, srcMobile, posterMobile, ...rest }) {
+/* ---------- cinematic background video ----------
+   The poster is a CSS background on the parent, so it paints before any JS and never shifts layout.
+   After mount this picks the desktop or mobile encode (WebM first, MP4 fallback) so only one file is
+   downloaded, and fades the video in once it is actually playing. Reduced-motion users keep the
+   poster and never download the video. `seamless` is for footage whose last frame runs into its
+   first; otherwise the loop point is hidden with a short fade. */
+export function CinematicVideo({ className, src, webm, srcMobile, webmMobile, seamless, ...rest }) {
   const ref = useRef(null)
-  const [media, setMedia] = useState({ src: src || '/assets/video/vrk-hero-v3.mp4', poster })
-  useEffect(() => {
-    if (srcMobile && window.matchMedia('(max-width:700px)').matches) {
-      setMedia({ src: srcMobile, poster: posterMobile || poster })
-    }
-  }, [])
   useEffect(() => {
     const v = ref.current
-    if (!v) return
-    if (v.currentSrc && !v.currentSrc.endsWith(media.src)) { v.load(); const p = v.play(); p && p.catch(() => {}) }
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (reduce) { v.pause(); return }
+    if (!v || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const mobile = srcMobile && window.matchMedia('(max-width:700px)').matches
+    const sources = [[mobile ? webmMobile : webm, 'video/webm'], [mobile ? srcMobile : src, 'video/mp4']].filter(([u]) => u)
+    v.replaceChildren(...sources.map(([u, type]) => Object.assign(document.createElement('source'), { src: u, type })))
+    // React does not reliably emit the muted attribute; browsers only allow unprompted playback when muted
+    v.muted = true; v.defaultMuted = true; v.playsInline = true; v.autoplay = true
+    v.preload = 'auto'
+    v.load()
+    const play = () => { const p = v.play(); p && p.catch(() => {}) }
+    const onPlaying = () => v.classList.add('is-playing')
+    v.addEventListener('playing', onPlaying)
     const FADE = 0.9
     const onTime = () => {
       if (!v.duration) return
-      const remain = v.duration - v.currentTime
-      if (remain <= FADE) v.classList.add('is-fading')
+      if (v.duration - v.currentTime <= FADE) v.classList.add('is-fading')
       else if (v.currentTime < 0.6) v.classList.remove('is-fading')
     }
-    v.addEventListener('timeupdate', onTime)
+    if (!seamless) v.addEventListener('timeupdate', onTime)
     const io = new IntersectionObserver(es => {
-      es.forEach(en => { if (en.isIntersecting) { const p = v.play(); p && p.catch(() => {}) } else v.pause() })
+      es.forEach(en => { if (en.isIntersecting) play(); else v.pause() })
     }, { threshold: 0.1 })
     io.observe(v)
-    return () => { v.removeEventListener('timeupdate', onTime); io.disconnect() }
-  }, [media.src])
-  return (
-    <video ref={ref} className={className} poster={media.poster} autoPlay muted loop playsInline preload="metadata" {...rest}>
-      <source src={media.src} type="video/mp4" />
-    </video>
-  )
+    return () => { v.removeEventListener('playing', onPlaying); v.removeEventListener('timeupdate', onTime); io.disconnect() }
+  }, [])
+  return <video ref={ref} className={className} muted loop playsInline preload="none" aria-hidden="true" {...rest} />
 }
 
 /* ---------- Header ---------- */
