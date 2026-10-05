@@ -18,8 +18,8 @@ export function Home() {
       <section className="hero">
         <div className="hero-media hero-stage-poster" aria-hidden="true">
           <CinematicVideo className="hero-video-full" seamless
-            src="/assets/video/vrk-hero-stage.mp4" webm="/assets/video/vrk-hero-stage.webm"
-            srcMobile="/assets/video/vrk-hero-stage-mobile.mp4" webmMobile="/assets/video/vrk-hero-stage-mobile.webm"
+            src="/assets/video/vrk-hero-full.mp4" webm="/assets/video/vrk-hero-full.webm"
+            srcMobile="/assets/video/vrk-hero-full-mobile.mp4" webmMobile="/assets/video/vrk-hero-full-mobile.webm"
             tabIndex={-1} />
         </div>
         <div className="hero-scrim" aria-hidden="true"></div>
