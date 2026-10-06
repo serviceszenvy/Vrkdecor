@@ -55,7 +55,7 @@ function headFor(r) {
   const schema = (m.schema || []).map(o => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join('\n')
   // LCP: preload the hero poster on home routes only (matching the breakpoint the video component uses)
   const preload = r.base === '/'
-    ? '<link rel="preload" as="image" href="/assets/video/vrk-hero-mandap-poster.webp" media="(min-width:701px)">\n<link rel="preload" as="image" href="/assets/video/vrk-hero-mandap-mobile-poster.webp" media="(max-width:700px)">\n'
+    ? '<link rel="preload" as="image" href="/assets/video/vrk-hero-reel-poster.webp" media="(min-width:701px)">\n<link rel="preload" as="image" href="/assets/video/vrk-hero-reel-mobile-poster.webp" media="(max-width:700px)">\n'
     : ''
   return `<title>${esc(m.title)}</title>
 ${preload}

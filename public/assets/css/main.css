@@ -606,8 +606,8 @@ html[lang="ta"] .prop-badge{letter-spacing:.08em}
 .hero-video-full{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:52% 42%;transition:opacity 1.1s ease}
 .hero-video-full.is-fading{opacity:0}
 /* poster paints immediately as the hero background (same framing as the video); the video fades in over it once playing */
-.hero-stage-poster{background:#0E140B url(/assets/video/vrk-hero-mandap-poster.webp) 52% 42%/cover no-repeat}
-@media (max-width:700px){.hero-stage-poster{background-image:url(/assets/video/vrk-hero-mandap-mobile-poster.webp)}}
+.hero-stage-poster{background:#0E140B url(/assets/video/vrk-hero-reel-poster.webp) 52% 42%/cover no-repeat}
+@media (max-width:700px){.hero-stage-poster{background-image:url(/assets/video/vrk-hero-reel-mobile-poster.webp)}}
 .hero-stage-poster .hero-video-full{opacity:0}
 .hero-stage-poster .hero-video-full.is-playing{opacity:1}
 .hero-stage-poster .hero-video-full.is-playing.is-fading{opacity:0}
