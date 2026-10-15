@@ -133,4 +133,43 @@ fs.writeFileSync(path.join(client, 'vercel.json'), JSON.stringify({
   ],
 }, null, 1))
 fs.writeFileSync(path.join(client, '_redirects'), `/gallery /our-work 301\n/gallery/* /our-work 301\n/packages /services 301\n/quote /contact 301\n/privacy /privacy-policy 301\n`)
+// Apache / LiteSpeed (cPanel shared hosting) equivalent of the configs above
+fs.writeFileSync(path.join(client, '.htaccess'), `Options -Indexes
+DirectorySlash Off
+ErrorDocument 404 /404.html
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# Force HTTPS
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP:X-Forwarded-Proto} !https
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+# Old URLs
+RewriteRule ^gallery(/.*)?$ /our-work [R=301,L]
+RewriteRule ^packages/?$ /services [R=301,L]
+RewriteRule ^quote/?$ /contact [R=301,L]
+RewriteRule ^privacy/?$ /privacy-policy [R=301,L]
+
+# Clean URLs without trailing slash: /about/ -> /about, /about serves about/index.html
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^(.+)/$ /$1 [R=301,L]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteCond %{REQUEST_FILENAME}/index.html -f
+RewriteRule ^(.+)$ $1/index.html [L]
+</IfModule>
+
+<IfModule mod_headers.c>
+Header always set X-Content-Type-Options "nosniff"
+Header always set X-Frame-Options "SAMEORIGIN"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+<FilesMatch "\\.(css|js|webp|jpg|jpeg|png|svg|mp4|woff2?)$">
+Header set Cache-Control "public, max-age=31536000, immutable"
+</FilesMatch>
+</IfModule>
+
+AddType application/manifest+json .webmanifest
+`)
 console.log('sitemap, robots, configs written')
