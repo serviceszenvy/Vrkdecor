@@ -134,6 +134,11 @@ fs.writeFileSync(path.join(client, 'vercel.json'), JSON.stringify({
 }, null, 1))
 fs.writeFileSync(path.join(client, '_redirects'), `/gallery /our-work 301\n/gallery/* /our-work 301\n/packages /services 301\n/quote /contact 301\n/privacy /privacy-policy 301\n`)
 // Apache / LiteSpeed (cPanel shared hosting) equivalent of the configs above
+const host = new URL(DOMAIN).host
+// Bare domain -> www (only when the production domain is the www host)
+const wwwRedirect = host.startsWith('www.')
+  ? `# One canonical host\nRewriteCond %{HTTP_HOST} ^${host.slice(4).replace(/\./g, '\\.')}$ [NC]\nRewriteRule ^ ${DOMAIN}%{REQUEST_URI} [R=301,L]\n\n`
+  : ''
 fs.writeFileSync(path.join(client, '.htaccess'), `Options -Indexes
 DirectorySlash Off
 ErrorDocument 404 /404.html
@@ -141,10 +146,14 @@ ErrorDocument 404 /404.html
 <IfModule mod_rewrite.c>
 RewriteEngine On
 
-# Force HTTPS
+${wwwRedirect}# Force HTTPS
 RewriteCond %{HTTPS} off
 RewriteCond %{HTTP:X-Forwarded-Proto} !https
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+# /index.html and /about/index.html -> clean URLs (only for direct requests, not internal rewrites)
+RewriteCond %{THE_REQUEST} \\s/+(?:(.+?)/)?index\\.html[\\s?]
+RewriteRule ^(.*/)?index\\.html$ /%1 [R=301,L,NE]
 
 # Old URLs
 RewriteRule ^gallery(/.*)?$ /our-work [R=301,L]
