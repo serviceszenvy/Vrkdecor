@@ -21,7 +21,7 @@ export function Privacy() {
           ) : (
             <p>This site does not run analytics trackers or set marketing cookies. If we add visitor statistics in future, they will load only after you give permission through a notice on the site, and this policy will be updated first.</p>
           )}
-          <p>The map on our contact page loads from Google only when you tap Show the map.</p>
+          <p>The map on our contact page is provided by Google Maps, so Google may receive your IP address and browser details when the map loads.</p>
           <h2>How we use your details</h2>
           <p>We use the details you share only to respond to your enquiry, prepare quotations, plan and deliver the decoration services you book, and coordinate partner services such as band set or sound where you request them. We do not sell your information, and we do not share it with anyone except the partner vendors needed to deliver your event.</p>
           <h2>Event photographs</h2>

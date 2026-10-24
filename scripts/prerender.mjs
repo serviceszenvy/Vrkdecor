@@ -171,7 +171,7 @@ VRK Decor is also known as ${SITE.ALT_NAMES.join(', ')}. The website is in Engli
 - Founded in December 2011 by proprietor ${SITE.PROPRIETOR}
 - More than 700 celebrations decorated
 - Team of more than ${SITE.TEAM_SIZE} people
-- Service area: all of Kanyakumari district (Nagercoil, Kanyakumari, Suchindram, Thuckalay, Marthandam, Kuzhithurai, Colachel, Eraniel and nearby towns), plus Tirunelveli, Thoothukudi, Thiruvananthapuram and Madurai on request
+- Service area: all of Kanyakumari district (Nagercoil, Kanyakumari, Suchindram, Thuckalay, Marthandam, Kuzhithurai, Colachel, Eraniel and nearby towns), plus Tirunelveli, Thoothukudi, Thiruvananthapuram and Madurai, other parts of Tamil Nadu and anywhere in India on request
 - Marriage halls regularly decorated: Ganga Grandeur, Y.R. Mahal, Perumal Thirumana Mandapam, Shree Lakshman Mahal, VMS Mahal, AMOHAA PALACE Kalyana Mandapam, P.S. Mahal, GPK Mahal, Madha Maaligai
 - Band set, sound and AV, and garlands are arranged through partner vendors
 

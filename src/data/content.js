@@ -82,8 +82,8 @@ export const TESTIMONIALS = [
 export const AREAS = {
   en: ['Vadasery', 'Kottar', 'Vettunimadam', 'Parvathipuram', 'Asaripallam', 'Suchindram', 'Kanyakumari', 'Thuckalay', 'Marthandam', 'Kuzhithurai', 'Colachel', 'Eraniel', 'Padmanabhapuram', 'Thovalai', 'Aralvaimozhi', 'Kulasekaram'],
   ta: ['வடசேரி', 'கோட்டார்', 'வெட்டூர்ணிமடம்', 'பார்வதிபுரம்', 'ஆசாரிப்பள்ளம்', 'சுசீந்திரம்', 'கன்னியாகுமரி', 'தக்கலை', 'மார்த்தாண்டம்', 'குழித்துறை', 'குளச்சல்', 'இரணியல்', 'பத்மநாபபுரம்', 'தோவாளை', 'ஆரல்வாய்மொழி', 'குலசேகரம்'],
-  farEn: ['Tirunelveli', 'Thoothukudi (Tuticorin)', 'Thiruvananthapuram (Trivandrum)', 'Madurai'],
-  farTa: ['திருநெல்வேலி', 'தூத்துக்குடி', 'திருவனந்தபுரம்', 'மதுரை'],
+  farEn: ['Tirunelveli', 'Thoothukudi (Tuticorin)', 'Thiruvananthapuram (Trivandrum)', 'Madurai', 'Other parts of Tamil Nadu', 'Anywhere in India (on request)'],
+  farTa: ['திருநெல்வேலி', 'தூத்துக்குடி', 'திருவனந்தபுரம்', 'மதுரை', 'தமிழ்நாட்டின் மற்ற பகுதிகள்', 'இந்தியா முழுவதும் (கேட்டால்)'],
 }
 
 // Portfolio filter groups (by design type, since event type is not recorded for each photo)

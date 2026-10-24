@@ -22,6 +22,7 @@ const AREA_SERVED = [
   ...AREA_CITIES.map(name => ({ '@type': 'City', name })),
   { '@type': 'AdministrativeArea', name: 'Kanyakumari district' },
   { '@type': 'AdministrativeArea', name: 'Tamil Nadu' },
+  { '@type': 'Country', name: 'India' },
 ]
 
 export const BUSINESS = {

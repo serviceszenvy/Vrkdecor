@@ -20,7 +20,6 @@ export function Home() {
         <div className="hero-scrim" aria-hidden="true"></div>
         <div className="hero-inner">
           <div className="hero-copy">
-            <p className="hero-eyebrow"><span className="dot"></span> {t.heroEyebrow}</p>
             <h1>{t.heroH1a} <em>{t.heroH1b}</em></h1>
             <p className="hero-tag">{t.heroTag}</p>
             <p className="hero-sub">{t.heroSub}</p>

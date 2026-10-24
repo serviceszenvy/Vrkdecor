@@ -225,23 +225,16 @@ export function FaqList({ items }) {
   )
 }
 
-/* ---------- click-to-load Google map (no Google request until the visitor asks) ---------- */
+/* ---------- Google map: visible straight away; the frame itself loads lazily when it nears the viewport ---------- */
 export function MapFacade() {
   const t = useT()
-  const [on, setOn] = useState(false)
   const src = `https://www.google.com/maps?q=${GEO.lat},${GEO.lng}&z=16&output=embed`
   return (
-    <div className="map-facade">
-      {on ? (
+    <div className="map-embed">
+      <div className="map-facade">
         <iframe title={t.mapTitle} src={src} loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen></iframe>
-      ) : (
-        <div className="map-placeholder">
-          <span className="map-pin" aria-hidden="true">{I.pin}</span>
-          <button type="button" className="btn btn-dark" onClick={() => setOn(true)}>{t.mapLoad}</button>
-          <p className="form-note">{t.mapNote}</p>
-          <a className="text-link" href={MAPS} target="_blank" rel="noopener noreferrer">{t.directions} {I.arrow}</a>
-        </div>
-      )}
+      </div>
+      <a className="text-link" href={MAPS} target="_blank" rel="noopener noreferrer">{t.directions} {I.arrow}</a>
     </div>
   )
 }

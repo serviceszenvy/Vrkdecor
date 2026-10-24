@@ -43,8 +43,8 @@ export const FAQ_GROUPS = [
     id: 'weddings', en: 'Weddings and venues', ta: 'திருமணங்களும் மண்டபங்களும்',
     items: [
       { id: 'halls',
-        en: ['Do you decorate wedding stages in marriage halls in Nagercoil?', 'Yes. We regularly decorate at Ganga Grandeur, Y.R. Mahal, Perumal Thirumana Mandapam, Shree Lakshman Mahal, VMS Mahal, AMOHAA PALACE Kalyana Mandapam, P.S. Mahal, GPK Mahal and Madha Maaligai, and at many other halls around Nagercoil.'],
-        ta: ['நாகர்கோவில் திருமண மண்டபங்களில் மேடை அலங்காரம் செய்வீர்களா?', 'ஆம். Ganga Grandeur, Y.R. Mahal, Perumal Thirumana Mandapam, Shree Lakshman Mahal, VMS Mahal, AMOHAA PALACE Kalyana Mandapam, P.S. Mahal, GPK Mahal, Madha Maaligai ஆகிய மண்டபங்களிலும், நாகர்கோவிலைச் சுற்றியுள்ள பல மண்டபங்களிலும் தொடர்ந்து அலங்காரம் செய்கிறோம்.'] },
+        en: ['Do you decorate wedding stages in marriage halls in Nagercoil?', 'Yes. We regularly decorate at Ganga Grandeur, Y.R. Mahal, Perumal Thirumana Mandapam, Shree Lakshman Mahal, VMS Mahal, AMOHAA PALACE Kalyana Mandapam, P.S. Mahal, GPK Mahal and Madha Maaligai, and at many other halls and venues. We are also happy to decorate at open grounds, gardens and any other venue you choose.'],
+        ta: ['நாகர்கோவில் திருமண மண்டபங்களில் மேடை அலங்காரம் செய்வீர்களா?', 'ஆம். Ganga Grandeur, Y.R. Mahal, Perumal Thirumana Mandapam, Shree Lakshman Mahal, VMS Mahal, AMOHAA PALACE Kalyana Mandapam, P.S. Mahal, GPK Mahal, Madha Maaligai ஆகிய மண்டபங்களிலும், இன்னும் பல மண்டபங்கள் மற்றும் இடங்களிலும் அலங்காரம் செய்திருக்கிறோம். திறந்த வெளி மைதானம், தோட்டம் உள்ளிட்ட நீங்கள் தேர்ந்தெடுக்கும் எந்த இடத்திலும் அலங்கரிக்கத் தயார்.'] },
       { id: 'church',
         en: ['Do you decorate church and temple weddings?', 'Yes. We decorate weddings in churches, temples, halls and homes. We plan the decoration to suit the place and its customs.'],
         ta: ['தேவாலய மற்றும் கோவில் திருமணங்களை அலங்கரிப்பீர்களா?', 'ஆம். தேவாலயங்கள், கோவில்கள், மண்டபங்கள், வீடுகளில் நடக்கும் திருமணங்களை அலங்கரிக்கிறோம். அந்த இடத்திற்கும் அதன் வழக்கங்களுக்கும் ஏற்ப அலங்காரத்தைத் திட்டமிடுகிறோம்.'] },
@@ -74,8 +74,8 @@ export const FAQ_GROUPS = [
     id: 'areas', en: 'Areas and timings', ta: 'பகுதிகளும் நேரமும்',
     items: [
       { id: 'areas',
-        en: ['Which areas do you cover?', 'We are based in Vettunimadam, Nagercoil, and we cover the whole of Kanyakumari district, including Kanyakumari, Suchindram, Thuckalay, Marthandam, Kuzhithurai, Colachel and Eraniel. We also travel to Tirunelveli, Thoothukudi, Thiruvananthapuram, Madurai and other places on request.'],
-        ta: ['எந்தெந்த பகுதிகளுக்கு வருவீர்கள்?', 'நாங்கள் நாகர்கோவில் வெட்டூர்ணிமடத்தில் இருக்கிறோம். கன்னியாகுமரி, சுசீந்திரம், தக்கலை, மார்த்தாண்டம், குழித்துறை, குளச்சல், இரணியல் உட்பட கன்னியாகுமரி மாவட்டம் முழுவதும் வருகிறோம். கேட்டால் திருநெல்வேலி, தூத்துக்குடி, திருவனந்தபுரம், மதுரை மற்றும் பிற ஊர்களுக்கும் வருவோம்.'] },
+        en: ['Which areas do you cover?', 'We are based in Vettunimadam, Nagercoil, and we cover the whole of Kanyakumari district, including Kanyakumari, Suchindram, Thuckalay, Marthandam, Kuzhithurai, Colachel and Eraniel. We also travel to Tirunelveli, Thoothukudi, Thiruvananthapuram, Madurai, other parts of Tamil Nadu and anywhere in India on request.'],
+        ta: ['எந்தெந்த பகுதிகளுக்கு வருவீர்கள்?', 'நாங்கள் நாகர்கோவில் வெட்டூர்ணிமடத்தில் இருக்கிறோம். கன்னியாகுமரி, சுசீந்திரம், தக்கலை, மார்த்தாண்டம், குழித்துறை, குளச்சல், இரணியல் உட்பட கன்னியாகுமரி மாவட்டம் முழுவதும் வருகிறோம். கேட்டால் திருநெல்வேலி, தூத்துக்குடி, திருவனந்தபுரம், மதுரை, தமிழ்நாட்டின் மற்ற பகுதிகள் மற்றும் இந்தியா முழுவதும் கேட்டால் வருவோம்.'] },
       { id: 'hours',
         en: ['What are your shop timings?', 'Our shop at 301 M.S Road, Vettunimadam, Nagercoil is open from 9:30 AM to 10:00 PM, all 7 days. You can also call or WhatsApp us at +91 99940 72435 at other times.'],
         ta: ['உங்கள் கடை எப்போது திறந்திருக்கும்?', 'நாகர்கோவில் வெட்டூர்ணிமடம், 301 M.S ரோட்டில் உள்ள எங்கள் கடை வாரத்தின் 7 நாட்களும் காலை 9:30 முதல் இரவு 10:00 வரை திறந்திருக்கும். மற்ற நேரங்களிலும் +91 99940 72435 என்ற எண்ணில் அழைக்கலாம் அல்லது WhatsApp செய்யலாம்.'] },
