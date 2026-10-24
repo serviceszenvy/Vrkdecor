@@ -11,7 +11,7 @@ export function Marquee() {
   const t = useT()
   const items = t.occasions.map(o => <span key={o}>{o} <i>&#10022;</i></span>)
   return (
-    <div className="marquee" aria-label={t.occasions.join(', ')}>
+    <div className="marquee" role="group" aria-label={t.occasions.join(', ')}>
       <div className="marquee-track">
         <span className="contents">{items}</span>
         <span className="contents" aria-hidden="true">{items}</span>

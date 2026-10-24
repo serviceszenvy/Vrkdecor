@@ -26,12 +26,12 @@ export const STATIC_META = {
   },
   '/about': {
     en: { title: 'About VRK Decor | Event Decorators in Nagercoil Since 2011', desc: 'VRK Decor is a wedding and event decoration company in Nagercoil, started in 2011 by V. Raja Kumerasen, with 700+ celebrations and a 35 member team.' },
-    ta: { title: 'VRK Decor பற்றி | 2011 முதல் நாகர்கோவில் விழா அலங்காரம்', desc: 'நாகர்கோவிலில் 2011-ல் V. ராஜ குமரேசன் அவர்களால் தொடங்கப்பட்ட திருமண மற்றும் விழா அலங்கார நிறுவனம். 700-க்கும் மேற்பட்ட விழாக்கள், 35 பேர் கொண்ட குழு.' },
+    ta: { title: 'VRK Decor பற்றி | 2011 முதல் நாகர்கோவில் விழா அலங்காரம்', desc: 'நாகர்கோவிலில் 2011-ல் V. ராஜா குமரேசன் அவர்களால் தொடங்கப்பட்ட திருமண மற்றும் விழா அலங்கார நிறுவனம். 700-க்கும் மேற்பட்ட விழாக்கள், 35 பேர் கொண்ட குழு.' },
     type: 'AboutPage', crumb: { en: 'About', ta: 'எங்களைப் பற்றி' }, og: '/assets/img/proprietor.jpg',
   },
   '/contact': {
     en: { title: 'Contact VRK Decor | Wedding Decorators in Nagercoil', desc: 'Call or WhatsApp VRK Decor at +91 99940 72435. Visit our shop at 301 M.S Road, Vettunimadam, Nagercoil, open 9:30 AM to 10:00 PM, all 7 days.' },
-    ta: { title: 'VRK Decor தொடர்பு | நாகர்கோவில் திருமண அலங்காரம்', desc: 'VRK Decor-ஐ +91 99940 72435 எண்ணில் அழைக்கவும் அல்லது WhatsApp செய்யவும். கடை: 301 M.S ரோடு, வெட்டுனிமடம், நாகர்கோவில். காலை 9:30 முதல் இரவு 10:00 வரை.' },
+    ta: { title: 'VRK Decor தொடர்பு | நாகர்கோவில் திருமண அலங்காரம்', desc: 'VRK Decor-ஐ +91 99940 72435 எண்ணில் அழைக்கவும் அல்லது WhatsApp செய்யவும். கடை: 301 M.S ரோடு, வெட்டூர்ணிமடம், நாகர்கோவில். காலை 9:30 முதல் இரவு 10:00 வரை.' },
     type: 'ContactPage', crumb: { en: 'Contact', ta: 'தொடர்பு' },
   },
   '/blog': {

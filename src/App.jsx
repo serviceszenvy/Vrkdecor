@@ -28,7 +28,7 @@ export function preloadPage(kind) {
   return f ? f() : Promise.resolve()
 }
 
-function Layout({ lang, children, missing }) {
+function Layout({ lang, children, missing, home }) {
   const loc = useLocation()
   const [quote, setQuote] = useState({ open: false, ref: '', refTitle: '' })
   const openQuote = (ref = '', refTitle = '') => setQuote({ open: true, ref, refTitle })
@@ -39,9 +39,13 @@ function Layout({ lang, children, missing }) {
   useRevealEffect([loc.pathname])
   useEffect(() => { initClickTracking() }, [])
   useEffect(() => {
-    // user-initiated navigation: reset to top of the new page and update the head
+    // user-initiated navigation: go to the #section if the link names one, else the top of the new page.
+    // 'instant' overrides html{scroll-behavior:smooth}, whose animation got cut short on page change
     if (window.__vrkNavigated) {
-      window.scrollTo(0, 0); pageView(loc.pathname)
+      const target = loc.hash && document.getElementById(decodeURIComponent(loc.hash.slice(1)))
+      if (target) target.scrollIntoView({ behavior: 'instant' })
+      else window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+      pageView(loc.pathname)
       const m = missing ? clientMeta('/404', 'en') : clientMeta(stripLang(loc.pathname), lang)
       document.title = m.title
       const d = document.querySelector('meta[name="description"]')
@@ -49,7 +53,7 @@ function Layout({ lang, children, missing }) {
       document.documentElement.lang = lang
     }
     window.__vrkNavigated = true
-  }, [loc.pathname, lang])
+  }, [loc.pathname, loc.hash, lang])
   const t = STRINGS[lang]
   return (
     <LangContext.Provider value={lang}>
@@ -58,7 +62,7 @@ function Layout({ lang, children, missing }) {
         <Header />
         <Suspense fallback={<main id="main" className="page-loading" />}>{children}</Suspense>
         <Footer />
-        <Floaters />
+        <Floaters home={home} />
         <QuoteModal state={quote} close={close} />
         <ConsentNotice />
       </QuoteContext.Provider>
@@ -80,7 +84,7 @@ function PageEl({ page }) {
 }
 
 const el = (lang, page) => (
-  <Layout lang={lang}>
+  <Layout lang={lang} home={page.kind === 'home'}>
     <DarkHero on={page.kind === 'home'} />
     <PageEl page={page} />
   </Layout>

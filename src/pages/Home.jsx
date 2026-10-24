@@ -5,7 +5,7 @@ import { Marquee, PageHero, Breadcrumb, WorkGrid, Testimonials, CtaBand, FaqList
 import { Steps, ServiceCards, AreasBlock, VenuesBlock, LastUpdated, useP } from '../components/Shared.jsx'
 import { HOME_SERVICES, PILLARS } from '../data/content.js'
 import { HOME_FAQ_IDS, faqById } from '../data/faq.js'
-import { PROPRIETOR } from '../site.js'
+import { PROPRIETOR, PROPRIETOR_TA } from '../site.js'
 
 /* ================= HOME ================= */
 export function Home() {
@@ -101,10 +101,10 @@ export function Home() {
             <img src="/assets/img/proprietor-chest.webp" alt={`${PROPRIETOR}, proprietor of VRK Decor`} width="360" height="461" loading="lazy" decoding="async" />
             <div className="prop-mini-body">
               <p className="kicker">{t.miniPropK}</p>
-              <h2>{PROPRIETOR}</h2>
+              <h2>{lang === 'ta' ? PROPRIETOR_TA : PROPRIETOR}</h2>
               <span className="prop-badge">{t.propTitle}</span>
               <p>{t.miniPropP}</p>
-              <Link className="btn btn-ghost" to={p('/about')}>{t.miniPropCta} {I.arrow}</Link>
+              <Link className="btn btn-ghost" to={p('/about') + '#proprietor'}>{t.miniPropCta} {I.arrow}</Link>
             </div>
           </div>
         </div>

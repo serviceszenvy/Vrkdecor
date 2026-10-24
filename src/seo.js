@@ -99,7 +99,7 @@ export function metaFor(base, lang = 'en') {
     extra.push({
       '@type': 'BlogPosting', '@id': url + '#article', headline: post.h1, description: post.desc, image: og,
       author: { '@id': FOUNDER }, publisher: { '@id': BIZ }, datePublished: post.date, dateModified: post.date,
-      mainEntityOfPage: { '@id': url }, inLanguage: 'en',
+      mainEntityOfPage: { '@id': url + '#webpage' }, inLanguage: 'en',
     })
   } else {
     const sm = STATIC_META[base]
@@ -117,7 +117,7 @@ export function metaFor(base, lang = 'en') {
       }
     }
     if (base === '/blog') {
-      webExtra.hasPart = POSTS.map(p => ({ '@id': `${DOMAIN}/blog/${p.slug}#article` }))
+      webExtra.hasPart = POSTS.map(p => ({ '@type': 'BlogPosting', '@id': `${DOMAIN}/blog/${p.slug}#article`, headline: p.h1, url: `${DOMAIN}/blog/${p.slug}` }))
     }
     if (base === '/about' || base === '/contact' || base === '/') webExtra.about = { '@id': BIZ }
   }

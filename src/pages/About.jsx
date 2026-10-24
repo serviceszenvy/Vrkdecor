@@ -3,7 +3,7 @@ import { I } from '../components/Icons.jsx'
 import { useT, useLang, useQuote, HeroMedia } from '../components/Chrome.jsx'
 import { Marquee, PageHero, Breadcrumb, WorkGrid, Testimonials, CtaBand, FaqList, MapFacade, RatingLine, Stars } from '../components/Blocks.jsx'
 import { Steps, ServiceCards, AreasBlock, VenuesBlock, LastUpdated, useP } from '../components/Shared.jsx'
-import { PROPRIETOR, OFFICIAL_DESC, OFFICIAL_DESC_TA, GBP, IG, FB, JUSTDIAL, INDIAMART, YOUTUBE, LINKEDIN, X_PROFILE } from '../site.js'
+import { PROPRIETOR, PROPRIETOR_TA, OFFICIAL_DESC, OFFICIAL_DESC_TA, GBP, IG, FB, JUSTDIAL, INDIAMART, YOUTUBE, LINKEDIN, X_PROFILE } from '../site.js'
 
 /* ================= ABOUT ================= */
 export function About() {
@@ -33,7 +33,7 @@ export function About() {
           </div>
         </div>
       </section>
-      <section className="section section-tight prop-feature pt-0">
+      <section id="proprietor" className="section section-tight prop-feature pt-0">
         <div className="wrap prop-grid">
           <div className="prop-media reveal">
             <img src="/assets/img/proprietor.webp" alt={`${PROPRIETOR}, proprietor of VRK Decor`} width="591" height="744" loading="lazy" decoding="async" />
@@ -41,12 +41,12 @@ export function About() {
           </div>
           <div className="prop-body reveal reveal-d1">
             <span className="prop-badge">{t.propTitle}</span>
-            <h2>{PROPRIETOR}</h2>
+            <h2>{lang === 'ta' ? PROPRIETOR_TA : PROPRIETOR}</h2>
             <p className="prop-intro">{t.propIntro}</p>
             <p>{t.propP1}</p>
             <p>{t.propP2}</p>
             <p>{t.propP3}</p>
-            <blockquote className="pull" lang="en">{t.propQuote}<footer>{PROPRIETOR} &middot; Proprietor, VRK Decor</footer></blockquote>
+            <blockquote className="pull" lang={lang}>{t.propQuote}<footer>{lang === 'ta' ? `${PROPRIETOR_TA} · உரிமையாளர், VRK Decor` : `${PROPRIETOR} · Proprietor, VRK Decor`}</footer></blockquote>
             <ul className="prop-meta chips-list">
               {t.propChips.map(c => <li className="chip" key={c}>{I.check} {c}</li>)}
             </ul>

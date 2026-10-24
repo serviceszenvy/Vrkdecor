@@ -94,6 +94,8 @@ async function write(r, out, m, appHtml) {
     .replace('<!--app-head-->', headFor(r, m))
     .replace('<!--app-html-->', appHtml)
     .replace('<html lang="en">', `<html lang="${r.lang}">`)
+    // the home hero is dark: set the light header colours in the static HTML so they do not flip when the app script loads
+    .replace('<body>', r.base === '/' ? '<body class="hero-dark">' : '<body>')
   html = (await beasties.process(html)).replace(' data-beasties-container', '')
   html = deferApp(html)
   fs.mkdirSync(path.dirname(out), { recursive: true })
@@ -196,7 +198,12 @@ ${faqLines}
 `
 fs.writeFileSync(path.join(client, 'llms.txt'), llms)
 
-// ---------- host configs (Vercel / Netlify, if used). LiteSpeed/Apache uses public/.htaccess ----------
+// ---------- Apache / LiteSpeed (cPanel hosting): .htaccess from scripts/htaccess.tpl, follows the SITE_URL domain ----------
+const host = new URL(DOMAIN).host
+fs.writeFileSync(path.join(client, '.htaccess'), fs.readFileSync(path.join(__dirname, 'htaccess.tpl'), 'utf8')
+  .replaceAll('{{DOMAIN}}', DOMAIN).replaceAll('{{HOST_RX}}', host.replace(/\./g, '\\.')))
+
+// ---------- host configs (Vercel / Netlify, if used) ----------
 fs.writeFileSync(path.join(client, 'vercel.json'), JSON.stringify({
   cleanUrls: true, trailingSlash: false,
   redirects: [

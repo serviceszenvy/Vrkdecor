@@ -4,7 +4,7 @@ import { I } from './Icons.jsx'
 import { STRINGS, localePath, stripLang } from '../i18n.js'
 import { hasTa } from '../routes.js'
 import { SERVICE_INDEX } from '../data/servicesIndex.js'
-import { PHONE_DISPLAY, PHONE_TEL, EMAIL, ADDRESS, ADDRESS_TA, MAPS, GBP, IG, IG_HANDLE, FB, JUSTDIAL, INDIAMART, YOUTUBE, LINKEDIN, X_PROFILE, ZENVY, HERO, ANALYTICS_ON, waLink, composeWaText } from '../site.js'
+import { PHONE_DISPLAY, PHONE_TEL, EMAIL, leadError, ADDRESS, ADDRESS_TA, MAPS, GBP, IG, IG_HANDLE, FB, JUSTDIAL, INDIAMART, YOUTUBE, LINKEDIN, X_PROFILE, ZENVY, HERO, ANALYTICS_ON, waLink, composeWaText } from '../site.js'
 import { getConsent, setConsent, loadAnalytics, track } from '../analytics.js'
 
 export const LangContext = createContext('en')
@@ -31,52 +31,50 @@ export function useRevealEffect(deps) {
 }
 
 /* ---------- Hero media ----------
-   The poster photo is the real first paint (fast LCP). The video is only fetched after the page has fully
-   loaded, and never on Save-Data, slow 2G/3G connections or when the visitor prefers reduced motion. */
+   The poster photo is the real first paint (fast LCP). The hero reel (WebM first, MP4 fallback, a lighter
+   portrait file on phones) is only fetched after the page has fully loaded, and never on Save-Data,
+   slow 2G/3G connections or when the visitor prefers reduced motion. The footage runs seamlessly into
+   its first frame, so it simply loops. */
 export function HeroMedia() {
   const ref = useRef(null)
-  const [src, setSrc] = useState('')
+  const [play, setPlay] = useState(false)
   const [playing, setPlaying] = useState(false)
+  const mobileRef = useRef(false)
   useEffect(() => {
-    const mobile = window.matchMedia('(max-width:700px)').matches
-    const want = mobile ? HERO.mobileVideo : HERO.desktopVideo
-    if (!want) return
+    mobileRef.current = window.matchMedia('(max-width:700px)').matches
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const c = navigator.connection || {}
     const slow = c.saveData || /(^|-)2g$|^3g$/.test(c.effectiveType || '')
     if (reduce || slow) return
-    const start = () => setTimeout(() => setSrc(want), 400)
+    const start = () => setTimeout(() => setPlay(true), 400)
     if (document.readyState === 'complete') start()
     else window.addEventListener('load', start, { once: true })
   }, [])
   useEffect(() => {
     const v = ref.current
-    if (!v || !src) return
-    const p = v.play(); p && p.catch(() => {})
-    const FADE = 0.9
-    const onTime = () => {
-      if (!v.duration) return
-      if (v.duration - v.currentTime <= FADE) v.classList.add('is-fading')
-      else if (v.currentTime < 0.6) v.classList.remove('is-fading')
-    }
-    v.addEventListener('timeupdate', onTime)
-    const io = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { const q = v.play(); q && q.catch(() => {}) } else v.pause() }), { threshold: 0.1 })
+    if (!v || !play) return
+    const m = mobileRef.current
+    const sources = [[m ? HERO.mobileWebm : HERO.desktopWebm, 'video/webm'], [m ? HERO.mobileVideo : HERO.desktopVideo, 'video/mp4']].filter(([u]) => u)
+    v.replaceChildren(...sources.map(([u, type]) => Object.assign(document.createElement('source'), { src: u, type })))
+    // React does not reliably emit the muted attribute, and browsers only autoplay when it is set
+    v.muted = true; v.defaultMuted = true; v.playsInline = true; v.autoplay = true
+    v.load()
+    const go = () => { const q = v.play(); q && q.catch(() => {}) }
+    const onPlaying = () => setPlaying(true)
+    v.addEventListener('playing', onPlaying)
+    go()
+    const io = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) go(); else v.pause() }), { threshold: 0.1 })
     io.observe(v)
-    return () => { v.removeEventListener('timeupdate', onTime); io.disconnect() }
-  }, [src])
+    return () => { v.removeEventListener('playing', onPlaying); io.disconnect() }
+  }, [play])
   return (
     <>
       <picture>
         <source media="(max-width:700px)" srcSet={HERO.mobilePoster} />
         <source media="(max-width:1200px)" srcSet={HERO.desktopPosterSmall} />
-        <img className="hero-poster-img" src={HERO.desktopPoster} alt="" width="1600" height="790" fetchPriority="high" decoding="async" />
+        <img className="hero-poster-img" src={HERO.desktopPoster} alt="" width="1600" height="900" fetchPriority="high" decoding="async" />
       </picture>
-      {src && (
-        <video ref={ref} className={`hero-video-full${playing ? ' is-playing' : ''}`} muted loop playsInline autoPlay preload="none"
-          onPlaying={() => setPlaying(true)} tabIndex={-1}>
-          <source src={src} type="video/mp4" />
-        </video>
-      )}
+      {play && <video ref={ref} className={`hero-video-full${playing ? ' is-playing' : ''}`} muted loop playsInline preload="none" tabIndex={-1} aria-hidden="true" />}
     </>
   )
 }
@@ -111,7 +109,7 @@ export function Header() {
       <div className="wrap nav">
         <Link className="brand" to={localePath(lang, '/')} aria-label="VRK Decor, home">
           <img className="brand-logo" src="/assets/img/logo.webp" alt="VRK Decor logo" width="212" height="128" />
-          <img className="brand-logo brand-logo-dark" src="/assets/img/logo-dark.webp" alt="VRK Decor logo" aria-hidden="true" width="212" height="128" loading="lazy" />
+          <img className="brand-logo brand-logo-dark" src="/assets/img/logo-dark.webp" alt="VRK Decor logo" aria-hidden="true" width="212" height="128" />
         </Link>
         <button className="nav-toggle" aria-expanded={open} aria-label={t.openMenu} onClick={toggle}>
           <span></span><span></span><span></span>
@@ -134,16 +132,17 @@ export function Header() {
 
 /* ---------- Floating buttons: Call (phones) + WhatsApp, Instagram on larger screens ----------
    Hidden while a form is on screen so they never cover a submit button */
-export function Floaters() {
+export function Floaters({ home }) {
   const t = useT()
   const [hide, setHide] = useState(false)
-  const [inHero, setInHero] = useState(false)
+  const [atTop, setAtTop] = useState(true)
   const loc = useLocation()
-  // on the home page, keep the hero buttons clear on phones until the visitor starts scrolling
+  // on the home page, keep the hero clear of the floating buttons on phones until the visitor starts scrolling.
+  // The class is part of the static HTML (CSS applies it on phone widths only), so the buttons never flash over the hero text.
   useEffect(() => {
-    const on = () => setInHero(document.body.classList.contains('hero-dark') && window.innerWidth <= 860 && window.scrollY < 260)
-    on(); window.addEventListener('scroll', on, { passive: true }); window.addEventListener('resize', on)
-    return () => { window.removeEventListener('scroll', on); window.removeEventListener('resize', on) }
+    const on = () => setAtTop(window.scrollY < 260)
+    on(); window.addEventListener('scroll', on, { passive: true })
+    return () => window.removeEventListener('scroll', on)
   }, [loc.pathname])
   useEffect(() => {
     const forms = document.querySelectorAll('.form-grid, .site-footer .footer-bottom')
@@ -157,11 +156,11 @@ export function Floaters() {
     return () => io.disconnect()
   }, [loc.pathname])
   return (
-    <div className={`float-stack${hide || inHero ? ' is-hidden' : ''}`}>
+    <aside className={`float-stack${hide ? ' is-hidden' : ''}${home && atTop ? ' is-hero' : ''}`} aria-label={t.quickAria}>
       <a className="float-btn float-ig" href={IG} target="_blank" rel="noopener noreferrer" aria-label={`${t.igAria} ${IG_HANDLE}`}>{I.ig}</a>
       <a className="float-btn float-call" href={`tel:${PHONE_TEL}`} aria-label={t.callAria}>{I.phone}</a>
       <a className="float-btn float-wa" href={waLink(t.waFloating)} target="_blank" rel="noopener noreferrer" aria-label={t.waFloatingAria}>{I.wa}</a>
-    </div>
+    </aside>
   )
 }
 
@@ -196,15 +195,26 @@ export function QuoteModal({ state, close }) {
   const panelRef = useRef(null)
   const [img, setImg] = useState(null)
   const [imgErr, setImgErr] = useState('')
+  const [err, setErr] = useState('')
   const clearImg = () => { setImg(prev => { if (prev) URL.revokeObjectURL(prev.url); return null }); setImgErr('') }
   useEffect(() => {
     document.body.classList.toggle('modal-open', !!state.open)
     if (!state.open) { clearImg(); return }
-    const onKey = e => { if (e.key === 'Escape') close() }
+    const opener = document.activeElement
+    const onKey = e => {
+      if (e.key === 'Escape') { close(); return }
+      if (e.key !== 'Tab' || !panelRef.current) return
+      // keep keyboard focus inside the dialog
+      const items = [...panelRef.current.querySelectorAll('a[href],button:not([disabled]),input:not([tabindex="-1"]):not([type=hidden]),select,textarea')].filter(el => el.offsetParent !== null)
+      if (!items.length) return
+      const first = items[0], last = items[items.length - 1]
+      if (e.shiftKey && (document.activeElement === first || !panelRef.current.contains(document.activeElement))) { e.preventDefault(); last.focus() }
+      else if (!e.shiftKey && (document.activeElement === last || !panelRef.current.contains(document.activeElement))) { e.preventDefault(); first.focus() }
+    }
     document.addEventListener('keydown', onKey)
     const first = panelRef.current && panelRef.current.querySelector('input')
     if (first) first.focus()
-    return () => document.removeEventListener('keydown', onKey)
+    return () => { document.removeEventListener('keydown', onKey); if (opener && opener.focus && document.contains(opener)) opener.focus() }
   }, [state.open])
   if (!state.open) return null
   const onFile = e => {
@@ -221,6 +231,9 @@ export function QuoteModal({ state, close }) {
     e.preventDefault()
     const fields = Object.fromEntries(new FormData(e.target).entries())
     if (fields.website) return // honeypot: bots fill hidden fields, people never see it
+    const bad = leadError(fields)
+    setErr(bad)
+    if (bad) { const el = e.target.elements[bad]; if (el) el.focus(); return }
     let text = composeWaText(fields, state.ref, t)
     track('generate_lead', { form: 'quote_modal', event_type: fields.event || '' })
     if (img) {
@@ -241,14 +254,14 @@ export function QuoteModal({ state, close }) {
         <p className="text-sm">{t.qmP}</p>
         {state.ref && <p className="modal-ref">{I.heart} <span>{state.refTitle || state.ref}</span></p>}
         <form className="form-grid" onSubmit={submit} noValidate>
-          <div><label htmlFor="qm-name">{t.fName}</label><input id="qm-name" name="name" autoComplete="name" required /></div>
-          <div><label htmlFor="qm-phone">{t.fPhone}</label><input id="qm-phone" name="phone" type="tel" autoComplete="tel" inputMode="tel" /></div>
+          <div><label htmlFor="qm-name">{t.fName}</label><input id="qm-name" type="text" name="name" autoComplete="name" required aria-invalid={err === 'name' || undefined} aria-describedby={err === 'name' ? 'qm-err' : undefined} /></div>
+          <div><label htmlFor="qm-phone">{t.fPhone}</label><input id="qm-phone" name="phone" type="tel" autoComplete="tel" inputMode="tel" aria-invalid={err === 'phone' || undefined} aria-describedby={err === 'phone' ? 'qm-err' : undefined} /></div>
           <div><label htmlFor="qm-event">{t.fEvent}</label>
             <select id="qm-event" name="event" defaultValue={t.events[0]}>{t.events.map(ev => <option key={ev}>{ev}</option>)}</select></div>
           <div><label htmlFor="qm-date">{t.fDate}</label><input id="qm-date" name="date" type="date" /></div>
-          <div className="full"><label htmlFor="qm-loc">{t.fLocation}</label><input id="qm-loc" name="location" placeholder={t.fLocPH} /></div>
+          <div className="full"><label htmlFor="qm-loc">{t.fLocation}</label><input id="qm-loc" type="text" name="location" placeholder={t.fLocPH} /></div>
           <div className="full"><label htmlFor="qm-notes">{t.fNotes}</label><textarea id="qm-notes" name="notes" placeholder={t.fNotesPH}></textarea></div>
-          <div className="hp" aria-hidden="true"><label htmlFor="qm-website">Website</label><input id="qm-website" name="website" tabIndex={-1} autoComplete="off" /></div>
+          <div className="hp" aria-hidden="true"><label htmlFor="qm-website">Website</label><input id="qm-website" type="text" name="website" tabIndex={-1} autoComplete="off" /></div>
           {!state.ref && (
             <div className="full upload-field">
               <label htmlFor="qm-photo">{t.upLabel}</label>
@@ -271,6 +284,7 @@ export function QuoteModal({ state, close }) {
               {img && <p className="form-note mt-xs">{t.upWaNote}</p>}
             </div>
           )}
+          {err && <p className="field-err full" id="qm-err" role="alert">{err === 'name' ? t.errName : t.errPhone}</p>}
           <div className="full"><button className="btn btn-wa btn-block" type="submit">{I.wa} {t.continueWa}</button></div>
           <p className="form-note full">{t.formNote}</p>
         </form>

@@ -28,7 +28,7 @@ export const SERVICES = [
 ]
 
 export const HOME_SERVICES = [
-  { icon: 'rings', to: '/wedding-stage-decoration-nagercoil', en: ['Wedding & Stage Decoration', 'Signature stages, mandaps and full venue styling for the big day'], ta: ['திருமண & மேடை அலங்காரம்', 'சிறப்பு மேடைகள், மண்டபங்கள் மற்றும் முழு மண்டப அலங்காரம்'] },
+  { icon: 'rings', to: '/wedding-stage-decoration-nagercoil', en: ['Wedding & Stage Decoration', 'Signature stages, mandaps and full venue styling for the big day'], ta: ['திருமண மேடை அலங்காரம்', 'சிறப்பு மேடைகள், மண்டபங்கள் மற்றும் முழு மண்டப அலங்காரம்'] },
   { icon: 'heart', to: '/engagement-reception-decoration-nagercoil', en: ['Engagement & Reception', 'Elegant backdrops and seating styled around the couple'], ta: ['நிச்சயதார்த்தம் & வரவேற்பு', 'தம்பதியரை மையமாகக் கொண்ட அழகான பின்னணிகளும் இருக்கைகளும்'] },
   { icon: 'cake', to: '/birthday-decoration-nagercoil', en: ['Birthday & Family Functions', 'Themes for birthdays, baby showers, puberty ceremonies and more'], ta: ['பிறந்தநாள் & குடும்ப விழாக்கள்', 'பிறந்தநாள், வளைகாப்பு, மஞ்சள் நீராட்டு விழா உள்ளிட்ட தீம் அலங்காரங்கள்'] },
   { icon: 'home', to: '/family-function-decoration-nagercoil', en: ['Housewarming', 'Warm, traditional touches for gruhapravesam and new beginnings'], ta: ['புதுமனை புகுவிழா', 'கிரகப்பிரவேசத்திற்கு பாரம்பரிய அழகுடன் வரவேற்பு அலங்காரம்'] },
@@ -44,10 +44,10 @@ export const PILLARS = {
     ['04', 'Local, hands-on execution', 'An in-house crew that knows Nagercoil venues, timings and traditions'],
   ],
   ta: [
-    ['01', 'பிரமாண்டத்தை விட நெருக்கம்', 'ஒரே மாதிரியான வடிவமைப்பு அல்ல · உங்கள் குடும்பத்திற்கும் கதைக்கும் ஏற்ப வடிவமைக்கிறோம்'],
+    ['01', 'பிரமாண்டத்தை விட தனிப்பட்ட கவனம்', 'ஒரே மாதிரியான வடிவமைப்பு அல்ல · உங்கள் குடும்பத்திற்கும் விருப்பத்திற்கும் ஏற்ப வடிவமைக்கிறோம்'],
     ['02', 'மண்டபத்திற்கு ஏற்ற வடிவமைப்பு', 'வாக்குறுதிக்கு முன் ஏற்பாடுகள் திட்டமிடப்படும் · ஒப்புக்கொண்ட வடிவமைப்பே கிடைக்கும்'],
-    ['03', 'ஒரே பொறுப்பு மையம்', 'முதல் அழைப்பு முதல் இறுதி வரை அனைத்தையும் ஒரே குழு கவனிக்கும்'],
-    ['04', 'உள்ளூர் நேரடி செயலாக்கம்', 'நாகர்கோவில் மண்டபங்கள், நேரங்கள், பாரம்பரியங்கள் நன்கு அறிந்த சொந்த குழு'],
+    ['03', 'ஒரே குழுவிடம் முழுப் பொறுப்பு', 'முதல் அழைப்பு முதல் இறுதி வரை அனைத்தையும் ஒரே குழு கவனிக்கும்'],
+    ['04', 'உள்ளூர் குழு, நேரடி கவனிப்பு', 'நாகர்கோவில் மண்டபங்கள், நேரங்கள், பாரம்பரியங்கள் நன்கு அறிந்த சொந்த குழு'],
   ],
 }
 
@@ -59,7 +59,7 @@ export const STEPS = {
     ['04', 'You celebrate', 'We stay through the event and clear the venue after'],
   ],
   ta: [
-    ['01', 'உங்கள் திட்டத்தைச் சொல்லுங்கள்', 'தேதி, மண்டபம், விழா வகையை WhatsApp-இல் அல்லது அழைப்பில் சொல்லுங்கள்'],
+    ['01', 'உங்கள் திட்டத்தைச் சொல்லுங்கள்', 'தேதி, மண்டபம், விழா வகையை WhatsApp-ல் அல்லது அழைப்பில் சொல்லுங்கள்'],
     ['02', 'வடிவமைப்பைப் பாருங்கள்', 'உங்கள் மண்டபத்திற்கும் பட்ஜெட்டுக்கும் ஏற்ற வடிவமைப்புகளை பரிந்துரைக்கிறோம்'],
     ['03', 'நாங்கள் அமைக்கிறோம்', 'அமைப்பு, பூக்கள், விளக்குகள், பார்ட்னர் ஒருங்கிணைப்பு அனைத்தும் எங்கள் குழு'],
     ['04', 'நீங்கள் கொண்டாடுங்கள்', 'விழா முடியும் வரை உடன் இருந்து, பின் மண்டபத்தை சீர் செய்கிறோம்'],
@@ -81,7 +81,7 @@ export const TESTIMONIALS = [
 // Areas around Nagercoil (homepage and contact page)
 export const AREAS = {
   en: ['Vadasery', 'Kottar', 'Vettunimadam', 'Parvathipuram', 'Asaripallam', 'Suchindram', 'Kanyakumari', 'Thuckalay', 'Marthandam', 'Kuzhithurai', 'Colachel', 'Eraniel', 'Padmanabhapuram', 'Thovalai', 'Aralvaimozhi', 'Kulasekaram'],
-  ta: ['வடசேரி', 'கோட்டார்', 'வெட்டுனிமடம்', 'பார்வதிபுரம்', 'ஆசாரிப்பள்ளம்', 'சுசீந்திரம்', 'கன்னியாகுமரி', 'தக்கலை', 'மார்த்தாண்டம்', 'குழித்துறை', 'குளச்சல்', 'இரணியல்', 'பத்மநாபபுரம்', 'தோவாளை', 'ஆரல்வாய்மொழி', 'குலசேகரம்'],
+  ta: ['வடசேரி', 'கோட்டார்', 'வெட்டூர்ணிமடம்', 'பார்வதிபுரம்', 'ஆசாரிப்பள்ளம்', 'சுசீந்திரம்', 'கன்னியாகுமரி', 'தக்கலை', 'மார்த்தாண்டம்', 'குழித்துறை', 'குளச்சல்', 'இரணியல்', 'பத்மநாபபுரம்', 'தோவாளை', 'ஆரல்வாய்மொழி', 'குலசேகரம்'],
   farEn: ['Tirunelveli', 'Thoothukudi (Tuticorin)', 'Thiruvananthapuram (Trivandrum)', 'Madurai'],
   farTa: ['திருநெல்வேலி', 'தூத்துக்குடி', 'திருவனந்தபுரம்', 'மதுரை'],
 }
