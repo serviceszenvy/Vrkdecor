@@ -41,10 +41,9 @@ export const LAST_UPDATED = '2026-10-24'
 export const LAST_UPDATED_LABEL = { en: '24 October 2026', ta: '24 அக்டோபர் 2026' }
 
 // ---------- Hero media ----------
-// Desktop shows a sharp still photo (fast LCP). Set HERO.desktopVideo to '/assets/video/vrk-hero-v3.mp4'
-// after copying that file into public/assets/video if you want video on desktop too.
+// The still photo is the first paint (fast LCP); the video fades in once the page has loaded.
 export const HERO = {
-  desktopVideo: '',
+  desktopVideo: '/assets/video/vrk-hero.mp4',
   mobileVideo: '/assets/video/vrk-hero-v3-mobile.mp4',
   desktopPoster: '/assets/img/hero/vrk-hero-desktop-1600.webp',
   desktopPosterSmall: '/assets/img/hero/vrk-hero-desktop-1100.webp',
