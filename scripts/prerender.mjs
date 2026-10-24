@@ -2,7 +2,7 @@
 // (no JavaScript needed for search engines or AI crawlers). Also writes sitemaps, robots.txt, llms.txt and host configs.
 import fs from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import Beasties from 'beasties'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -10,7 +10,7 @@ const root = path.resolve(__dirname, '..')
 const client = path.join(root, 'dist/client')
 const DOMAIN = (process.env.SITE_URL || 'https://www.vrkdecor.com').replace(/\/+$/, '')
 
-const S = await import(path.join(root, 'dist/server/entry-server.js'))
+const S = await import(pathToFileURL(path.join(root, 'dist/server/entry-server.js')).href)
 const { render, metaFor, notFoundMeta, PAGES, taPath, SERVICE_PAGES, POSTS, WORKS, FAQ_GROUPS, SITE } = S
 
 const template = fs.readFileSync(path.join(client, 'index.html'), 'utf8')
