@@ -1,14 +1,12 @@
 {
   "name": "vrk-decor",
   "private": true,
-  "version": "1.0.0",
+  "version": "2.0.0",
   "type": "module",
-  "engines": {
-    "node": "22.x"
-  },
   "scripts": {
     "dev": "vite",
-    "build": "vite build --outDir dist/client && vite build --ssr src/entry-server.jsx --outDir dist/server && node scripts/prerender.mjs"
+    "build": "vite build --outDir dist/client && vite build --ssr src/entry-server.jsx --outDir dist/server && node scripts/prerender.mjs",
+    "indexnow": "node scripts/indexnow.mjs"
   },
   "dependencies": {
     "react": "^19.2.0",
@@ -17,6 +15,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^5.1.1",
-    "vite": "^8.3.2"
+    "vite": "^8.3.2",
+    "beasties": "^0.5.5"
   }
 }

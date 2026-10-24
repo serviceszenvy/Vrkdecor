@@ -16,10 +16,10 @@ export function Home() {
   return (
     <main id="main">
       <section className="hero">
-        <div className="hero-media hero-stage-poster" aria-hidden="true">
-          <CinematicVideo className="hero-video-full" seamless
-            src="/assets/video/vrk-hero-reel.mp4" webm="/assets/video/vrk-hero-reel.webm"
-            srcMobile="/assets/video/vrk-hero-reel-mobile.mp4" webmMobile="/assets/video/vrk-hero-reel-mobile.webm"
+        <div className="hero-media" aria-hidden="true">
+          <CinematicVideo className="hero-video-full"
+            src="/assets/video/vrk-hero-v3.mp4" poster="/assets/video/vrk-hero-v3-poster.webp"
+            srcMobile="/assets/video/vrk-hero-v3-mobile.mp4" posterMobile="/assets/video/vrk-hero-v3-mobile-poster.webp"
             tabIndex={-1} />
         </div>
         <div className="hero-scrim" aria-hidden="true"></div>
@@ -107,7 +107,7 @@ export function Home() {
               <h2>{PROPRIETOR}</h2>
               <span className="prop-badge">{t.propTitle}</span>
               <p>{t.miniPropP}</p>
-              <Link className="btn btn-ghost" to={p('/about') + '#proprietor'}>{t.miniPropCta} {I.arrow}</Link>
+              <Link className="btn btn-ghost" to={p('/about')}>{t.miniPropCta} {I.arrow}</Link>
             </div>
           </div>
         </div>
@@ -189,7 +189,8 @@ export function OurWork() {
   return (
     <main id="main">
       <PageHero crumb={t.nav.work}
-        title={<>{t.owH1a} <em className="serif-i">{t.owH1b}</em></>} lead={t.owLead} />
+        title={<>{t.owH1a} <em className="serif-i">{t.owH1b}</em></>} lead={t.owLead}
+        aside={<div className="head-stat reveal" title={t.owCountSub}><b>49<i>+</i></b><span>{t.owCount}</span></div>} />
       <Marquee />
       <section className="section section-tight">
         <div className="wrap">
@@ -236,7 +237,7 @@ export function About() {
           </div>
         </div>
       </section>
-      <section id="proprietor" className="section section-tight prop-feature" style={{ paddingTop: 0 }}>
+      <section className="section section-tight prop-feature" style={{ paddingTop: 0 }}>
         <div className="wrap prop-grid">
           <div className="prop-media reveal">
             <img src="/assets/img/proprietor.webp" alt={`${PROPRIETOR}, proprietor of VRK Decor`} width="591" height="744" loading="lazy" decoding="async" />

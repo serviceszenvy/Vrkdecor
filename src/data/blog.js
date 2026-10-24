@@ -1,0 +1,73 @@
+// Blog articles (English only until reviewed Tamil versions exist).
+export const POSTS = [
+  {
+    slug: 'wedding-stage-decoration-ideas-nagercoil',
+    title: 'Wedding Stage Decoration Ideas for Nagercoil | VRK Decor',
+    desc: 'Wedding stage decoration ideas from real VRK Decor stages in Nagercoil. Traditional mandapams, white and green florals, pastel and royal stage looks.',
+    h1: 'Wedding stage decoration ideas for Nagercoil weddings',
+    date: '2026-10-24', dateLabel: '24 October 2026',
+    cover: 'royal-gold-mandap',
+    related: ['wedding-stage-decoration-nagercoil', 'engagement-reception-decoration-nagercoil'],
+    intro: [
+      'The wedding stage is the one part of the decoration that everyone sees. The muhurtham happens there, the families stand there for photos, and guests come up to bless the couple. So it is worth taking some time to choose the right look.',
+      'Below are six stage styles that families in Nagercoil often ask us for. Every photo on this page is a real stage set up by the VRK Decor team. Use them as a starting point, and then change the colours and flowers to suit your hall and your family.',
+    ],
+    sections: [
+      { h: '1. Traditional gold mandapam', img: 'royal-gold-mandap',
+        p: ['A gold mandapam with carved pillars, dense garlands and silk drapes is the classic choice for a muhurtham. It looks rich in photos and it suits both temple-style ceremonies and big marriage halls.', 'This look works best when the hall has a high ceiling, because the pillars and the top frame need height. In a smaller hall, we keep the pillars slimmer and use more flowers on the sides instead.'] },
+      { h: '2. White and green flower stage', img: 'airy-white-green-stage',
+        p: ['White flowers with fresh green leaves give a clean and calm look. This style is popular for church weddings and for receptions, and it photographs very well under both daylight and warm evening light.', 'It also goes with almost any saree or dress colour, which makes it a safe choice when the bride and groom have not yet decided their outfits.'] },
+      { h: '3. Pastel canopy stage', img: 'pastel-canopy-stage',
+        p: ['Soft pink, peach and lilac flowers with a light fabric canopy make the stage feel gentle and fresh. Pastel stages work well for engagements and morning weddings.', 'If you choose pastels, tell your photographer. Soft colours look best when the photographer plans the lighting for them.'] },
+      { h: '4. Royal stage with chandeliers', img: 'royal-red-velvet-stage',
+        p: ['Deep red, royal blue or gold panels with chandeliers give a grand, royal feel. This look is a favourite for evening receptions in large halls.', 'Royal stages need good lighting on the panels and flowers. We plan the stage lights together with the design, so the colours look rich and not dark.'] },
+      { h: '5. Monogram reception stage', img: 'glam-monogram-stage',
+        p: ['A monogram with the couple’s initials at the centre of the backdrop makes the stage feel personal. It is a simple way to make a reception stage stand out without making it busy.', 'The monogram can be in flowers, gold or lights, and it can be reused for the welcome board at the entrance.'] },
+      { h: '6. Garden style stage', img: 'garden-arch-stage',
+        p: ['Arched panels, white blooms and lots of greens give a garden feel, even inside a hall. This style is light and modern and suits couples who want something less traditional.', 'For an outdoor lawn function, the same idea can be done with open arches and string lights.'] },
+    ],
+    afterH: 'How to choose the right stage for your hall',
+    after: [
+      'Start with the hall. Note the ceiling height, the width of the stage area and where the main lights are. A design that looks good in a photo online may not fit your hall, so share the hall name with your decorator early.',
+      'Think about the time of day. Morning muhurthams look best with bright, fresh colours. Evening receptions need warm lights and richer colours.',
+      'Match the stage with your outfits. If the bride’s saree is bright, a white or pastel stage helps it stand out. If the outfits are light, a gold or royal stage adds richness.',
+      'Plan the photos. Leave space on the stage for both families to stand together, and keep the couple seating in the centre where the light is best.',
+    ],
+    checklistH: 'Quick checklist before you book',
+    checklist: ['Hall name and date', 'Setup and removal timings allowed by the hall', 'Stage size and ceiling height', 'Your outfit colours', 'Morning or evening function', 'Things you want added, like the entrance, car or lighting'],
+  },
+  {
+    slug: 'church-temple-wedding-decoration-nagercoil',
+    title: 'Planning Church and Temple Wedding Decoration | VRK Decor',
+    desc: 'A simple guide to planning decoration for church and temple weddings in Nagercoil, from venue rules and timings to flowers, entrances and the reception.',
+    h1: 'How to plan decoration for church and temple weddings in Nagercoil',
+    date: '2026-10-24', dateLabel: '24 October 2026',
+    cover: 'grand-entrance-aisle',
+    related: ['wedding-stage-decoration-nagercoil', 'floral-entrance-decoration-nagercoil'],
+    intro: [
+      'Many weddings in Nagercoil and Kanyakumari district take place in a church or a temple, and then move to a marriage hall for the lunch or the reception. Decorating two very different places on the same day needs some planning.',
+      'Here is a simple step by step guide, based on how the VRK Decor team plans these weddings.',
+    ],
+    sections: [
+      { h: 'Step 1. Talk to the church or temple first',
+        p: ['Every church and temple has its own rules. Before you finalise the design, ask the office what decoration is allowed, where flowers can be placed, what time the team can start setting up, and when everything must be cleared.', 'Also ask about power points if you want lighting, and whether nails, tape or stands are allowed. Share these answers with your decorator so the design fits the rules from the start.'] },
+      { h: 'Step 2. Keep the ceremony decoration respectful', img: 'grand-entrance-aisle',
+        p: ['In a church, the usual focus is the entrance, the aisle and the area near the altar. Flowers on the aisle and a clean entrance arch make a big difference without being too much.', 'In a temple, decoration usually stays traditional. Garlands, fresh flowers and simple drapes around the mandapam area suit most temples. Follow the temple’s guidance on what can be placed near the sanctum.'] },
+      { h: 'Step 3. Plan the move to the hall',
+        p: ['If the reception or lunch is in a hall on the same day, the hall should be ready before the families arrive. It helps to have one decoration team handle both places, so the timing and the colours are planned together.', 'Give your decorator the exact ceremony time and the expected arrival time at the hall. This decides how the team is split between the two venues.'] },
+      { h: 'Step 4. Choose flowers and colours for both places', img: 'airy-white-green-stage',
+        p: ['Many families keep a common colour across the church or temple and the hall. White and green works well for church weddings. Gold, maroon and marigold tones suit temple weddings. You can keep the same flowers in both places, or use a simpler version at the ceremony and a fuller stage at the hall.'] },
+      { h: 'Step 5. Think about the photos',
+        p: ['Church and temple interiors can be darker than a hall. Ask your photographer to visit or check photos of the venue, and plan lighting at the hall stage so the reception photos are bright and clear.'] },
+    ],
+    afterH: 'Things to send your decorator',
+    after: [
+      'Send the church or temple name and the hall name, the ceremony time, the reception time, and the rules you got from the venue office. Add a few photos of looks you like.',
+      'With these details, a decorator can give you a clear design and a clear quote for both places together.',
+    ],
+    checklistH: 'Church and temple wedding checklist',
+    checklist: ['Decoration rules from the church or temple', 'Setup and clearing times at both venues', 'Ceremony time and hall arrival time', 'Power points for lighting', 'Common colour plan for both places', 'Entrance, aisle and stage needs', 'Wedding car decoration if needed'],
+  },
+]
+
+export const postBySlug = slug => POSTS.find(p => p.slug === slug)

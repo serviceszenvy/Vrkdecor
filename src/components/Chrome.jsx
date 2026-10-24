@@ -2,7 +2,10 @@ import { useEffect, useRef, useState, createContext, useContext } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { I } from './Icons.jsx'
 import { STRINGS, localePath, stripLang } from '../i18n.js'
-import { PHONE_DISPLAY, PHONE_TEL, EMAIL, ADDRESS, MAPS, IG, IG_HANDLE, FB, ZENVY, waLink, composeWa, composeWaText } from '../site.js'
+import { hasTa } from '../routes.js'
+import { SERVICE_INDEX } from '../data/servicesIndex.js'
+import { PHONE_DISPLAY, PHONE_TEL, EMAIL, ADDRESS, ADDRESS_TA, MAPS, GBP, IG, IG_HANDLE, FB, JUSTDIAL, INDIAMART, YOUTUBE, LINKEDIN, X_PROFILE, ZENVY, HERO, ANALYTICS_ON, waLink, composeWaText } from '../site.js'
+import { getConsent, setConsent, loadAnalytics, track } from '../analytics.js'
 
 export const LangContext = createContext('en')
 export const useT = () => STRINGS[useContext(LangContext)]
@@ -27,41 +30,55 @@ export function useRevealEffect(deps) {
   }, deps)
 }
 
-/* ---------- cinematic background video ----------
-   The poster is a CSS background on the parent, so it paints before any JS and never shifts layout.
-   After mount this picks the desktop or mobile encode (WebM first, MP4 fallback) so only one file is
-   downloaded, and fades the video in once it is actually playing. Reduced-motion users keep the
-   poster and never download the video. `seamless` is for footage whose last frame runs into its
-   first; otherwise the loop point is hidden with a short fade. */
-export function CinematicVideo({ className, src, webm, srcMobile, webmMobile, seamless, ...rest }) {
+/* ---------- Hero media ----------
+   The poster photo is the real first paint (fast LCP). The video is only fetched after the page has fully
+   loaded, and never on Save-Data, slow 2G/3G connections or when the visitor prefers reduced motion. */
+export function HeroMedia() {
   const ref = useRef(null)
+  const [src, setSrc] = useState('')
+  const [playing, setPlaying] = useState(false)
+  useEffect(() => {
+    const mobile = window.matchMedia('(max-width:700px)').matches
+    const want = mobile ? HERO.mobileVideo : HERO.desktopVideo
+    if (!want) return
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const c = navigator.connection || {}
+    const slow = c.saveData || /(^|-)2g$|^3g$/.test(c.effectiveType || '')
+    if (reduce || slow) return
+    const start = () => setTimeout(() => setSrc(want), 400)
+    if (document.readyState === 'complete') start()
+    else window.addEventListener('load', start, { once: true })
+  }, [])
   useEffect(() => {
     const v = ref.current
-    if (!v || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const mobile = srcMobile && window.matchMedia('(max-width:700px)').matches
-    const sources = [[mobile ? webmMobile : webm, 'video/webm'], [mobile ? srcMobile : src, 'video/mp4']].filter(([u]) => u)
-    v.replaceChildren(...sources.map(([u, type]) => Object.assign(document.createElement('source'), { src: u, type })))
-    // React does not reliably emit the muted attribute; browsers only allow unprompted playback when muted
-    v.muted = true; v.defaultMuted = true; v.playsInline = true; v.autoplay = true
-    v.preload = 'auto'
-    v.load()
-    const play = () => { const p = v.play(); p && p.catch(() => {}) }
-    const onPlaying = () => v.classList.add('is-playing')
-    v.addEventListener('playing', onPlaying)
+    if (!v || !src) return
+    const p = v.play(); p && p.catch(() => {})
     const FADE = 0.9
     const onTime = () => {
       if (!v.duration) return
       if (v.duration - v.currentTime <= FADE) v.classList.add('is-fading')
       else if (v.currentTime < 0.6) v.classList.remove('is-fading')
     }
-    if (!seamless) v.addEventListener('timeupdate', onTime)
-    const io = new IntersectionObserver(es => {
-      es.forEach(en => { if (en.isIntersecting) play(); else v.pause() })
-    }, { threshold: 0.1 })
+    v.addEventListener('timeupdate', onTime)
+    const io = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { const q = v.play(); q && q.catch(() => {}) } else v.pause() }), { threshold: 0.1 })
     io.observe(v)
-    return () => { v.removeEventListener('playing', onPlaying); v.removeEventListener('timeupdate', onTime); io.disconnect() }
-  }, [])
-  return <video ref={ref} className={className} muted loop playsInline preload="none" aria-hidden="true" {...rest} />
+    return () => { v.removeEventListener('timeupdate', onTime); io.disconnect() }
+  }, [src])
+  return (
+    <>
+      <picture>
+        <source media="(max-width:700px)" srcSet={HERO.mobilePoster} />
+        <source media="(max-width:1200px)" srcSet={HERO.desktopPosterSmall} />
+        <img className="hero-poster-img" src={HERO.desktopPoster} alt="" width="1600" height="790" fetchPriority="high" decoding="async" />
+      </picture>
+      {src && (
+        <video ref={ref} className={`hero-video-full${playing ? ' is-playing' : ''}`} muted loop playsInline autoPlay preload="none"
+          onPlaying={() => setPlaying(true)} tabIndex={-1}>
+          <source src={src} type="video/mp4" />
+        </video>
+      )}
+    </>
+  )
 }
 
 /* ---------- Header ---------- */
@@ -83,16 +100,18 @@ export function Header() {
   }, [])
   const toggle = () => { setOpen(o => { document.body.style.overflow = o ? '' : 'hidden'; return !o }) }
   const base = stripLang(loc.pathname)
-  const other = lang === 'ta' ? base : localePath('ta', base)
+  // language switch goes to the matching page when it exists, otherwise to that language's home page
+  const switchTo = lang === 'ta' ? base : (hasTa(base) ? localePath('ta', base) : '/ta')
   const links = [
-    [t.nav.home, '/'], [t.nav.services, '/services'], [t.nav.work, '/our-work'], [t.nav.about, '/about'], [t.nav.contact, '/contact'],
+    [t.nav.home, '/'], [t.nav.services, '/services'], [t.nav.work, '/our-work'], [t.nav.about, '/about'], [t.nav.faq, '/faq'], [t.nav.contact, '/contact'],
   ]
+  const isActive = href => href === '/' ? base === '/' : (base === href || base.startsWith(href + '/') || (href === '/services' && SERVICE_INDEX.some(p => base === '/' + p.slug)))
   return (
     <header className={`site-header${scrolled ? ' is-scrolled' : ''}${open ? ' menu-open' : ''}`}>
       <div className="wrap nav">
         <Link className="brand" to={localePath(lang, '/')} aria-label="VRK Decor, home">
-          <img className="brand-logo" src="/assets/img/logo.png" alt="VRK Decor" width="560" height="338" />
-          <img className="brand-logo brand-logo-dark" src="/assets/img/logo-dark.png" alt="" aria-hidden="true" width="560" height="338" />
+          <img className="brand-logo" src="/assets/img/logo.webp" alt="VRK Decor logo" width="212" height="128" />
+          <img className="brand-logo brand-logo-dark" src="/assets/img/logo-dark.webp" alt="VRK Decor logo" aria-hidden="true" width="212" height="128" loading="lazy" />
         </Link>
         <button className="nav-toggle" aria-expanded={open} aria-label={t.openMenu} onClick={toggle}>
           <span></span><span></span><span></span>
@@ -101,11 +120,11 @@ export function Header() {
           {links.map(([label, href]) => (
             <li key={href}>
               <NavLink to={localePath(lang, href)} end={href === '/'}
-                className={({ isActive }) => isActive ? 'is-active' : undefined}
-                aria-current={stripLang(loc.pathname) === href ? 'page' : undefined}>{label}</NavLink>
+                className={isActive(href) ? 'is-active' : undefined}
+                aria-current={base === href ? 'page' : undefined}>{label}</NavLink>
             </li>
           ))}
-          <li><Link className="lang-switch" to={lang === 'ta' ? base : other} aria-label={t.switchAria} lang={lang === 'ta' ? 'en' : 'ta'}>{t.switchLabel}</Link></li>
+          <li><Link className="lang-switch" to={switchTo} aria-label={t.switchAria} lang={lang === 'ta' ? 'en' : 'ta'}>{t.switchLabel}</Link></li>
           <li><button className="btn btn-primary nav-cta" onClick={() => openQuote()}>{t.nav.quote}</button></li>
         </ul>
       </div>
@@ -113,13 +132,58 @@ export function Header() {
   )
 }
 
-/* ---------- Floating buttons ---------- */
+/* ---------- Floating buttons: Call (phones) + WhatsApp, Instagram on larger screens ----------
+   Hidden while a form is on screen so they never cover a submit button */
 export function Floaters() {
   const t = useT()
+  const [hide, setHide] = useState(false)
+  const [inHero, setInHero] = useState(false)
+  const loc = useLocation()
+  // on the home page, keep the hero buttons clear on phones until the visitor starts scrolling
+  useEffect(() => {
+    const on = () => setInHero(document.body.classList.contains('hero-dark') && window.innerWidth <= 860 && window.scrollY < 260)
+    on(); window.addEventListener('scroll', on, { passive: true }); window.addEventListener('resize', on)
+    return () => { window.removeEventListener('scroll', on); window.removeEventListener('resize', on) }
+  }, [loc.pathname])
+  useEffect(() => {
+    const forms = document.querySelectorAll('.form-grid, .site-footer .footer-bottom')
+    if (!forms.length || !('IntersectionObserver' in window)) return
+    const seen = new Set()
+    const io = new IntersectionObserver(es => {
+      es.forEach(en => { en.isIntersecting ? seen.add(en.target) : seen.delete(en.target) })
+      setHide(seen.size > 0)
+    }, { threshold: 0.05 })
+    forms.forEach(f => io.observe(f))
+    return () => io.disconnect()
+  }, [loc.pathname])
   return (
-    <div className="float-stack">
+    <div className={`float-stack${hide || inHero ? ' is-hidden' : ''}`}>
       <a className="float-btn float-ig" href={IG} target="_blank" rel="noopener noreferrer" aria-label={`${t.igAria} ${IG_HANDLE}`}>{I.ig}</a>
+      <a className="float-btn float-call" href={`tel:${PHONE_TEL}`} aria-label={t.callAria}>{I.phone}</a>
       <a className="float-btn float-wa" href={waLink(t.waFloating)} target="_blank" rel="noopener noreferrer" aria-label={t.waFloatingAria}>{I.wa}</a>
+    </div>
+  )
+}
+
+/* ---------- Analytics consent notice (renders only when an analytics ID is configured) ---------- */
+export function ConsentNotice() {
+  const t = useT()
+  const [show, setShow] = useState(false)
+  useEffect(() => {
+    if (!ANALYTICS_ON) return
+    const c = getConsent()
+    if (c === 'yes') loadAnalytics()
+    else if (c !== 'no') setShow(true)
+  }, [])
+  if (!show) return null
+  const choose = v => { setConsent(v); setShow(false) }
+  return (
+    <div className="consent glass" role="region" aria-label="Cookies">
+      <p>{t.consentP} <Link to="/privacy-policy">{t.privacy}</Link></p>
+      <div className="consent-actions">
+        <button className="btn btn-primary btn-sm" onClick={() => choose('yes')}>{t.consentAccept}</button>
+        <button className="btn btn-ghost btn-sm" onClick={() => choose('no')}>{t.consentDecline}</button>
+      </div>
     </div>
   )
 }
@@ -134,6 +198,7 @@ export function QuoteModal({ state, close }) {
   const [imgErr, setImgErr] = useState('')
   const clearImg = () => { setImg(prev => { if (prev) URL.revokeObjectURL(prev.url); return null }); setImgErr('') }
   useEffect(() => {
+    document.body.classList.toggle('modal-open', !!state.open)
     if (!state.open) { clearImg(); return }
     const onKey = e => { if (e.key === 'Escape') close() }
     document.addEventListener('keydown', onKey)
@@ -154,7 +219,10 @@ export function QuoteModal({ state, close }) {
   }
   const submit = async e => {
     e.preventDefault()
-    let text = composeWaText(Object.fromEntries(new FormData(e.target).entries()), state.ref, t)
+    const fields = Object.fromEntries(new FormData(e.target).entries())
+    if (fields.website) return // honeypot: bots fill hidden fields, people never see it
+    let text = composeWaText(fields, state.ref, t)
+    track('generate_lead', { form: 'quote_modal', event_type: fields.event || '' })
     if (img) {
       // where the browser can share a file (most phones), hand WhatsApp the photo directly
       if (navigator.canShare && navigator.canShare({ files: [img.file] })) {
@@ -169,8 +237,8 @@ export function QuoteModal({ state, close }) {
       <div className="modal-backdrop" onClick={close}></div>
       <div className="modal-panel" ref={panelRef}>
         <button className="modal-close" aria-label={t.close} onClick={close}>{I.x}</button>
-        <h3 id="quote-title">{t.qmH}</h3>
-        <p style={{ fontSize: '.9rem' }}>{t.qmP}</p>
+        <h2 id="quote-title" className="h3">{t.qmH}</h2>
+        <p className="text-sm">{t.qmP}</p>
         {state.ref && <p className="modal-ref">{I.heart} <span>{state.refTitle || state.ref}</span></p>}
         <form className="form-grid" onSubmit={submit} noValidate>
           <div><label htmlFor="qm-name">{t.fName}</label><input id="qm-name" name="name" autoComplete="name" required /></div>
@@ -180,13 +248,14 @@ export function QuoteModal({ state, close }) {
           <div><label htmlFor="qm-date">{t.fDate}</label><input id="qm-date" name="date" type="date" /></div>
           <div className="full"><label htmlFor="qm-loc">{t.fLocation}</label><input id="qm-loc" name="location" placeholder={t.fLocPH} /></div>
           <div className="full"><label htmlFor="qm-notes">{t.fNotes}</label><textarea id="qm-notes" name="notes" placeholder={t.fNotesPH}></textarea></div>
+          <div className="hp" aria-hidden="true"><label htmlFor="qm-website">Website</label><input id="qm-website" name="website" tabIndex={-1} autoComplete="off" /></div>
           {!state.ref && (
             <div className="full upload-field">
               <label htmlFor="qm-photo">{t.upLabel}</label>
               {!img ? (
                 <>
                   <input id="qm-photo" type="file" accept="image/jpeg,image/png,image/webp" onChange={onFile} />
-                  <p className="form-note" style={{ marginTop: '.35rem' }}>{t.upHint}</p>
+                  <p className="form-note mt-xs">{t.upHint}</p>
                 </>
               ) : (
                 <div className="upload-preview">
@@ -199,10 +268,10 @@ export function QuoteModal({ state, close }) {
                 </div>
               )}
               {imgErr && <p className="upload-err" role="alert">{imgErr}</p>}
-              {img && <p className="form-note" style={{ marginTop: '.4rem' }}>{t.upWaNote}</p>}
+              {img && <p className="form-note mt-xs">{t.upWaNote}</p>}
             </div>
           )}
-          <div className="full"><button className="btn btn-wa" type="submit" style={{ width: '100%' }}>{I.wa} {t.continueWa}</button></div>
+          <div className="full"><button className="btn btn-wa btn-block" type="submit">{I.wa} {t.continueWa}</button></div>
           <p className="form-note full">{t.formNote}</p>
         </form>
       </div>
@@ -215,15 +284,19 @@ export function Footer() {
   const t = useT(); const lang = useLang()
   const { openQuote } = useQuote()
   const p = x => localePath(lang, x)
+  const profiles = [
+    ['Google', GBP], ['Instagram', IG], ['Facebook', FB], ['Justdial', JUSTDIAL], ['IndiaMART', INDIAMART],
+    ['YouTube', YOUTUBE], ['LinkedIn', LINKEDIN], ['X', X_PROFILE],
+  ].filter(([, u]) => u) // YouTube, LinkedIn and X appear automatically once their URLs are added in site.js
   return (
     <footer className="site-footer">
       <div className="wrap">
         <div className="footer-grid">
           <div className="footer-brand">
             <Link className="brand" to={p('/')} aria-label="VRK Decor, home">
-              <img src="/assets/img/logo-dark.png" alt="VRK Decor" width="560" height="338" style={{ width: '170px', height: 'auto' }} loading="lazy" />
+              <img className="footer-logo" src="/assets/img/logo-dark.webp" alt="VRK Decor logo" width="212" height="128" loading="lazy" />
             </Link>
-            <p style={{ marginTop: '1rem' }}>{t.footerDesc}</p>
+            <p className="mt-s">{t.footerDesc}</p>
             <div className="footer-social">
               <a href={waLink(t.waFloating)} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">{I.wa}</a>
               <a href={IG} target="_blank" rel="noopener noreferrer" aria-label="Instagram">{I.ig}</a>
@@ -232,39 +305,41 @@ export function Footer() {
             </div>
           </div>
           <nav aria-label="Footer">
-            <h4>{t.fExplore}</h4>
+            <p className="footer-h">{t.fExplore}</p>
             <ul>
               <li><Link to={p('/')}>{t.nav.home}</Link></li>
               <li><Link to={p('/services')}>{t.nav.services}</Link></li>
               <li><Link to={p('/our-work')}>{t.nav.work}</Link></li>
               <li><Link to={p('/about')}>{t.nav.about}</Link></li>
+              <li><Link to={p('/faq')}>{t.nav.faq}</Link></li>
+              <li><Link to="/blog">{t.nav.blog}</Link></li>
               <li><Link to={p('/contact')}>{t.nav.contact}</Link></li>
             </ul>
           </nav>
           <div>
-            <h4>{t.fServices}</h4>
+            <p className="footer-h">{t.fServices}</p>
             <ul>
-              <li><Link to={p('/services')}>{lang === 'ta' ? 'திருமண அலங்காரம்' : 'Wedding Decoration'}</Link></li>
-              <li><Link to={p('/services')}>{lang === 'ta' ? 'மேடை அலங்காரம்' : 'Stage Decoration'}</Link></li>
-              <li><Link to={p('/services')}>{lang === 'ta' ? 'பிறந்தநாள் அலங்காரம்' : 'Birthday Decoration'}</Link></li>
-              <li><Link to={p('/services')}>{lang === 'ta' ? 'நிறுவன நிகழ்வுகள்' : 'Corporate Events'}</Link></li>
-              <li><Link to={p('/services')}>{lang === 'ta' ? 'விழா விளக்குகள்' : 'Event Lighting'}</Link></li>
+              {SERVICE_INDEX.map(s => <li key={s.slug}><Link to={p('/' + s.slug)}>{s[lang].name}</Link></li>)}
             </ul>
           </div>
           <div>
-            <h4>{t.fContact}</h4>
+            <p className="footer-h">{t.fContact}</p>
             <ul>
               <li><a href={`tel:${PHONE_TEL}`}>{PHONE_DISPLAY}</a></li>
               <li><a href={`mailto:${EMAIL}`}>{EMAIL}</a></li>
-              <li><a href={MAPS} target="_blank" rel="noopener noreferrer">{ADDRESS}</a></li>
-              <li><a href={IG} target="_blank" rel="noopener noreferrer">{IG_HANDLE}</a></li>
+              <li><a href={MAPS} target="_blank" rel="noopener noreferrer">{lang === 'ta' ? ADDRESS_TA : ADDRESS}</a></li>
+              <li>{t.hoursP.split('.')[0]}</li>
             </ul>
-            <button className="btn btn-primary" style={{ marginTop: '1.1rem' }} onClick={() => openQuote()}>{t.startEvent}</button>
+            <p className="footer-h footer-h-sm">{t.profilesH}</p>
+            <ul className="footer-profiles">
+              {profiles.map(([n, u]) => <li key={n}><a href={u} target="_blank" rel="noopener noreferrer">{n}</a></li>)}
+            </ul>
+            <button className="btn btn-primary mt-m" onClick={() => openQuote()}>{t.startEvent}</button>
           </div>
         </div>
         <div className="footer-bottom">
           <span>&copy; {new Date().getFullYear()} VRK Decor &middot; Nagercoil, Tamil Nadu</span>
-          <span className="made-with">{t.madeWith} <span className="heart" aria-label="love">{I.heartFill}</span> <a href={ZENVY} target="_blank" rel="noopener noreferrer">{t.madeBy}</a></span>
+          <span className="made-with">{t.madeWith} <span className="heart" role="img" aria-label="love">{I.heartFill}</span> <a href={ZENVY} target="_blank" rel="noopener noreferrer">{t.madeBy}</a></span>
           <span><Link to="/privacy-policy">{t.privacy}</Link> &middot; <Link to="/terms">{t.terms}</Link></span>
         </div>
       </div>

@@ -28,12 +28,12 @@ export const SERVICES = [
 ]
 
 export const HOME_SERVICES = [
-  { icon: 'rings', en: ['Wedding & Stage Decoration', 'Signature stages, mandaps and full venue styling for the big day'], ta: ['திருமண & மேடை அலங்காரம்', 'சிறப்பு மேடைகள், மண்டபங்கள் மற்றும் முழு மண்டப அலங்காரம்'] },
-  { icon: 'heart', en: ['Engagement & Reception', 'Elegant backdrops and seating styled around the couple'], ta: ['நிச்சயதார்த்தம் & வரவேற்பு', 'தம்பதியரை மையமாகக் கொண்ட அழகான பின்னணிகளும் இருக்கைகளும்'] },
-  { icon: 'cake', en: ['Birthday & Family Functions', 'Themes for birthdays, baby showers, puberty ceremonies and more'], ta: ['பிறந்தநாள் & குடும்ப விழாக்கள்', 'பிறந்தநாள், வளைகாப்பு, மஞ்சள் நீராட்டு விழா உள்ளிட்ட தீம் அலங்காரங்கள்'] },
-  { icon: 'home', en: ['Housewarming', 'Warm, traditional touches for gruhapravesam and new beginnings'], ta: ['புதுமனை புகுவிழா', 'கிரகப்பிரவேசத்திற்கு பாரம்பரிய அழகுடன் வரவேற்பு அலங்காரம்'] },
-  { icon: 'brief', en: ['Corporate Events', 'Clean, branded setups for launches, meets and celebrations'], ta: ['நிறுவன நிகழ்வுகள்', 'அறிமுக விழா மற்றும் கொண்டாட்டங்களுக்கு நேர்த்தியான அமைப்புகள்'] },
-  { icon: 'flower', en: ['Floral & Entrance Design', 'Fresh florals, grand entrances and welcome styling'], ta: ['பூ & நுழைவாயில் அலங்காரம்', 'புதிய பூக்கள், பிரமாண்ட நுழைவாயில்கள் மற்றும் வரவேற்பு அமைப்பு'] },
+  { icon: 'rings', to: '/wedding-stage-decoration-nagercoil', en: ['Wedding & Stage Decoration', 'Signature stages, mandaps and full venue styling for the big day'], ta: ['திருமண & மேடை அலங்காரம்', 'சிறப்பு மேடைகள், மண்டபங்கள் மற்றும் முழு மண்டப அலங்காரம்'] },
+  { icon: 'heart', to: '/engagement-reception-decoration-nagercoil', en: ['Engagement & Reception', 'Elegant backdrops and seating styled around the couple'], ta: ['நிச்சயதார்த்தம் & வரவேற்பு', 'தம்பதியரை மையமாகக் கொண்ட அழகான பின்னணிகளும் இருக்கைகளும்'] },
+  { icon: 'cake', to: '/birthday-decoration-nagercoil', en: ['Birthday & Family Functions', 'Themes for birthdays, baby showers, puberty ceremonies and more'], ta: ['பிறந்தநாள் & குடும்ப விழாக்கள்', 'பிறந்தநாள், வளைகாப்பு, மஞ்சள் நீராட்டு விழா உள்ளிட்ட தீம் அலங்காரங்கள்'] },
+  { icon: 'home', to: '/family-function-decoration-nagercoil', en: ['Housewarming', 'Warm, traditional touches for gruhapravesam and new beginnings'], ta: ['புதுமனை புகுவிழா', 'கிரகப்பிரவேசத்திற்கு பாரம்பரிய அழகுடன் வரவேற்பு அலங்காரம்'] },
+  { icon: 'brief', to: '/corporate-event-decoration-nagercoil', en: ['Corporate Events', 'Clean, branded setups for launches, meets and celebrations'], ta: ['நிறுவன நிகழ்வுகள்', 'அறிமுக விழா மற்றும் கொண்டாட்டங்களுக்கு நேர்த்தியான அமைப்புகள்'] },
+  { icon: 'flower', to: '/floral-entrance-decoration-nagercoil', en: ['Floral & Entrance Design', 'Fresh florals, grand entrances and welcome styling'], ta: ['பூ & நுழைவாயில் அலங்காரம்', 'புதிய பூக்கள், பிரமாண்ட நுழைவாயில்கள் மற்றும் வரவேற்பு அமைப்பு'] },
 ]
 
 export const PILLARS = {
@@ -78,21 +78,23 @@ export const TESTIMONIALS = [
     text: 'VRK stage decoration was very good at the church and at the marriage hall. Your people did a great job. Really commendable' },
 ]
 
-export const FAQS = {
-  en: [
-    ['What events does VRK Decor handle', 'Weddings, engagements, receptions, birthdays, housewarmings, baby showers, puberty ceremonies, family functions and corporate events'],
-    ['Where does VRK Decor provide services', 'We are based in Nagercoil and regularly work across Kanyakumari district, Tirunelveli, Trivandrum, Tuticorin and Madurai, with statewide coverage on request'],
-    ['Can VRK Decor create a custom theme', 'Yes, we design custom colour palettes, backdrops and full themes around your story, venue and budget'],
-    ['Can I request a quote based on a portfolio image', 'Yes, open any design on the Our Work page and tap Get a Quote for This Design, the reference is sent to us on WhatsApp automatically'],
-    ['Does VRK Decor provide band set or live band services', 'Yes, band set and live band are arranged through our trusted partner network and coordinated by the VRK team'],
-    ['How do I get a quote', 'Message us on WhatsApp at +91 99940 72435 or use the Get a Quote button, share your date, venue and occasion and we reply with options and pricing'],
-  ],
-  ta: [
-    ['VRK Decor எந்த விழாக்களுக்கு சேவை செய்கிறது', 'திருமணம், நிச்சயதார்த்தம், வரவேற்பு நிகழ்வு, பிறந்தநாள், புதுமனை புகுவிழா, வளைகாப்பு, மஞ்சள் நீராட்டு விழா, குடும்ப விழாக்கள் மற்றும் நிறுவன நிகழ்வுகள்'],
-    ['எந்தெந்த பகுதிகளில் சேவை கிடைக்கும்', 'நாகர்கோவிலை மையமாகக் கொண்டு கன்னியாகுமரி மாவட்டம், திருநெல்வேலி, திருவனந்தபுரம், தூத்துக்குடி, மதுரை பகுதிகளில் தொடர்ந்து பணியாற்றுகிறோம் · தேவைப்பட்டால் மாநிலம் முழுவதும்'],
-    ['தனிப்பயன் தீம் வடிவமைக்க முடியுமா', 'ஆம், உங்கள் கதை, மண்டபம், பட்ஜெட்டுக்கு ஏற்ப வண்ணங்கள், பின்னணிகள், முழு தீம் வடிவமைத்து தருகிறோம்'],
-    ['படத்தை வைத்து விலை கேட்க முடியுமா', 'ஆம், எங்கள் படைப்புகள் பக்கத்தில் எந்த வடிவமைப்பையும் திறந்து “இந்த வடிவமைப்புக்கு விலை கேட்க” என்பதைத் தொடுங்கள் · குறிப்பு தானாக WhatsApp-இல் எங்களுக்கு வரும்'],
-    ['பேண்ட் செட் சேவை உண்டா', 'ஆம், பேண்ட் செட் மற்றும் நேரடி இசை நம்பகமான பார்ட்னர்கள் மூலம் ஏற்பாடு செய்யப்பட்டு VRK குழுவால் ஒருங்கிணைக்கப்படும்'],
-    ['விலை விவரம் எப்படி பெறுவது', 'WhatsApp எண் +91 99940 72435 இல் தொடர்பு கொள்ளுங்கள் அல்லது “விலை விவரம் பெற” பொத்தானை பயன்படுத்துங்கள் · தேதி, மண்டபம், விழா வகை சொன்னால் விருப்பங்களும் விலையும் அனுப்புகிறோம்'],
-  ],
+// Areas around Nagercoil (homepage and contact page)
+export const AREAS = {
+  en: ['Vadasery', 'Kottar', 'Vettunimadam', 'Parvathipuram', 'Asaripallam', 'Suchindram', 'Kanyakumari', 'Thuckalay', 'Marthandam', 'Kuzhithurai', 'Colachel', 'Eraniel', 'Padmanabhapuram', 'Thovalai', 'Aralvaimozhi', 'Kulasekaram'],
+  ta: ['வடசேரி', 'கோட்டார்', 'வெட்டுனிமடம்', 'பார்வதிபுரம்', 'ஆசாரிப்பள்ளம்', 'சுசீந்திரம்', 'கன்னியாகுமரி', 'தக்கலை', 'மார்த்தாண்டம்', 'குழித்துறை', 'குளச்சல்', 'இரணியல்', 'பத்மநாபபுரம்', 'தோவாளை', 'ஆரல்வாய்மொழி', 'குலசேகரம்'],
+  farEn: ['Tirunelveli', 'Thoothukudi (Tuticorin)', 'Thiruvananthapuram (Trivandrum)', 'Madurai'],
+  farTa: ['திருநெல்வேலி', 'தூத்துக்குடி', 'திருவனந்தபுரம்', 'மதுரை'],
 }
+
+// Portfolio filter groups (by design type, since event type is not recorded for each photo)
+export const WORK_CATS = [
+  { id: 'all', en: 'All designs', ta: 'அனைத்தும்' },
+  { id: 'stages', en: 'Stages', ta: 'மேடைகள்' },
+  { id: 'mandaps', en: 'Mandaps & traditional', ta: 'மண்டபம் & பாரம்பரியம்' },
+  { id: 'entrances', en: 'Entrances & outdoor', ta: 'நுழைவாயில் & வெளிப்புறம்' },
+  { id: 'cars', en: 'Car decoration', ta: 'கார் அலங்காரம்' },
+]
+const MANDAPS = ['red-accent-mandap-stage', 'traditional-gold-mandap', 'heritage-hall-stage', 'pastel-mandap-carpet', 'traditional-swing-stage', 'gold-pavilion-mandap', 'heritage-gold-mandap', 'royal-gold-mandap', 'patola-canopy-mandap', 'vibrant-orange-floral-stage']
+const ENTRANCES = ['outdoor-evening-lights', 'grand-entrance-aisle', 'outdoor-entrance-arch', 'sculptural-garden-arches', 'outdoor-greenery-glass', 'home-entrance-florals', 'pink-canopy-walkway', 'garden-bench-floral-wall', 'birdcage-floral-detail']
+export const workCat = slug => slug.startsWith('wedding-car') ? 'cars' : MANDAPS.includes(slug) ? 'mandaps' : ENTRANCES.includes(slug) ? 'entrances' : 'stages'
+export const workBySlug = slug => WORKS.find(w => w.slug === slug)

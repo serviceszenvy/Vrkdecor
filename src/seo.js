@@ -1,90 +1,139 @@
-import { DOMAIN, PHONE_DISPLAY, EMAIL, MAPS, IG, FB, PROPRIETOR } from './site.js'
-import { SERVICES, TESTIMONIALS, FAQS } from './data/content.js'
+import {
+  DOMAIN, BRAND, ALT_NAMES, OFFICIAL_DESC, OFFICIAL_DESC_TA, PHONE_DISPLAY, EMAIL, STREET, GEO, HOURS, FOUNDED, TEAM_SIZE,
+  MAPS, SAME_AS, PROPRIETOR, LAST_UPDATED,
+} from './site.js'
+import { SERVICE_PAGES, servicePageBySlug } from './data/servicePages.js'
+import { POSTS, postBySlug } from './data/blog.js'
+import { FAQ_GROUPS } from './data/faq.js'
+import { WORKS } from './data/content.js'
+import { pageFor, taPath } from './routes.js'
+import { STATIC_META, caseMeta } from './data/meta.js'
+import { caseBySlug } from './data/caseStudies.js'
 
-const BIZ_ID = DOMAIN + '/#business'
+const BIZ = DOMAIN + '/#business'
+const SITE = DOMAIN + '/#website'
+const FOUNDER = DOMAIN + '/#founder'
+const full = slug => `${DOMAIN}/assets/img/work/${slug}-full.jpg`
+const OG_DEFAULT = DOMAIN + '/assets/img/og.jpg'
 
-export const LOCAL_BUSINESS = {
-  '@context': 'https://schema.org', '@type': 'LocalBusiness', '@id': BIZ_ID,
-  name: 'VRK Decor', image: DOMAIN + '/assets/img/og.jpg', url: DOMAIN,
-  telephone: PHONE_DISPLAY, email: EMAIL, priceRange: '₹₹', foundingDate: '2011-12',
-  description: 'Premium event decoration and event management in Nagercoil, Tamil Nadu, covering weddings, engagements, receptions, birthdays, housewarmings, family functions and corporate events',
-  address: { '@type': 'PostalAddress', streetAddress: '301 M.S Road, Vettunimadam', addressLocality: 'Nagercoil', addressRegion: 'Tamil Nadu', postalCode: '629003', addressCountry: 'IN' },
+// ---------- shared entities ----------
+const AREA_CITIES = ['Nagercoil', 'Kanyakumari', 'Suchindram', 'Thuckalay', 'Marthandam', 'Kuzhithurai', 'Colachel', 'Eraniel', 'Tirunelveli', 'Thoothukudi', 'Thiruvananthapuram', 'Madurai']
+const AREA_SERVED = [
+  ...AREA_CITIES.map(name => ({ '@type': 'City', name })),
+  { '@type': 'AdministrativeArea', name: 'Kanyakumari district' },
+  { '@type': 'AdministrativeArea', name: 'Tamil Nadu' },
+]
+
+export const BUSINESS = {
+  '@type': 'EventPlanner', '@id': BIZ,
+  name: BRAND, alternateName: ALT_NAMES, description: OFFICIAL_DESC,
+  url: DOMAIN + '/', logo: DOMAIN + '/assets/img/logo.png',
+  image: [OG_DEFAULT, full('royal-gold-mandap'), full('white-floral-luxury-stage'), full('grand-entrance-aisle')],
+  telephone: PHONE_DISPLAY, email: EMAIL,
+  address: { '@type': 'PostalAddress', streetAddress: STREET, addressLocality: 'Nagercoil', addressRegion: 'Tamil Nadu', postalCode: '629003', addressCountry: 'IN' },
+  geo: { '@type': 'GeoCoordinates', latitude: GEO.lat, longitude: GEO.lng },
   hasMap: MAPS,
-  founder: { '@type': 'Person', name: PROPRIETOR, jobTitle: 'Proprietor' },
-  sameAs: [IG, FB],
-  areaServed: ['Nagercoil', 'Kanyakumari district', 'Tirunelveli', 'Trivandrum', 'Tuticorin', 'Madurai', 'Tamil Nadu'],
-  review: TESTIMONIALS.map(t => ({
-    '@type': 'Review',
-    author: { '@type': 'Person', name: t.name },
-    reviewBody: t.text,
-    ...(t.rating ? { reviewRating: { '@type': 'Rating', ratingValue: t.rating, bestRating: 5 } } : {}),
-  })),
+  openingHoursSpecification: [{ '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], opens: HOURS.opens, closes: HOURS.closes }],
+  founder: { '@id': FOUNDER }, foundingDate: FOUNDED,
+  numberOfEmployees: { '@type': 'QuantitativeValue', value: TEAM_SIZE },
+  knowsLanguage: ['en', 'ta', 'ml'],
+  areaServed: AREA_SERVED,
+  hasOfferCatalog: {
+    '@type': 'OfferCatalog', name: 'Event decoration services',
+    itemListElement: SERVICE_PAGES.map(p => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name: p.en.name, url: `${DOMAIN}/${p.slug}` } })),
+  },
+  sameAs: SAME_AS,
 }
-export const WEBSITE = { '@context': 'https://schema.org', '@type': 'WebSite', '@id': DOMAIN + '/#website', url: DOMAIN, name: 'VRK Decor', inLanguage: ['en', 'ta'], publisher: { '@id': BIZ_ID } }
-const breadcrumb = (name, path) => ({
-  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
-  itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'Home', item: DOMAIN + '/' },
-    { '@type': 'ListItem', position: 2, name, item: DOMAIN + path },
-  ],
-})
-const svcSchema = {
-  '@context': 'https://schema.org', '@type': 'ItemList', name: 'VRK Decor services',
-  itemListElement: SERVICES.map((s, i) => ({
-    '@type': 'Service', position: i + 1, name: s.en[0].replace('&amp;', '&'), description: s.en[1],
-    provider: { '@id': BIZ_ID }, areaServed: 'Nagercoil, Kanyakumari district, Tamil Nadu',
-  })),
+const PERSON = {
+  '@type': 'Person', '@id': FOUNDER, name: PROPRIETOR, jobTitle: 'Proprietor',
+  worksFor: { '@id': BIZ }, image: DOMAIN + '/assets/img/proprietor.webp',
+  address: { '@type': 'PostalAddress', addressLocality: 'Nagercoil', addressRegion: 'Tamil Nadu', addressCountry: 'IN' },
 }
-const personSchema = {
-  '@context': 'https://schema.org', '@type': 'Person', name: PROPRIETOR, jobTitle: 'Proprietor',
-  worksFor: { '@id': BIZ_ID }, image: DOMAIN + '/assets/img/proprietor.webp',
-  address: { '@type': 'PostalAddress', addressLocality: 'Nagercoil', addressRegion: 'Tamil Nadu' },
-}
-const faqSchema = (lang) => ({
-  '@context': 'https://schema.org', '@type': 'FAQPage',
-  mainEntity: FAQS[lang].map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })),
-})
+const WEBSITE = { '@type': 'WebSite', '@id': SITE, url: DOMAIN + '/', name: BRAND, alternateName: ALT_NAMES, inLanguage: ['en', 'ta'], publisher: { '@id': BIZ } }
 
-// route meta: path (en form) -> per-lang meta
-export const META = {
-  '/': {
-    en: { title: 'VRK Decor · Wedding & Event Decoration in Nagercoil, Tamil Nadu', desc: 'Premium wedding, engagement, birthday and corporate event decoration in Nagercoil since 2011. 700+ celebrations across Kanyakumari district and Tamil Nadu. Get a quote on WhatsApp' },
-    ta: { title: 'VRK Decor · நாகர்கோவில் திருமண & விழா அலங்காரம்', desc: '2011 முதல் நாகர்கோவிலில் திருமணம், நிச்சயதார்த்தம், பிறந்தநாள், நிறுவன நிகழ்வு அலங்காரம் · 700+ விழாக்கள் · WhatsApp-இல் விலை விவரம் பெறுங்கள்' },
-    schema: () => [LOCAL_BUSINESS, WEBSITE],
-  },
-  '/services': {
-    en: { title: 'Event Decoration Services in Nagercoil · VRK Decor', desc: 'Wedding, engagement, reception, birthday, housewarming and corporate event decoration in Nagercoil. Stage decoration, florals, entrance decor, lighting, car decoration and band set via partners' },
-    ta: { title: 'விழா அலங்கார சேவைகள் · நாகர்கோவில் · VRK Decor', desc: 'நாகர்கோவிலில் திருமணம், நிச்சயதார்த்தம், வரவேற்பு, பிறந்தநாள், புதுமனை புகுவிழா, நிறுவன நிகழ்வு அலங்காரம் · மேடை, பூ, நுழைவாயில், விளக்கு, கார் அலங்காரம்' },
-    schema: () => [breadcrumb('Services', '/services'), svcSchema],
-  },
-  '/our-work': {
-    en: { title: 'Our Work · Wedding & Event Decoration Portfolio · VRK Decor Nagercoil', desc: 'Browse real VRK Decor stages and setups from weddings, receptions, engagements, birthdays and corporate events in and around Nagercoil. Request a quote for any design you like' },
-    ta: { title: 'எங்கள் படைப்புகள் · VRK Decor நாகர்கோவில்', desc: 'திருமணம், வரவேற்பு, நிச்சயதார்த்தம், பிறந்தநாள் நிகழ்வுகளில் VRK Decor அமைத்த உண்மையான மேடைகள் · பிடித்த வடிவமைப்புக்கு விலை கேளுங்கள்' },
-    schema: () => [breadcrumb('Our Work', '/our-work')],
-  },
-  '/about': {
-    en: { title: 'About VRK Decor · Event Decorators in Nagercoil since 2011', desc: 'Meet VRK Decor, a Nagercoil event decoration team founded in December 2011 and led by proprietor V. Raja Kumerasen. 700+ celebrations, a 35-member in-house crew and a trusted partner network' },
-    ta: { title: 'VRK Decor பற்றி · 2011 முதல் நாகர்கோவில் விழா அலங்காரம்', desc: '2011 டிசம்பரில் தொடங்கப்பட்ட நாகர்கோவில் அலங்காரக் குழு · உரிமையாளர் V. ராஜ குமரேசன் · 700+ விழாக்கள், 35 பேர் கொண்ட சொந்த குழு' },
-    schema: () => [breadcrumb('About', '/about'), personSchema],
-  },
-  '/contact': {
-    en: { title: 'Contact VRK Decor · Get a Quote for Event Decoration in Nagercoil', desc: 'Contact VRK Decor in Nagercoil on WhatsApp +91 99940 72435 for wedding and event decoration quotes. Visit us at 301 M.S Road, Vettunimadam, or find us on Google Maps' },
-    ta: { title: 'VRK Decor தொடர்பு · விலை விவரம் பெற · நாகர்கோவில்', desc: 'WhatsApp +91 99940 72435 மூலம் VRK Decor-ஐ தொடர்பு கொள்ளுங்கள் · முகவரி: 301 M.S Road, வெட்டுனிமடம், நாகர்கோவில் · Google Maps-இல் காணலாம்' },
-    schema: (lang) => [breadcrumb('Contact', '/contact'), faqSchema(lang)],
-  },
-  '/privacy-policy': {
-    en: { title: 'Privacy Policy · VRK Decor', desc: 'How VRK Decor handles the information you share through this website' },
-    schema: () => [breadcrumb('Privacy Policy', '/privacy-policy')],
-  },
-  '/terms': {
-    en: { title: 'Terms of Use · VRK Decor', desc: 'Terms for using the VRK Decor website, quotations, bookings and partner services' },
-    schema: () => [breadcrumb('Terms of Use', '/terms')],
-  },
-  '/404': { en: { title: 'Page not found · VRK Decor', desc: 'Page not found', noindex: true }, schema: () => [] },
+const urlFor = (base, lang) => DOMAIN + (lang === 'ta' ? taPath(base) : base)
+const homeLabel = { en: 'Home', ta: 'முகப்பு' }
+const qa = list => list.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } }))
+
+function breadcrumb(base, lang, trail) {
+  const items = [{ name: homeLabel[lang], url: urlFor('/', lang) }, ...trail]
+  return { '@type': 'BreadcrumbList', '@id': urlFor(base, lang) + '#breadcrumb', itemListElement: items.map((it, i) => ({ '@type': 'ListItem', position: i + 1, name: it.name, item: it.url })) }
 }
 
-export function metaFor(basePath, lang) {
-  const m = META[basePath] || META['/404']
-  const langMeta = m[lang] || m.en
-  return { ...langMeta, schema: (m.schema || (() => []))(lang) }
+// ---------- meta + graph per page ----------
+export function metaFor(base, lang = 'en') {
+  const page = pageFor(base)
+  if (!page) return { ...STATIC_META['/404'].en, noindex: true, graph: null }
+  const url = urlFor(base, lang)
+  const graph = [BUSINESS, PERSON, WEBSITE]
+  let m, type = 'WebPage', og = OG_DEFAULT, trail = [], extra = [], webExtra = {}
+
+  if (page.kind === 'service') {
+    const sp = servicePageBySlug(page.slug); const c = sp[lang] || sp.en
+    m = { title: c.title, desc: c.desc }
+    og = full(sp.photos[0])
+    trail = [{ name: STATIC_META['/services'].crumb[lang] || 'Services', url: urlFor('/services', lang) }, { name: c.name, url }]
+    type = c.faqs && c.faqs.length ? ['WebPage', 'FAQPage'] : 'WebPage'
+    if (c.faqs && c.faqs.length) webExtra.mainEntity = qa(c.faqs)
+    extra.push({
+      '@type': 'Service', '@id': url + '#service', name: c.name, serviceType: sp.en.name, description: c.lead,
+      provider: { '@id': BIZ }, areaServed: AREA_SERVED, url, image: sp.photos.slice(0, 3).map(full),
+    })
+    webExtra.dateModified = LAST_UPDATED
+    if (sp.draft) m.noindex = true
+  } else if (page.kind === 'case') {
+    const c = caseBySlug(page.slug)
+    m = caseMeta(c)
+    og = full(c.photos[0])
+    trail = [{ name: lang === 'ta' ? 'எங்கள் படைப்புகள்' : 'Our Work', url: urlFor('/our-work', lang) }, { name: c.eventType, url }]
+    extra.push({
+      '@type': 'CreativeWork', '@id': url + '#work', name: `${c.eventType}, ${c.area}`, description: c.special,
+      creator: { '@id': BIZ }, dateCreated: c.date, locationCreated: { '@type': 'Place', name: c.venue, address: c.area },
+      image: c.photos.map(s => ({ '@type': 'ImageObject', contentUrl: full(s) })),
+    })
+  } else if (page.kind === 'post') {
+    const post = postBySlug(page.slug)
+    m = { title: post.title, desc: post.desc }
+    og = full(post.cover)
+    trail = [{ name: 'Blog', url: urlFor('/blog', 'en') }, { name: post.h1, url }]
+    extra.push({
+      '@type': 'BlogPosting', '@id': url + '#article', headline: post.h1, description: post.desc, image: og,
+      author: { '@id': FOUNDER }, publisher: { '@id': BIZ }, datePublished: post.date, dateModified: post.date,
+      mainEntityOfPage: { '@id': url }, inLanguage: 'en',
+    })
+  } else {
+    const sm = STATIC_META[base]
+    m = { ...(sm[lang] || sm.en) }
+    type = sm.type || 'WebPage'
+    if (sm.og) og = DOMAIN + sm.og
+    if (sm.crumb) trail = [{ name: sm.crumb[lang] || sm.crumb.en, url }]
+    if (base === '/faq') {
+      webExtra.mainEntity = qa(FAQ_GROUPS.flatMap(g => g.items.map(i => i[lang] || i.en)))
+    }
+    if (base === '/our-work') {
+      webExtra.mainEntity = {
+        '@type': 'ImageGallery', name: lang === 'ta' ? 'VRK Decor படைப்புகள்' : 'VRK Decor portfolio',
+        associatedMedia: WORKS.map(w => ({ '@type': 'ImageObject', contentUrl: full(w.slug), caption: w.alt, width: w.full[0], height: w.full[1], creator: { '@id': BIZ }, copyrightHolder: { '@id': BIZ } })),
+      }
+    }
+    if (base === '/blog') {
+      webExtra.hasPart = POSTS.map(p => ({ '@id': `${DOMAIN}/blog/${p.slug}#article` }))
+    }
+    if (base === '/about' || base === '/contact' || base === '/') webExtra.about = { '@id': BIZ }
+  }
+
+  if (page.draft) m.noindex = true
+  const webpage = {
+    '@type': type, '@id': url + '#webpage', url, name: m.title, description: m.desc,
+    inLanguage: lang, isPartOf: { '@id': SITE }, publisher: { '@id': BIZ },
+    primaryImageOfPage: { '@type': 'ImageObject', url: og },
+    ...(trail.length ? { breadcrumb: { '@id': url + '#breadcrumb' } } : {}),
+    ...webExtra,
+  }
+  graph.push(webpage, ...extra)
+  if (trail.length) graph.push(breadcrumb(base, lang, trail))
+  return { ...m, og, graph: { '@context': 'https://schema.org', '@graph': graph } }
 }
+
+export const notFoundMeta = () => ({ ...STATIC_META['/404'].en, noindex: true, og: OG_DEFAULT, graph: null })
+export { STATIC_META, OG_DEFAULT }
