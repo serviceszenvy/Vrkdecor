@@ -822,6 +822,9 @@ html[lang="ta"] .prop-badge{letter-spacing:.08em}
 .panel{padding:2rem;border-radius:var(--r-l)}
 .stats-stack{grid-template-columns:1fr;gap:1rem}
 .split-top{align-items:start}
+.split-stretch{align-items:stretch}
+/* CTA band right after a dark section: room above, less below */
+.cta-gap{padding-top:clamp(2.2rem,4.5vw,3.6rem);padding-bottom:clamp(1.6rem,3vw,2.4rem)}
 .footer-logo{width:170px;height:auto}
 .site-footer .footer-h-sm{font-size:.95rem;margin:1.4rem 0 .6rem}
 .footer-profiles{display:flex;flex-wrap:wrap;gap:.3rem 1rem}

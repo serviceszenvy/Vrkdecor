@@ -240,11 +240,11 @@ export function MapFacade() {
 }
 
 /* ---------- CTA band ---------- */
-export function CtaBand({ kicker, h, p, secondary }) {
+export function CtaBand({ kicker, h, p, secondary, className = 'pt-0' }) {
   const t = useT()
   const { openQuote } = useQuote()
   return (
-    <section className="section pt-0">
+    <section className={`section ${className}`}>
       <div className="wrap">
         <div className="cta-band reveal">
           {kicker && <p className="kicker kicker-light">{kicker}</p>}

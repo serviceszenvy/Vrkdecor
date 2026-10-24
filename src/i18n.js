@@ -80,7 +80,7 @@ export const STRINGS = {
     abCtaH: 'Celebrate with a team that cares', abCtaP: 'Share your plans and we will show you what is possible',
     // contact
     cK: 'Contact', cH1a: 'Contact VRK Decor', cH1b: 'in Nagercoil',
-    cLead: 'WhatsApp is the fastest way to reach us · or call, write or drop by our shop in Vettunimadam',
+    cLead: 'WhatsApp is the fastest way to reach us or call, write or drop by our shop in Vettunimadam',
     cWa: 'WhatsApp', cWaCta: 'Chat now', cCall: 'Call us', cCallCta: 'Call now', cMail: 'Email', cMailCta: 'Write to us', cIg: 'Instagram', cIgCta: 'Follow us', cFb: 'Facebook', cFbCta: 'Find us there',
     formK: 'Get a quote', formH: 'Tell us about your event',
     fName: 'Your name', fPhone: 'Phone', fEvent: 'Event type', fDate: 'Event date', fLocation: 'Venue or town', fNotes: 'Requirements', fNotesPH: 'Theme, colours, guest count…', fLocPH: 'Nagercoil, Kanyakumari district…',
@@ -204,7 +204,7 @@ export const STRINGS = {
     reviewInvite: 'சமீபத்தில் எங்களுடன் விழா நடத்தினீர்களா? Google-ல் உங்கள் கருத்து மற்ற குடும்பங்களுக்கு உதவும்',
     abCtaH: 'அக்கறையுள்ள குழுவுடன் விழா நடத்துங்கள்', abCtaP: 'உங்கள் திட்டத்தைச் சொல்லுங்கள் · என்ன செய்ய முடியும் என்று காட்டுகிறோம்',
     cK: 'தொடர்பு', cH1a: 'VRK Decor-ஐ தொடர்பு கொள்ள', cH1b: 'நாகர்கோவில்',
-    cLead: 'WhatsApp மூலம் எங்களை விரைவாக தொடர்பு கொள்ளலாம் · அல்லது அழைக்கலாம், மின்னஞ்சல் அனுப்பலாம், வெட்டூர்ணிமடத்தில் உள்ள கடைக்கு நேரில் வரலாம்',
+    cLead: 'WhatsApp மூலம் எங்களை விரைவாக தொடர்பு கொள்ளலாம் அல்லது அழைக்கலாம், மின்னஞ்சல் அனுப்பலாம், வெட்டூர்ணிமடத்தில் உள்ள கடைக்கு நேரில் வரலாம்',
     cWa: 'WhatsApp', cWaCta: 'இப்போது பேச', cCall: 'அழைக்க', cCallCta: 'இப்போது அழைக்க', cMail: 'மின்னஞ்சல்', cMailCta: 'எழுத', cIg: 'Instagram', cIgCta: 'பின்தொடர', cFb: 'Facebook', cFbCta: 'பின்தொடர',
     formK: 'விலை விவரம்', formH: 'உங்கள் விழா பற்றி சொல்லுங்கள்',
     fName: 'உங்கள் பெயர்', fPhone: 'தொலைபேசி', fEvent: 'விழா வகை', fDate: 'விழா தேதி', fLocation: 'மண்டபம் அல்லது ஊர்', fNotes: 'தேவைகள்', fNotesPH: 'தீம், வண்ணங்கள், விருந்தினர் எண்ணிக்கை…', fLocPH: 'நாகர்கோவில், கன்னியாகுமரி மாவட்டம்…',

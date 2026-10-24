@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom'
 import { I } from '../components/Icons.jsx'
 import { useT, useLang, useQuote, HeroMedia } from '../components/Chrome.jsx'
 import { Marquee, PageHero, Breadcrumb, WorkGrid, Testimonials, CtaBand, FaqList, MapFacade, RatingLine, Stars } from '../components/Blocks.jsx'
@@ -9,7 +8,7 @@ import { track } from '../analytics.js'
 
 /* ================= CONTACT ================= */
 export function Contact() {
-  const t = useT(); const lang = useLang(); const p = useP()
+  const t = useT(); const lang = useLang()
   const [err, setErr] = useState('')
   const submit = e => {
     e.preventDefault()
@@ -50,7 +49,7 @@ export function Contact() {
         </div>
       </section>
       <section className="section section-tight pt-0">
-        <div className="wrap split split-top">
+        <div className="wrap split split-stretch">
           <div className="glass panel reveal">
             <p className="kicker">{t.formK}</p>
             <h2 className="h3">{t.formH}</h2>
@@ -80,11 +79,6 @@ export function Contact() {
             <div className="glass panel reveal reveal-d2 mt-s">
               <Stars label="4.8 out of 5" />
               <p className="m-0 text-sm"><a href={GBP} target="_blank" rel="noopener noreferrer">{t.gReviews}</a></p>
-            </div>
-            <div className="glass panel reveal reveal-d2 mt-s">
-              <h2 className="h3">{t.faqLinkH}</h2>
-              <p>{t.faqLinkP}</p>
-              <Link className="text-link" to={p('/faq')}>{t.faqLinkCta} {I.arrow}</Link>
             </div>
           </div>
         </div>

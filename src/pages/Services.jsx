@@ -40,7 +40,7 @@ export function Services() {
         </div>
       </section>
       <Steps />
-      <CtaBand h={t.svcCtaH} p={t.svcCtaP} />
+      <CtaBand h={t.svcCtaH} p={t.svcCtaP} className="cta-gap" />
     </main>
   )
 }
